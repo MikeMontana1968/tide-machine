@@ -1,0 +1,706 @@
+<title>Tide Machine Model Viewer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<style>
+:root{
+  --bg:#E6EBEF; --paper:#F6F8FA; --sunk:#DCE3E9; --stage:#DFE6EB;
+  --ink:#0E1D28; --ink2:#46596A; --ink3:#7E93A3;
+  --rule:#C6D2DB; --rule-2:#DCE4EA;
+  --sig:#9C5F17; --acc:#1F6FB2;
+  --shadow:0 1px 2px rgba(14,29,40,.06), 0 8px 24px -16px rgba(14,29,40,.35);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0A131A; --paper:#101C25; --sunk:#16242F; --stage:#0C1720;
+    --ink:#DEE9F0; --ink2:#9FB4C2; --ink3:#6B8496;
+    --rule:#243544; --rule-2:#1A2833;
+    --sig:#E3A64C; --acc:#5AAEEA;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0A131A; --paper:#101C25; --sunk:#16242F; --stage:#0C1720;
+  --ink:#DEE9F0; --ink2:#9FB4C2; --ink3:#6B8496;
+  --rule:#243544; --rule-2:#1A2833;
+  --sig:#E3A64C; --acc:#5AAEEA;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg); color:var(--ink);
+  font-family:'Archivo','Helvetica Neue',Arial,sans-serif; font-size:14px; line-height:1.45;
+  -webkit-font-smoothing:antialiased}
+.wrap{max-width:1240px; margin:0 auto; padding-inline:16px; padding-block:22px 40px}
+
+.head{margin-bottom:12px}
+.kicker{font-family:'IBM Plex Mono',monospace; font-size:10.5px; font-weight:500;
+  letter-spacing:.17em; text-transform:uppercase; color:var(--ink3); margin:0 0 3px}
+h1{font-size:clamp(22px,3.2vw,30px); font-weight:700; letter-spacing:-.022em; margin:0; text-wrap:balance}
+.sub{color:var(--ink2); max-width:74ch; margin:8px 0 0}
+
+.stage{display:grid; grid-template-columns:minmax(0,1fr) 262px; gap:16px; align-items:start}
+@media (max-width:880px){.stage{grid-template-columns:minmax(0,1fr)}}
+
+.card{background:var(--paper); border:1px solid var(--rule); box-shadow:var(--shadow)}
+.card-head{display:flex; align-items:center; justify-content:space-between; gap:10px;
+  padding:9px 14px; border-bottom:1px solid var(--rule-2)}
+.card-head h2{font-family:'IBM Plex Mono',monospace; font-size:10.5px; font-weight:600;
+  letter-spacing:.16em; text-transform:uppercase; color:var(--ink3); margin:0}
+
+#view{display:block; width:100%; height:540px; background:var(--stage); cursor:grab; touch-action:none}
+#view.drag{cursor:grabbing}
+@media (max-width:640px){#view{height:380px}}
+
+.bar{display:flex; flex-wrap:wrap; gap:10px 18px; align-items:center;
+  padding:11px 14px; border-top:1px solid var(--rule-2)}
+.field{display:flex; align-items:center; gap:9px}
+.field label{font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:.13em;
+  text-transform:uppercase; color:var(--ink3); white-space:nowrap}
+.field output{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink); min-width:42px}
+.btn{font:500 11px/1 'IBM Plex Mono',monospace; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--ink2); background:transparent; border:1px solid var(--rule); border-radius:2px;
+  padding:6px 10px; cursor:pointer}
+.btn:hover{color:var(--ink); border-color:var(--ink3)}
+.btn:focus-visible,input:focus-visible{outline:2px solid var(--acc); outline-offset:2px}
+
+input[type=range]{-webkit-appearance:none; appearance:none; background:transparent; cursor:pointer; height:18px; margin:0; width:120px}
+input[type=range]::-webkit-slider-runnable-track{height:2px; background:var(--rule)}
+input[type=range]::-moz-range-track{height:2px; background:var(--rule)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none; width:13px; height:13px; border-radius:50%;
+  background:var(--paper); border:2px solid var(--ink2); margin-top:-5.5px}
+input[type=range]::-moz-range-thumb{width:13px; height:13px; border-radius:50%;
+  background:var(--paper); border:2px solid var(--ink2)}
+
+.tog{display:flex; align-items:center; gap:9px; padding:7px 14px; border-bottom:1px solid var(--rule-2);
+  font-size:12.5px; color:var(--ink2); cursor:pointer}
+.tog:last-child{border-bottom:0}
+.tog input{accent-color:var(--acc); width:14px; height:14px; cursor:pointer}
+.sw{width:11px; height:11px; border-radius:2px; flex:none}
+
+table.dims{border-collapse:collapse; width:100%; font-size:11.5px}
+.dims th{text-align:right; padding:6px 8px; border-bottom:1px solid var(--rule);
+  font-family:'IBM Plex Mono',monospace; font-size:9px; letter-spacing:.11em;
+  text-transform:uppercase; color:var(--ink3); font-weight:600}
+.dims th:first-child{text-align:left}
+.dims td{padding:6px 8px; border-bottom:1px solid var(--rule-2); color:var(--ink2);
+  font-family:'IBM Plex Mono',monospace; text-align:right}
+.dims td:first-child{text-align:left; color:var(--ink); font-weight:600}
+.dims tr:last-child td{border-bottom:0}
+.stat{display:flex; align-items:baseline; justify-content:space-between; gap:10px;
+  padding:7px 14px; border-bottom:1px solid var(--rule-2); font-size:12px; color:var(--ink2)}
+.stat:last-child{border-bottom:0}
+.stat b{font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:var(--ink); font-weight:600}
+
+footer{margin-top:26px; padding-top:16px; border-top:1px solid var(--rule); color:var(--ink3); font-size:12px}
+footer p{max-width:82ch; margin:0 0 8px}
+footer code{font-family:'IBM Plex Mono',monospace; color:var(--ink2); background:var(--sunk); padding:1px 5px}
+footer b{color:var(--ink2)}
+</style>
+
+<div class="wrap">
+  <div class="head">
+    <p class="kicker">Sheet 4 &middot; Rev L &middot; direct drive</p>
+    <h1>Tide Machine Model Viewer</h1>
+  </div>
+  <p class="sub">Five crank discs pressed straight onto 28BYJ-48 output shafts, motors coaxial behind a single flat plate. No pinions, no gear rims, no reduction &mdash; a PWM trickle on the common rail does the holding. Drag to orbit, run the cranks, pull the explode slider apart.</p>
+
+  <div class="stage">
+    <div class="card">
+      <div class="card-head">
+        <h2>General arrangement &mdash; Rev L</h2>
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink3)">drag to orbit</span>
+      </div>
+      <canvas id="view"></canvas>
+      <div class="bar">
+        <div class="field">
+          <label for="ex">Explode</label>
+          <input type="range" id="ex" min="0" max="100" step="1" value="0">
+          <output for="ex" id="exOut">0%</output>
+        </div>
+        <div class="field">
+          <label for="ph">Crank</label>
+          <input type="range" id="ph" min="0" max="359" step="1" value="0">
+          <output for="ph" id="phOut">0&deg;</output>
+        </div>
+        <button class="btn" id="run">Run</button>
+        <button class="btn" id="front">Front</button>
+        <button class="btn" id="iso">Iso</button>
+        <button class="btn" id="reset">Reset</button>
+      </div>
+    </div>
+
+    <aside style="display:flex;flex-direction:column;gap:16px">
+      <div class="card">
+        <div class="card-head"><h2>Tags</h2></div>
+        <div id="tags"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>Stations &mdash; 0.20 N tension</h2></div>
+        <table class="dims">
+          <thead><tr><th>Ring</th><th>r pin</th><th>disc</th><th>yoke</th><th>margin</th></tr></thead>
+          <tbody>
+            <tr><td>M2</td><td>35.00</td><td>47.0</td><td>96</td><td>2.4&times;</td></tr>
+            <tr><td>S2</td><td>8.75</td><td>20.8</td><td>42</td><td>9.8&times;</td></tr>
+            <tr><td>N2</td><td>7.35</td><td>19.4</td><td>42</td><td>11.7&times;</td></tr>
+            <tr><td>K1</td><td>3.50</td><td>15.5</td><td>42</td><td>24.5&times;</td></tr>
+            <tr><td>O1</td><td>2.45</td><td>14.5</td><td>42</td><td>35.0&times;</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>Envelope</h2></div>
+        <div class="stat"><span>Faceplate</span><b>sheet, 321 &times; 164 &times; 1.5</b></div>
+        <div class="stat"><span>Rails</span><b>1&times;2 pine, 19 &times; 38</b></div>
+        <div class="stat"><span>Carriage, M2</span><b>96 &times; 15.6 &times; 12</b></div>
+        <div class="stat"><span>Carriage, &times;4</span><b>42 &times; 15.6 &times; 12</b></div>
+        <div class="stat"><span>Pin / slot</span><b>5.0 / 5.2 mm</b></div>
+        <div class="stat"><span>Guide rods</span><b>7, shared</b></div>
+        <div class="stat"><span>Home sensors</span><b>5, at 12 o'clock</b></div>
+        <div class="stat"><span>Flag band</span><b>3 &times; 2 mm, 12&deg; notch</b></div>
+        <div class="stat"><span>Shaft grip</span><b>8.0 of 8.0 mm</b></div>
+        <div class="stat"><span>Plate holes</span><b>35 &mdash; 5/10/10/10</b></div>
+        <div class="stat"><span>Rail drilling</span><b>20 inner + 5 rear, per rail</b></div>
+        <div class="stat"><span>Carriages in the row</span><b>6</b></div>
+        <div class="stat"><span>Depth over all</span><b>~63 mm</b></div>
+        <div class="stat"><span>&Sigma;r</span><b>57.1 mm</b></div>
+        <div class="stat"><span>Cable end</span><b>&plusmn;114 mm</b></div>
+        <div class="stat"><span>Pen travel (2&Sigma;r)</span><b>114 mm</b></div>
+        <div class="stat"><span>Chart scale</span><b>35 mm / m of tide</b></div>
+        <div class="stat"><span>Drum</span><b>3&quot; PVC, OD 88.9</b></div>
+        <div class="stat"><span>Chart speed</span><b>39.9 mm / day</b></div>
+        <div class="stat"><span>Drum</span><b>90 &times; 248</b></div>
+        <div class="stat"><span>Hold, 60% PWM</span><b>20.6 mN&middot;m</b></div>
+        <div class="stat"><span>All six motors</span><b>1.38 W</b></div>
+      </div>
+    </aside>
+  </div>
+
+  <footer>
+    <p><b>Correction carried into this revision:</b> earlier sheets under-reported pen travel. Each moving pulley doubles its carriage's displacement, so the cable end swings &plusmn;2&Sigma;r and full travel is <b>4&Sigma;r</b>, not 2&Sigma;r. That is why <code>pin_scale</code> came down from 70 to 35 &mdash; it now buys both a 2.4&times; torque margin and a 228 mm marigram on a 248 mm drum.</p>
+    <p><b>Two carriage classes.</b> M2 needs 73 mm of slot and a 93 mm carriage; the other four all fit inside S2's 20.5 mm, so they share one 40 mm part with a 22 mm slot. A slot longer than a crank needs costs nothing &mdash; it only constrains vertically, so the pin just sweeps less of it &mdash; which is why four different cranks share one carriage. <b>Two STLs, printed 1 and 4.</b> Pitch then falls out of the widths rather than a fixed number: 74.5 mm from M2 to S2, 48 mm between the small ones, plate back to <b>427 &times; 175</b>.</p>
+    <p><b>Section and grooves.</b> Webs above and below the slot are each 1&times; slot height, so the carriage is 18 &times; 12 mm in section &mdash; hugely overbuilt for 0.4 N, and thin because there is no reason for it to be thick.</p>
+    <p><b>One groove locates, one floats.</b> The left groove is a close fit on the rod (0.1 mm) and does the constraining; the right is deliberately loose (0.8 mm) and only resists rotation. Standard printer/plotter practice, and it means <b>the two rods at a station do not have to be parallel</b> &mdash; skew is absorbed by the floating side instead of binding the carriage. Drop the carriage in before the rod tops are fixed.</p>
+    <p><b>Don't print the drum.</b> 3" Schedule 40 PVC has an outside diameter of <b>88.9 mm</b> &mdash; within a millimetre of what the drum wanted, so the tube simply <i>is</i> the right part. Print only the two end caps: each plugs the 77.9 mm bore, carries the 7 mm shaft and trues up the cut end. About 30 g of PLA and forty minutes, against 250 g and most of a day for a printed drum that would be rounder only by luck. A 130 mm length weighs ~260 g &mdash; nothing to the motor (total drum torque is about 4 mN&middot;m against 34.3 available) but a real thrust load, so put a washer under the bottom cap. Cut the tube square; a drum that wobbles moves the pen in and out and modulates its contact force.</p>
+    <p><b>Chart speed is worth a thought.</b> Circumference is 279.3 mm, so at one revolution per 7 days you get 39.9 mm/day &mdash; only <b>20.6 mm per tidal cycle</b> against up to 102 mm of vertical swing, which is a very steep trace. One rev per 3.5 days gives 41.3 mm per cycle and a far more classical marigram, at the cost of 17 sheet changes over a 60-day run instead of 9. It is a firmware constant either way. Paper: an A4 sheet wrapped the long way leaves 17.7 mm of overlap to tape; trim the 210 mm dimension to about 140.</p>
+    <p><b>The drum hangs off the rails too.</b> Its 7 mm shaft passes through a hole at the same z as the guide rods in <i>both</i> rails &mdash; clearance through the top one on its way to the motor above, a plain bearing in the bottom one. Same printed part, no extra bracket. It now sits between the rails rather than towering over the machine, which is what halving the pen travel bought.</p>
+    <p><b>The pen is the sixth station.</b> It closes up against O1 with the same 2 mm gap the yokes use and shares rod 5 with it &mdash; float groove for O1, locating groove for the pen &mdash; so the whole run of six carriages is one continuous pattern and only <b>one extra rod</b> is needed, at x&nbsp;=&nbsp;181. Seven rods in total. The drum follows the pen in to x&nbsp;=&nbsp;250, its surface meeting the nib at the end of a 25 mm arm.</p>
+    <p><b>The pen swings further than any crank, necessarily.</b> It carries the sum, so its range is &Sigma;r = 57.05 mm against M2's 35.00 &mdash; a ratio of &Sigma;A/A<sub>M2</sub> = <b>1.630</b>. They can't be made to line up; that mismatch <i>is</i> the summation. Over a real 60-day run the pen reaches +56.6 / &minus;53.5 mm, so the theoretical bound is barely conservative and there's no headroom to reclaim. Which is why the carriage is 16 mm rather than 20, and why the ballast lives in a pocket <i>inside</i> it: a slug hung below would reach &minus;80.1 mm and foul the bottom rail by 10 mm at full travel. Part-fill the pocket with lead shot, cap with epoxy, check on a kitchen scale &mdash; all-up mass is the spec, not pocket volume.</p>
+    <p><b>The pen's zero is set by cable length and nothing else.</b> Mean sea level on the chart is wherever the pen sits when every carriage is at mid-travel, and that depends entirely on how long the cable is. Hence the screw-adjustable anchor at the dead end: it is the physical form of Z0 from the spreadsheet, and it is the one thing here that genuinely does have to be aligned.</p>
+    <p><b>The plate now has its holes, because the drawings made them real.</b> All 35 are subtracted geometry, not decoration, and they come from the same arithmetic that writes the DXF: <b>5 &times; &Oslash;10.0</b> shaft clearance (the motor's 9 mm boss plus 0.5), <b>10 &times; &Oslash;3.2</b> motor M3 on a 35 mm PCD, <b>10 &times; &Oslash;3.2</b> sensor-bracket M3 at each disc's rim, and <b>10 &times; &Oslash;4.0</b> frame screws on y&nbsp;=&nbsp;&plusmn;76. Against 1.5 mm stock the smallest hole is 3.2 and the thinnest hole-to-edge wall is 4.0, both well over the "&ge; material thickness" laser rule. Pull the explode slider and the rail pilots line up underneath the frame screws.</p>
+    <p><b>The two rails are mirror images, and that changed the drawings.</b> Both carry identical features at identical (x,&nbsp;z), but each is drilled on its <i>inner</i> face &mdash; the one looking at the other rail. Laying the top rail inner-face-up turns it over, so with the rear edge toward you on both, machine x runs left-to-right on one rail and right-to-left on the other. Drill both from one template and the second rail is scrap; hence a separately named sheet per rail. There <i>is</i> a pairing trick that gets the hand right for free &mdash; clamp them <b>outer</b> face to outer face, rear edges and ends flush, and drill each position from both sides to 9 mm. Seating each rail means rotating it about its <i>transverse</i> axis, so the same physical end lands at opposite ends of the machine. Clamping the inner faces together cannot work: those are the faces you need to drill.</p>
+    <p><b>Rails in wood &mdash; and 1&times;1 is too shallow.</b> The rail has to span from the faceplate at z&nbsp;=&nbsp;0 forward to the cable rings at z&nbsp;=&nbsp;&minus;30, with the rod sockets at &minus;20 in between; the rings <i>must</i> sit forward of the rods or the cable fouls them. That needs 30&nbsp;+&nbsp;4&nbsp;=&nbsp;<b>34 mm of depth</b>. A 25.4 mm section leaves 2.8 mm of wood ahead of the rod socket and puts the ring 4.6 mm off the front face entirely. <b>1&times;2 pine (19.05 &times; 38.1 actual)</b> gives 15.5 mm ahead of the socket and 8.1 mm ahead of the ring, and it's the cheapest stock there is.</p>
+    <p><b>No lip; the faceplate screws on.</b> It overlaps the rails' rear faces by 12 mm &mdash; a comfortable landing for a #6 wood screw. Pilot 2 mm into the pine, 3.5 mm through the sheet; the console prints the pattern. The cable rings become <b>screw eyes</b>, which is the right part for wood and far better than drilling 1.4 mm through 19 mm of pine. Carriages keep their drilled holes and hand-made rings &mdash; those are PLA. The drum shaft now runs in a 7 mm hole through wood: passable at one revolution a week, but a brass bushing costs nothing and won't wear oval.</p>
+    <p><b>Sheet metal at 1.5 mm, and the motor picks that number too.</b> The boss is 1.5 mm tall, so a 1.5 mm plate buries it exactly &mdash; the boss sits inside the clearance hole and the shaft emerges right at the plate's front face with all <b>8.0 mm forward of it</b>. The hub counterbore disappears, hub OD goes back to 11, and the clearance hole only has to pass the boss. 1.5 mm aluminium is also ~2.9&times; stiffer in bending than the 3 mm acrylic it replaces, drills without cracking, needs no nylon washers and gives the motors a ground plane. What it costs is the translucency &mdash; you could see the mechanism through the acrylic and now you can't.</p>
+    <p><b>The shaft budget is the tightest thing in the machine.</b> A 28BYJ-48 gives 9.5 mm past its mounting face, but the first 1.5 mm is a 9 mm boss &mdash; so there are only <b>8.0 mm of 5 mm shaft</b>. Bolted flat the face sits at z&nbsp;=&nbsp;+3, putting the boss at z [+1.5,&nbsp;+3] and the shaft at [&minus;6.5,&nbsp;+1.5], which leaves 6.5 mm forward of the plate. An earlier hub ran [&minus;3,&nbsp;+3] with a 5 mm bore, driving it straight into the boss: real engagement was <b>4.5 mm, not the 6 it looked like</b>. Now the bore runs through the <i>disc</i> as well, [&minus;9,&nbsp;+1.5], and the hub is counterbored over its last 1.5 mm to clear the boss &mdash; which also registers the disc concentrically on it. Grip is <b>8.0 mm, every millimetre there is</b>. Knock-ons: hub OD 11&nbsp;&rarr;&nbsp;13 (0.75 mm of wall over a 9.5 counterbore is not a wall) and plate clearance 12.5&nbsp;&rarr;&nbsp;14.</p>
+    <p><b>The home flag is a recess, not a tab.</b> The rims are close &mdash; only <b>3.25 mm</b> between M2's and S2's discs, 3.90 between S2 and N2 &mdash; and anything protruding radially sweeps a full circle, so it would strike its neighbour. Instead the disc body stops 3 mm short of its OD and that last ring of rim prints at <b>2 mm instead of 6</b>, with a 12&deg; notch in it. Nothing sticks out; the sensor's 3 mm slot straddles the 2 mm band. It prints with no support: the disc lies flat, so the thinned rim is a step down in layer height and the notch is a vertical-walled gap. The notch is <b>centred on the pin</b>, which makes the flag-to-pin angle exact by construction rather than a calibration. Run the crank slider and watch it pass the sensor.</p>
+    <p><b>Sensors at 12 o'clock, all five the same.</b> The sides are congested &mdash; neighbouring discs at 3 and 9 o'clock, guide rods just beyond &mdash; but there is 23 mm of clear space above even M2's rim and 50 mm above the small ones. The bracket occupies z 0&hellip;&minus;7 while the carriages live at &minus;26&hellip;&minus;14, so they pass in front of it wherever they are in their stroke. Slot the bracket's mounting holes radially and one design serves all five discs.</p>
+    <p><b>Both cable legs have to be parallel to the carriage's travel.</b> A moving ring gives exactly 2&times;d of take-up only when its two legs leave it along the direction the carriage slides. Splayed at angle &alpha; the take-up is 2&middot;d&middot;cos&alpha; &mdash; and &alpha; changes as the carriage moves, so the gain isn't even constant. An earlier routing ran <i>one</i> rail ring between each pair of stations, which splayed M2's legs by 58 and 35 mm and swung its gain from <b>0.78 to 1.77</b> instead of a flat 2.00. Now two rail rings per station, straddling it by 6 mm so both legs run vertical: residual error <b>0.58% of the trace</b>, against 12.4% from harmonic truncation. Twelve rail rings, not five.</p>
+    <p><b>Which makes the layout free.</b> Everything between stations now runs fixed ring to fixed ring, and the distance between two fixed points never changes &mdash; so the cable can take any path it likes between stations and contribute nothing to the sum. Station order, spacing and position are all unconstrained; only the local geometry at each moving ring matters.</p>
+    <p><b>The pen is a moving ring, not a cable end.</b> The cable wraps a ring on the pen carriage and terminates at a fixed anchor on the rail, so the pen travels <i>half</i> the cable end &mdash; 114 mm instead of 228. That is the only way it fits: the rails are 140 mm apart and a 20 mm carriage leaves 120 mm of usable stroke. Chart scale becomes <code>pin_scale</code> exactly, <b>35 mm per metre of tide</b> &mdash; 102 mm for a spring range, 53 mm for a neap. The alternative is moving the rails to &plusmn;130 and building a 280 mm tall machine for the same information.</p>
+    <p><b>Dead weight, not a spring, at both ends.</b> A spring's force varies with extension, which would vary cable tension over the stroke and so vary every crank torque. A hanging weight is constant. 20 g at the take-up end sets tension at 0.20 N; the pen carriage then needs 41 g to balance the 2T the wrap puts on it &mdash; build that in as a brass slug. Pen contact force is separate, acts in Z, and should stay independent of the travel mechanism: a light leaf spring at about 0.05 N, plus a manual lever to retract the nib for weekly sheet changes.</p>
+    <p><b>Blind rod sockets.</b> 9 mm into the 19 mm thickness &mdash; 1.8 diameters of engagement, ample for a guide carrying a fifth of a newton &mdash; leaving 10.1 mm of pine behind them, so nothing breaks through the outer faces and the rails read as solid bars. Rod length is socket-bottom to socket-bottom: <b>158 mm</b>. Cut them a whisker under and let them sit; forcing them home is how you split a socket wall.</p>
+    <p><i>Superseded by the wood rails above.</i> <b>The rails fixed the rod spacing.</b> Both rails <i>were</i> the same printed part, each carrying all six rod holes, so spacing and parallelism came off the printer rather than out of assembly &mdash; the alignment problem the locate/float grooves existed to survive. The float groove stays regardless; it now absorbs drilling slop instead of print error. The printed rail captured the acrylic in a 3.4 mm lip and, at 436 mm, needed three ~145 mm segments with staggered lap joints. In 1&times;2 pine the whole 470 mm run is one piece and there is no lip, which is most of the reason to be in wood at all.</p>
+    <p><i>Superseded by the sheet-metal plate above.</i> <b>Acrylic at 3 mm, and the stepper set it.</b> A 3 mm plate left 6.5 mm of shaft for a hub that needed 6; at 6 mm acrylic only 3.5 mm remained. Stiffness was never the constraint &mdash; the plate spans 140 mm between rails and carries about 250 g of motors &mdash; which is exactly why the thickness could follow the shaft budget instead, and then follow it all the way down to 1.5 mm of metal.</p>
+    <p><b>Six rods, not ten.</b> Each rod sits in a 2 mm gap between two neighbouring carriages and serves both &mdash; the locating groove for the one on its right, the floating groove for the one on its left. Station pitch then becomes <code>hw(i) + hw(i+1) + gap</code> rather than a free choice, and there are half as many rod mounts to get right.</p>
+    <p><b>Pin and slot now match.</b> The slot height <i>is</i> the kinematic fit &mdash; any clearance in it is pure backlash, reversing twice per revolution. Earlier revisions carried a 3 mm pin in a 6 mm slot: <b>3 mm of lost motion</b> on a 228 mm trace. Now a 5 mm pin in a 5.2 mm slot, which also lets the pins come off the same stock as the guide rods.</p>
+    <p><b>Dimples, not a printed hole.</b> The upper web prints in three slices so the 2.6 mm centring dimples on the front and back faces are real recesses with solid material between them. Drill through by hand; 1.4 mm clears paper-clip wire with enough slop for the ring to pivot.</p>
+    <p><b>Groove plane, corrected.</b> The rods are vertical, so each groove has to run the full height of the carriage &mdash; a half-cylinder about Y, not a notch in the outline. The end blocks are now drawn in XZ and extruded along Y while the webs stay XY-extruded along Z. Previously the groove was cut in the wrong plane, so the rod only touched near mid-height and the engagement crept as the carriage travelled. <b>Print upright</b>, standing on the 96 &times; 12 footprint, so the end grooves run vertically and come off the printer as clean bearing surfaces &mdash; the only surfaces here that matter. The cost is the slot, whose top wall then bridges its full length: turn on support inside the slot. It is a through-window open at both ends, so the support lifts straight out and a needle file cleans what is left.</p>
+    <p><b>Lubrication.</b> Light mineral oil is inert to PLA and takes PLA-on-steel from about &mu;&nbsp;0.25 dry to 0.1, dropping total guide drag across all five carriages from ~0.22 N to ~0.09 N &mdash; most of the way back inside the 0.20 N tension budget every torque figure here rests on. It collects lint over sixty days; wipe and re-oil if the pen starts to feel notchy.</p>
+    <p><b>Ring, not a pulley.</b> The drilled hole in the upper web takes a hand-made ring, and the line passes <i>through</i> it rather than tying to the carriage &mdash; that 180&deg; wrap is what turns a displacement d into 2d of take-up. A sliding ring costs capstan friction a roller would not; if the pen ever feels notchy or direction-dependent, that is where it is coming from.</p>
+    <p><b>Direct drive.</b> Each disc presses onto its motor's output shaft, motor coaxial behind the plate. Gone from Rev C: five pinions, five toothed rims, every mesh adjustment, all gear backlash, and the motor offset &mdash; which by itself took the plate from 300 mm tall down to 175.</p>
+    <p><b>PWM hold.</b> Holding torque scales with current, heat with current squared, so topping up the gearbox costs almost nothing. One N-channel MOSFET in the motors' common 5 V rail and one ESP32 PWM channel: idle at 60% duty for 20.6 mN&middot;m and 1.38 W across all six, snap the rail to 100% for the ~30 ms of a step, drop back. Tune the duty down once you have measured the unpowered holding torque.</p>
+    <p><b>The pen sets the crank size.</b> Every torque number follows from 0.20 N of cable tension, and pen drag dominates that budget &mdash; hence the counterweight on the pen carriage, so contact force is a designed number rather than whatever a spring gives. K1 and O1 are too small for a usable amplitude slot, so those two discs carry the pin at a printed-in radius; re-print them if you change ports.</p>
+    <p>Cable is ~0.3 mm fluorocarbon monofilament &mdash; at 0.20 N that is about 1% of breaking strength, so creep over sixty days is sub-millimetre and elastic stretch is a constant offset absorbed in the pen zero. Crimp sleeves, not knots. To build in SketchUp: <code>load "C:/Users/mikem/Desktop/tide-machine/tide_machine.rb"</code>.</p>
+  </footer>
+</div>
+
+<script>
+(function(){
+'use strict';
+if (typeof THREE === 'undefined'){
+  document.getElementById('view').outerHTML =
+    '<p style="padding:24px;color:#a33">Could not load the 3D library.</p>';
+  return;
+}
+
+/* ---- mirrors CFG in tide_machine.rb (Rev L) ---- */
+var C = {
+  sym:['M2','S2','N2','K1','O1'],
+  rPin:[35.0,8.75,7.35,3.50,2.45],
+  discR:[47.0,20.75,19.35,15.50,14.45],
+  xs:[-88,-17,27,71,115],
+  rodX:[-137,-39,5,49,93,137], rodGap:2,
+  slotted:[1,1,1,0,0],
+  ph0:[0,64,150,232,300],
+  speed:[1.0,1.035,0.981,0.519,0.481],
+  discT:6, discZ:-9, hubR:5.5, boreR:2.6, bossL:1.5,
+  flagBand:3, flagT:2, notchDeg:12, sensorOff:1.5, sensorDeep:7, slotGap:3.2,
+  plateT:1.5, pX0:-156, pX1:165, pY0:-82, pY1:82,
+  bossD:9.5, motorPCD:35, motorHoleD:3.2, sensorPCD:9, sensorHoleD:3.2,
+  screwPitch:75, plateScrewD:4.0, pilotD:2.0, pilotDeep:10,
+  railX0:-160, railX1:310,
+  penX:159, penRodX:[181], penH:16, penArm:25, penRingY:5,
+  ballastW:32, ballastH:9, ballastY:-2,
+  railY:70, railT:19.05, railZ0:0, railZ1:-38.1, socketDeep:9, postW:19.05,
+  rodHoleD:5.2, rodZ:-20, ringHoleD:2.0, ringZ:-30,
+  ringDx:6,
+  pinD:5, yokeZ:-26, yokeW:[96,42,42,42,42], slotLen:[76,24,24,24,24],
+  slotH:5.2, webT:5.2, yokeT:12,
+  grooveFit:2.60, grooveFree:3.30, dimpleD:2.6, dimpleDeep:1.0,
+  rodD:5, rodLen:158, ringY:9,
+  cz:-30,
+  drumX:249.5, drumR:44.45, drumIR:38.95, capDeep:14, drumShaftD:7, drumY0:-65, drumY1:65,
+  motorD:28, motorL:19,
+  gap:90
+};
+var STATIONS = C.xs.concat([C.penX]);
+var RINGX = [];
+STATIONS.forEach(function(x){ RINGX.push(x - C.ringDx, x + C.ringDx); });
+var PAL = {wood:0xc4a470, disc:0x1f6fb2, teeth:0x3f8ccb, part:0x5a8eb8,
+           alu:0xb2bec7, steel:0x788088,
+           motor:0x46596a, board:0x165c46, cable:0xb0761e, paper:0xeef2f5, pin:0x3a4048};
+var LAYERS = [
+  {k:'yokes', n:'Yokes + rails',      e:0, c:PAL.part},
+  {k:'cable', n:'Cable + pulleys',    e:0, c:PAL.cable},
+  {k:'pen',   n:'Pen carriage',       e:0, c:PAL.part},
+  {k:'drum',  n:'Drum',               e:0, c:PAL.paper},
+  {k:'discs', n:'Crank discs + pins', e:1, c:PAL.disc},
+  {k:'frame', n:'Rails + frame (wood)',e:0, c:PAL.wood},
+  {k:'plate', n:'Faceplate (sheet)',  e:2, c:PAL.alu},
+  {k:'drive', n:'Steppers',           e:3, c:PAL.motor},
+  {k:'sens',  n:'Home sensors',       e:2, c:PAL.board},
+  {k:'elec',  n:'Electronics',        e:4, c:PAL.board}
+];
+
+var cv = document.getElementById('view');
+var renderer = new THREE.WebGLRenderer({canvas:cv, antialias:true, alpha:true});
+renderer.setClearColor(0x000000, 0);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio||1, 2));
+var scene = new THREE.Scene();
+var camera = new THREE.PerspectiveCamera(36, 1, 10, 8000);
+scene.add(new THREE.HemisphereLight(0xffffff, 0x47575f, 0.9));
+var kA = new THREE.DirectionalLight(0xffffff, 0.7); kA.position.set(-300,600,900); scene.add(kA);
+var kB = new THREE.DirectionalLight(0xffffff, 0.28); kB.position.set(600,200,-600); scene.add(kB);
+
+var root = new THREE.Object3D(); scene.add(root);
+var G = {}; LAYERS.forEach(function(L){ G[L.k] = new THREE.Object3D(); root.add(G[L.k]); });
+function mat(c){ return new THREE.MeshStandardMaterial({color:c, roughness:0.6, metalness:0.12}); }
+var M = {}; Object.keys(PAL).forEach(function(k){ M[k] = mat(PAL[k]); });
+M.bore = new THREE.MeshStandardMaterial({color:0x2a2622, roughness:0.95});
+M.alu = new THREE.MeshStandardMaterial(
+  {color:0xb0b8be, roughness:0.38, metalness:0.65, side:THREE.DoubleSide});
+
+function cylZ(parent, x, y, r, z0, z1, m, segs){
+  var o = new THREE.Mesh(new THREE.CylinderGeometry(r, r, Math.abs(z1-z0), segs||32), m);
+  o.rotation.x = Math.PI/2; o.position.set(x, y, (z0+z1)/2); parent.add(o); return o;
+}
+function boxAt(parent, x0,y0,z0, x1,y1,z1, m){
+  var o = new THREE.Mesh(new THREE.BoxGeometry(Math.abs(x1-x0),Math.abs(y1-y0),Math.abs(z1-z0)), m);
+  o.position.set((x0+x1)/2,(y0+y1)/2,(z0+z1)/2); parent.add(o); return o;
+}
+function tubeZ(parent, x, y, rOut, rIn, z0, z1, m, segs){
+  var pts = [[rIn,0],[rOut,0],[rOut,z1-z0],[rIn,z1-z0]]
+        .map(function(p){ return new THREE.Vector2(p[0], p[1]); });
+  pts.push(pts[0].clone());
+  var o = new THREE.Mesh(new THREE.LatheGeometry(pts, segs||36), m);
+  o.rotation.x = Math.PI/2; o.position.set(x, y, z0);
+  parent.add(o); return o;
+}
+function sectorShape(rIn, rOut, a0, a1, n){
+  var sp = new THREE.Shape(), i, t;
+  for (i = 0; i <= n; i++){
+    t = a0 + (a1 - a0) * i / n;
+    if (i) sp.lineTo(rOut*Math.cos(t), rOut*Math.sin(t));
+    else   sp.moveTo(rOut*Math.cos(t), rOut*Math.sin(t));
+  }
+  for (i = 0; i <= n; i++){
+    t = a1 - (a1 - a0) * i / n;
+    sp.lineTo(rIn*Math.cos(t), rIn*Math.sin(t));
+  }
+  sp.closePath();
+  return sp;
+}
+function pulleyAt(parent, x, y, z, m){
+  var pts = [[2.8,-3.2],[10,-3.2],[10,-1.0],[8,0],[10,1.0],[10,3.2],[2.8,3.2]]
+              .map(function(p){ return new THREE.Vector2(p[0],p[1]); });
+  pts.push(pts[0].clone());
+  var o = new THREE.Mesh(new THREE.LatheGeometry(pts, 20), m);
+  o.rotation.z = Math.PI/2; o.position.set(x,y,z); parent.add(o); return o;
+}
+
+/* ---------------- faceplate ----------------
+   Every hole here is the same arithmetic faceplate.py puts in the DXF:
+   5 shaft clearances, 10 motor M3 on a 35 PCD, 10 sensor-bracket M3, and
+   the frame screws along y = +/-screwY. */
+var SHAFT_CLR = C.bossD + 0.5;
+var SCREW_Y   = (C.railY + C.pY1) / 2;
+var SCREWX    = (function(){
+  var n = Math.round((C.pX1 - C.pX0) / C.screwPitch), a = [], k;
+  for (k = 0; k <= n; k++) a.push(C.pX0 + 12 + (C.pX1 - C.pX0 - 24) * k / n);
+  return a;
+})();
+var PLATE_HOLES = [];
+C.xs.forEach(function(x, i){
+  PLATE_HOLES.push([x, 0, SHAFT_CLR]);
+  [-1, 1].forEach(function(sg){
+    PLATE_HOLES.push([x + sg * C.motorPCD / 2, 0, C.motorHoleD]);
+    PLATE_HOLES.push([x + sg * C.sensorPCD / 2, C.discR[i] + 3, C.sensorHoleD]);
+  });
+});
+SCREWX.forEach(function(x){
+  [SCREW_Y, -SCREW_Y].forEach(function(y){ PLATE_HOLES.push([x, y, C.plateScrewD]); });
+});
+(function(){
+  var sp = new THREE.Shape();
+  sp.moveTo(C.pX0, C.pY0); sp.lineTo(C.pX1, C.pY0);
+  sp.lineTo(C.pX1, C.pY1); sp.lineTo(C.pX0, C.pY1); sp.closePath();
+  PLATE_HOLES.forEach(function(h){
+    var p = new THREE.Path();
+    p.absarc(h[0], h[1], h[2] / 2, 0, Math.PI * 2, true);
+    sp.holes.push(p);
+  });
+  var m = new THREE.Mesh(
+    new THREE.ExtrudeGeometry(sp, {depth:C.plateT, bevelEnabled:false}), M.alu);
+  G.plate.add(m);
+})();
+
+/* ---------------- stations ---------------- */
+var cranks = [], yokes = [];
+C.xs.forEach(function(x, i){
+  var dr = C.discR[i], rp = C.rPin[i], z0 = C.discZ, z1 = C.discZ + C.discT;
+
+  var crank = new THREE.Object3D(); crank.position.set(x, 0, 0); G.discs.add(crank);
+  cranks.push(crank);
+  /* body stops short of the OD; the last flagBand of rim is thinned to
+     flagT so a photointerrupter's slot can straddle it */
+  tubeZ(crank, 0, 0, dr - C.flagBand, C.boreR, z0, z1, M.disc, 56);
+
+  /* flag: the band is continuous EXCEPT a notch centred on the pin */
+  var nd = C.notchDeg * Math.PI/180, a0 = nd/2, a1 = 2*Math.PI - nd/2;
+  var bandGeo = new THREE.ExtrudeGeometry(
+    sectorShape(dr - C.flagBand, dr, a0, a1, 72),
+    {depth:C.flagT, bevelEnabled:false});
+  var band = new THREE.Mesh(bandGeo, M.teeth);
+  band.position.z = z1 - C.flagT; crank.add(band);
+
+  /* hub reaches REARWARD through the plate hole; bored 5.2 as far as the
+     boss, then counterbored to clear it and register on it */
+  tubeZ(crank, 0, 0, C.hubR, C.boreR, z1, 0, M.disc, 24);
+  if (C.slotted[i]) boxAt(crank, 7, -4, z0-2.2, dr-6, 4, z0, M.steel);
+  else              boxAt(crank, rp-4, -4, z0-2.2, rp+4, 4, z0, M.pin);
+  cylZ(crank, rp, 0, C.pinD/2, C.yokeZ-2, z0+1, M.pin, 12);
+
+  var yk = new THREE.Object3D(); yk.position.set(x, 0, 0); G.yokes.add(yk); yokes.push(yk);
+  var z2 = C.yokeZ, tt = C.yokeT, zc = z2 + tt/2;
+  var hw = C.yokeW[i]/2, sl = C.slotLen[i]/2, sh = C.slotH/2;
+  var hh = sh + C.webT, ew = hw - sl, off = C.rodGap/2;
+
+  var low = new THREE.Mesh(new THREE.BoxGeometry(2*sl, C.webT, tt), M.part);
+  low.position.set(0, -(sh + C.webT/2), zc); yk.add(low);
+
+  function web(withDimple){
+    var sp = new THREE.Shape();
+    sp.moveTo(-sl, sh); sp.lineTo(sl, sh); sp.lineTo(sl, hh); sp.lineTo(-sl, hh);
+    sp.closePath();
+    if (withDimple){
+      var dm = new THREE.Path();
+      dm.absarc(0, sh + C.webT/2, C.dimpleD/2, 0, Math.PI*2, true);
+      sp.holes.push(dm);
+    }
+    return sp;
+  }
+  [[z2, C.dimpleDeep, true],
+   [z2 + C.dimpleDeep, tt - 2*C.dimpleDeep, false],
+   [z2 + tt - C.dimpleDeep, C.dimpleDeep, true]].forEach(function(p){
+    var m = new THREE.Mesh(
+      new THREE.ExtrudeGeometry(web(p[2]), {depth:p[1], bevelEnabled:false}), M.part);
+    m.position.z = p[0]; yk.add(m);
+  });
+
+  var rg = new THREE.Mesh(new THREE.TorusGeometry(3.2, 0.55, 8, 18), M.steel);
+  rg.position.set(0, sh + C.webT/2 + 2.4, zc); yk.add(rg);
+
+  [[-1, C.grooveFit], [1, C.grooveFree]].forEach(function(p){
+    var sgn = p[0], gr = p[1], uo = sgn*hw, uc = uo + sgn*off, ui = sgn*(hw-ew);
+    var zi = Math.sqrt(Math.max(gr*gr - off*off, 0));
+    var f0 = Math.acos(Math.max(-1, Math.min(1, -sgn*off/gr)));
+    var es = new THREE.Shape();
+    es.moveTo(ui, -tt/2); es.lineTo(uo, -tt/2); es.lineTo(uo, -zi);
+    if (sgn > 0) es.absarc(uc, 0, gr, 2*Math.PI - f0, f0, true);
+    else         es.absarc(uc, 0, gr, -f0, f0, false);
+    es.lineTo(uo, tt/2); es.lineTo(ui, tt/2); es.closePath();
+    var blk = new THREE.Mesh(
+      new THREE.ExtrudeGeometry(es, {depth:2*hh, bevelEnabled:false}), M.part);
+    blk.rotation.x = -Math.PI/2;
+    blk.position.set(0, -hh, zc);
+    yk.add(blk);
+  });
+
+  /* motor bolts FLAT to the acrylic -- a standoff would cost shaft length */
+  cylZ(G.drive, x, 0, C.motorD/2, C.plateT, C.plateT+C.motorL, M.motor, 26);
+  cylZ(G.drive, x, 0, 2.5, -6.5, C.plateT, M.steel, 10);
+
+  /* home sensor: 12 o'clock, bracket on the plate's front face, fork
+     reaching forward to straddle the flag band */
+  var sr = dr - C.sensorOff;
+  boxAt(G.sens, x-7, dr-9, -C.sensorDeep, x+7, dr+7, 0, M.part);
+  var bc = z1 - C.flagT/2, sg = C.slotGap/2;
+  [[bc-sg-1.4, bc-sg], [bc+sg, bc+sg+1.4]].forEach(function(f){
+    boxAt(G.sens, x-5, sr-3, f[0], x+5, sr+3, f[1], M.board);
+  });
+});
+
+/* ------------- rails: one part, used twice ------------- */
+function railLayer(xa, xb, zA, zB, y0, y1, holes){
+  var sp = new THREE.Shape();
+  sp.moveTo(xa, -zA); sp.lineTo(xb, -zA); sp.lineTo(xb, -zB); sp.lineTo(xa, -zB);
+  sp.closePath();
+  holes.forEach(function(q){
+    var p = new THREE.Path();
+    p.absarc(q[0], -q[1], q[2]/2, 0, Math.PI*2, true);
+    sp.holes.push(p);
+  });
+  var m = new THREE.Mesh(
+    new THREE.ExtrudeGeometry(sp, {depth:Math.abs(y1-y0), bevelEnabled:false}), M.wood);
+  m.rotation.x = -Math.PI/2;
+  m.position.y = Math.min(y0, y1);
+  G.frame.add(m);
+}
+(function(){
+  var xa = C.railX0, xb = C.railX1;
+  var rodH = C.rodX.concat(C.penRodX)
+        .map(function(rx){ return [rx, C.rodZ, C.rodHoleD]; });
+  var eyeH = RINGX.map(function(rx){ return [rx, C.ringZ, C.ringHoleD]; });
+  var drumH = [[C.drumX, C.rodZ, C.drumShaftD]];
+  [1,-1].forEach(function(sgn){
+    var ya = sgn*C.railY, yb = sgn*(C.railY + C.socketDeep),
+        yc = sgn*(C.railY + C.railT);
+    railLayer(xa, xb, C.railZ1, C.railZ0, ya, yb, rodH.concat(eyeH, drumH));
+    railLayer(xa, xb, C.railZ1, C.railZ0, yb, yc, drumH);
+  });
+  /* box-frame end posts, between the rails */
+  [[xa, xa + C.postW], [xb - C.postW, xb]].forEach(function(p){
+    boxAt(G.frame, p[0], -C.railY, C.railZ1, p[1], C.railY, C.railZ0, M.wood);
+  });
+  /* faceplate pilots in the rear face, 2 mm x 10 deep. The rail is an
+     extrusion along Y, so a Z-axis hole cannot be subtracted from it --
+     these are recessed dark plugs standing in for the holes. Same (x, y)
+     as the plate's frame screws, which is the point of showing them. */
+  SCREWX.forEach(function(sx){
+    [1, -1].forEach(function(sg){
+      cylZ(G.frame, sx, sg * SCREW_Y, C.pilotD / 2, -0.1, -C.pilotDeep,
+           M.bore, 10);
+    });
+  });
+  /* screw eyes -- hardware, the cable passes through them */
+  RINGX.forEach(function(rx){
+    var t = new THREE.Mesh(new THREE.TorusGeometry(3.0, 0.5, 8, 18), M.steel);
+    t.position.set(rx, C.railY - 3.0, C.ringZ); G.frame.add(t);
+  });
+})();
+
+/* ------------- shared guide rods: six, not ten ------------- */
+C.rodX.concat(C.penRodX).forEach(function(rx){
+  var rod = new THREE.Mesh(
+    new THREE.CylinderGeometry(C.rodD/2, C.rodD/2, C.rodLen, 12), M.steel);
+  rod.position.set(rx, 0, C.yokeZ + C.yokeT/2); G.yokes.add(rod);
+});
+
+/* ---------------- cable ---------------- */
+var cableLine = new THREE.Line(new THREE.BufferGeometry(),
+  new THREE.LineBasicMaterial({color:PAL.cable}));
+G.cable.add(cableLine);
+
+/* ---------------- pen carriage ---------------- */
+var penG = new THREE.Object3D(); G.pen.add(penG);
+(function(){
+  var hw = C.yokeW[1]/2, hh = C.penH/2, tt = C.yokeT;
+  var z2 = C.yokeZ, zc = z2 + tt/2, ew = hw - C.slotLen[1]/2, off = C.rodGap/2;
+
+  var sp = new THREE.Shape();
+  sp.moveTo(-hw+ew, -hh); sp.lineTo(hw-ew, -hh);
+  sp.lineTo(hw-ew, hh);   sp.lineTo(-hw+ew, hh); sp.closePath();
+  var rh = new THREE.Path();
+  rh.absarc(0, C.penRingY, C.ringHoleD/2 + 0.6, 0, Math.PI*2, true);
+  sp.holes.push(rh);
+  var bw = C.ballastW/2, bh = C.ballastH/2, by = C.ballastY;
+  var pk = new THREE.Path();
+  pk.moveTo(-bw, by-bh); pk.lineTo(bw, by-bh);
+  pk.lineTo(bw, by+bh);  pk.lineTo(-bw, by+bh); pk.closePath();
+  sp.holes.push(pk);
+  var body = new THREE.Mesh(
+    new THREE.ExtrudeGeometry(sp, {depth:tt, bevelEnabled:false}), M.part);
+  body.position.z = z2; penG.add(body);
+
+  [[-1, C.grooveFit], [1, C.grooveFree]].forEach(function(p){
+    var sgn = p[0], gr = p[1], uo = sgn*hw, uc = uo + sgn*off, ui = sgn*(hw-ew);
+    var zi = Math.sqrt(Math.max(gr*gr - off*off, 0));
+    var f0 = Math.acos(Math.max(-1, Math.min(1, -sgn*off/gr)));
+    var es = new THREE.Shape();
+    es.moveTo(ui, -tt/2); es.lineTo(uo, -tt/2); es.lineTo(uo, -zi);
+    if (sgn > 0) es.absarc(uc, 0, gr, 2*Math.PI - f0, f0, true);
+    else         es.absarc(uc, 0, gr, -f0, f0, false);
+    es.lineTo(uo, tt/2); es.lineTo(ui, tt/2); es.closePath();
+    var blk = new THREE.Mesh(
+      new THREE.ExtrudeGeometry(es, {depth:2*hh, bevelEnabled:false}), M.part);
+    blk.rotation.x = -Math.PI/2; blk.position.set(0, -hh, zc); penG.add(blk);
+  });
+
+  var arm = new THREE.Mesh(new THREE.BoxGeometry(C.penArm + ew, 10, 8), M.part);
+  arm.position.set(hw - ew + (C.penArm + ew)/2, 0, zc); penG.add(arm);
+  var nib = new THREE.Mesh(new THREE.BoxGeometry(10, 3.2, 3.2), M.cable);
+  nib.position.set(hw + C.penArm + 3, 0, zc); penG.add(nib);
+  var slug = new THREE.Mesh(
+    new THREE.BoxGeometry(C.ballastW - 0.8, C.ballastH - 0.8, tt - 0.8), M.steel);
+  slug.position.set(0, C.ballastY, zc); penG.add(slug);
+  penG.position.x = C.penX;
+})();
+
+/* ---------------- drum ---------------- */
+var drum = new THREE.Mesh(
+  new THREE.CylinderGeometry(C.drumR, C.drumR, C.drumY1 - C.drumY0, 48, 1, true), M.paper);
+drum.material.side = THREE.DoubleSide;
+drum.position.set(C.drumX, 0, C.rodZ); G.drum.add(drum);
+[[C.drumY0, 1], [C.drumY1, -1]].forEach(function(p){
+  var pts = [[C.drumShaftD/2, 0], [C.drumR + 1.5, 0], [C.drumR + 1.5, 3],
+             [C.drumIR - 0.3, 3], [C.drumIR - 0.3, C.capDeep],
+             [C.drumShaftD/2, C.capDeep]]
+        .map(function(q){ return new THREE.Vector2(q[0], p[0] + p[1]*q[1]); });
+  pts.push(pts[0].clone());
+  var cap = new THREE.Mesh(new THREE.LatheGeometry(pts, 40), M.part);
+  cap.position.set(C.drumX, 0, C.rodZ); G.drum.add(cap);
+});
+var dshaft = new THREE.Mesh(new THREE.CylinderGeometry(
+  C.drumShaftD/2 - 0.4, C.drumShaftD/2 - 0.4, 2*(C.railY + C.railT + 2), 14), M.steel);
+dshaft.position.set(C.drumX, 0, C.rodZ); G.drum.add(dshaft);
+var dmot = new THREE.Mesh(
+  new THREE.CylinderGeometry(C.motorD/2, C.motorD/2, C.motorL, 26), M.motor);
+dmot.position.set(C.drumX, C.railY + C.railT + 4 + C.motorL/2, C.rodZ);
+G.drum.add(dmot);
+
+/* ---------------- electronics ---------------- */
+var zb = C.plateT + 30;
+boxAt(G.elec, -120, -66, zb, 150, -20, zb+2.5, M.part);
+for (var b=0;b<6;b++) boxAt(G.elec, -119+b*42, -59, zb+2.5, -85+b*42, -27, zb+4.1, M.board);
+boxAt(G.elec, 96, -62, zb+2.5, 146, -24, zb+4.1, M.board);
+
+/* ---------------- animation ---------------- */
+var phase = 0, running = false;
+function update(){
+  var sum = 0, pts = [new THREE.Vector3(C.railX0 + 12, C.railY-7, C.cz)];
+  C.xs.forEach(function(x, i){
+    var a = (C.ph0[i] + phase * C.speed[i]) * Math.PI/180;
+    cranks[i].rotation.z = a;
+    var d = C.rPin[i] * Math.sin(a);       /* horizontal slot -> r sin(theta) */
+    yokes[i].position.y = d; sum += d;
+    pts.push(new THREE.Vector3(x - C.ringDx, C.railY-7, C.cz));
+    pts.push(new THREE.Vector3(x, d + C.ringY, C.cz));
+    pts.push(new THREE.Vector3(x + C.ringDx, C.railY-7, C.cz));
+  });
+  var pen = sum;                  /* 2:1 at the pen ring: half the cable end */
+  pts.push(new THREE.Vector3(C.penX - C.ringDx, C.railY-7, C.cz));
+  pts.push(new THREE.Vector3(C.penX, pen + C.penRingY, C.cz));
+  pts.push(new THREE.Vector3(C.penX + C.ringDx, C.railY-7, C.cz));
+  pts.push(new THREE.Vector3(C.penX + 34, C.railY-7, C.cz));
+  if (!window.__anchor){
+    var an = new THREE.Mesh(new THREE.BoxGeometry(18, 10, 10), M.steel);
+    an.position.set(C.penX + 33, C.railY - 7, C.cz); G.cable.add(an);
+    window.__anchor = true;
+  }
+  cableLine.geometry.dispose();
+  cableLine.geometry = new THREE.BufferGeometry().setFromPoints(pts);
+  penG.position.y = pen;
+  drum.rotation.y = -phase * 0.02;
+}
+function applyExplode(t){
+  LAYERS.forEach(function(L){ G[L.k].position.z = t * C.gap * L.e; });
+}
+
+/* ---------------- orbit ---------------- */
+var HOME = {th:Math.PI+0.52, ph:1.13, r:760, tx:70, ty:6, tz:-12};
+var cam = Object.assign({}, HOME);
+function place(){
+  var x = cam.r*Math.sin(cam.ph)*Math.sin(cam.th);
+  var y = cam.r*Math.cos(cam.ph);
+  var z = cam.r*Math.sin(cam.ph)*Math.cos(cam.th);
+  camera.position.set(cam.tx+x, cam.ty+y, cam.tz+z);
+  camera.lookAt(cam.tx, cam.ty, cam.tz);
+}
+var drag=false, lx=0, ly=0;
+cv.addEventListener('pointerdown', function(e){ drag=true; lx=e.clientX; ly=e.clientY;
+  cv.classList.add('drag'); cv.setPointerCapture(e.pointerId); });
+cv.addEventListener('pointerup', function(){ drag=false; cv.classList.remove('drag'); });
+cv.addEventListener('pointermove', function(e){
+  if(!drag) return;
+  cam.th -= (e.clientX-lx)*0.008;
+  cam.ph = Math.max(0.12, Math.min(3.02, cam.ph - (e.clientY-ly)*0.008));
+  lx=e.clientX; ly=e.clientY; place();
+});
+cv.addEventListener('wheel', function(e){
+  e.preventDefault();
+  cam.r = Math.max(220, Math.min(2600, cam.r * (1 + Math.sign(e.deltaY)*0.09)));
+  place();
+}, {passive:false});
+
+/* ---------------- ui ---------------- */
+var tagBox = document.getElementById('tags');
+LAYERS.forEach(function(L){
+  var l = document.createElement('label'); l.className='tog';
+  l.innerHTML = '<input type="checkbox" '+(L.off?'':'checked')+' data-k="'+L.k+'">'+
+    '<span class="sw" style="background:#'+('000000'+L.c.toString(16)).slice(-6)+'"></span>'+
+    '<span>'+L.n+'</span>';
+  tagBox.appendChild(l);
+  if (L.off) G[L.k].visible = false;
+});
+tagBox.addEventListener('change', function(e){
+  if(!e.target.dataset.k) return;
+  G[e.target.dataset.k].visible = e.target.checked;
+});
+var exIn = document.getElementById('ex'), phIn = document.getElementById('ph');
+exIn.addEventListener('input', function(){
+  document.getElementById('exOut').textContent = exIn.value+'%';
+  applyExplode(+exIn.value/100);
+});
+phIn.addEventListener('input', function(){
+  phase = +phIn.value;
+  document.getElementById('phOut').textContent = phIn.value+'\u00B0';
+  update();
+});
+document.getElementById('run').addEventListener('click', function(){
+  running = !running; this.textContent = running ? 'Pause' : 'Run';
+});
+document.getElementById('front').addEventListener('click', function(){
+  cam.th = Math.PI; cam.ph = Math.PI/2; place();
+});
+document.getElementById('iso').addEventListener('click', function(){
+  cam.th = HOME.th; cam.ph = HOME.ph; place();
+});
+document.getElementById('reset').addEventListener('click', function(){
+  cam = Object.assign({}, HOME);
+  exIn.value = 0; document.getElementById('exOut').textContent='0%'; applyExplode(0);
+  place();
+});
+function resize(){
+  var r = cv.getBoundingClientRect();
+  if(r.width<2||r.height<2) return;
+  renderer.setSize(r.width, r.height, false);
+  camera.aspect = r.width/r.height; camera.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(cv);
+resize(); place(); update();
+
+(function loop(){
+  if(running){
+    phase = (phase + 0.55) % 360;
+    phIn.value = Math.round(phase);
+    document.getElementById('phOut').textContent = Math.round(phase)+'\u00B0';
+    update();
+  }
+  renderer.render(scene, camera);
+  requestAnimationFrame(loop);
+})();
+})();
+</script>
