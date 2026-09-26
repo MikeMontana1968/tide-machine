@@ -29,9 +29,9 @@ import numpy as np
 from manifold3d import Manifold, CrossSection
 
 # ---------------------------------------------------------------- inputs --
-RAIL_Y      = 70.0    # inner face of the top rail (CFG :rail_y)
-LINE_Y      = 64.0    # the line runs along the pulley tops at this height
-LINE_Z      = -22.8   # arm-bearing groove plane, from station_study.py's depth stack
+RAIL_Y      = 76.0    # inner face of the top rail: rails 152 apart (Rev M; Rev L was 140)
+LINE_Y      = RAIL_Y - 6.0    # the line runs along the pulley tops, 6 below the rail face
+LINE_Z      = -15.0   # arm-bearing groove plane, from station_study.py's depth stack
 # the arm carries the same V623ZZ, so its groove matches BRG_ROOT_R and the legs hang vertical
 
 BRG_OD      = 12.0    # V623ZZ
@@ -45,6 +45,7 @@ CHEEK_T     = 3.0
 BOSS_H      = 0.5     # cheek boss to the outer bearing face, each side
 LOBE_R      = 5.0     # cheek material round the axle
 BRG_CLEAR   = 1.0     # bearing OD to the bridge underside
+FLOAT       = 0.2     # axial float in the bearing stack, so a slightly fat print can't pinch the bearings
 
 HALF_X      = 15.0    # bridge half-width
 SCREW_X     = 11.0    # two #4 wood screws, either side of the clevis, on the pulley plane midline
@@ -72,7 +73,7 @@ def threading(name, line_z=LINE_Z):
 
 def build_bracket(line_z=LINE_Z):
     """the bracket in PRINT frame; to_machine() takes it to the machine frame"""
-    stack = SHIM / 2 + BRG_W + BOSS_H          # cheek inner face from the arm-bearing plane
+    stack = SHIM / 2 + BRG_W + BOSS_H + FLOAT / 2   # cheek inner face from the arm-bearing plane
     z_rear_in, z_front_in = line_z + stack, line_z - stack
     z_rear, z_front = z_rear_in + CHEEK_T, z_front_in - CHEEK_T
     assert BRIDGE_T >= 3.0, f"bridge only {BRIDGE_T:.2f} mm"

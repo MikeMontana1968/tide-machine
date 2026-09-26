@@ -88,7 +88,7 @@ footer b{color:var(--ink2)}
 <div class="wrap">
   <p class="kicker">Tide machine &middot; Rev M fit study</p>
   <h1>Arm Station Study</h1>
-  <p class="lede">Two neighbouring stations, O1 and M2, at the 56&nbsp;mm pitch. This is the tightest pair, because M2's arm sweeps over O1's flag disc. Each rotor is two printed parts: a hub with a flag disc, and a bolt-on arm carrying a V623ZZ, the same V-groove bearing as the rail pulleys, on a short M3 axle. A Vishay TCST2202 sits flat on the faceplate at 12&nbsp;o'clock, and a fin on the back of the disc passes through its beam once per turn. Above each shaft, two V-groove bearings share one axle. The line drops from one, U-turns under the arm's bearing and climbs to the other, and the threading is mirrored at alternate stations. Press <b>Play</b> to watch everything clear everything else.</p>
+  <p class="lede">Two neighbouring stations, O1 and M2, at the 56&nbsp;mm pitch: the tightest pair, because M2&rsquo;s arm sweeps over O1&rsquo;s dial. Each rotor is a hub with a Ø52 dial and a bolt-on arm carrying a V623ZZ. A Hall latch on a thumbnail PCB behind the faceplate looks through a small window at a pair of magnets in the back of the dial. With nothing tall in front of the plate, the dials sit 3.5&nbsp;mm off it and the whole rotor stack is 8&nbsp;mm shallower than with the optical sensors. Above each shaft, two V-groove bearings share one axle; the threading is mirrored at alternate stations. Press <b>Play</b> to watch everything clear everything else.</p>
 
   <div class="stage">
     <div class="card">
@@ -97,8 +97,7 @@ footer b{color:var(--ink2)}
       <div class="readout" id="readout">Hover a part to name it.</div>
       <div class="toolbar">
         <div class="grp"><button class="chip" id="play" type="button">Play</button></div>
-        <div class="field"><label class="lab" for="aM2">M2</label><input type="range" id="aM2" min="0" max="359" step="1"><output id="oM2" for="aM2"></output></div>
-        <div class="field"><label class="lab" for="aO1">O1</label><input type="range" id="aO1" min="0" max="359" step="1"><output id="oO1" for="aO1"></output></div>
+        <div class="grp" id="angles" role="group" aria-label="Arm angles"></div>
       </div>
       <div class="toolbar">
         <div class="grp" role="group" aria-label="View">
@@ -116,6 +115,7 @@ footer b{color:var(--ink2)}
           <button class="chip" type="button" data-group="motors" aria-pressed="true">Motors</button>
           <button class="chip" type="button" data-group="rollers" aria-pressed="true">Pulleys</button>
           <button class="chip" type="button" data-group="line" aria-pressed="true">Line</button>
+          <button class="chip" type="button" data-group="pen" aria-pressed="true" id="penChip" hidden>Pen + drum</button>
         </div>
       </div>
     </div>
@@ -136,16 +136,16 @@ footer b{color:var(--ink2)}
       </div>
       <div class="card">
         <div class="card-head"><h2>Per station</h2></div>
-        <p class="note"><b>Printed:</b> hub + flag disc (print disc-down, so the hub and fin grow up), arm (print flat, boss up), sensor pad, pulley bracket.<br>
-        <b>Bought:</b> 28BYJ-48, TCST2202 + 180&nbsp;&Omega; + 10&nbsp;k&Omega;, 3 &times; V623ZZ (2 on the rail, on one M3&times;20 + nyloc with a 3&times;5&times;0.5 shim; 1 on the arm, on an M3&times;8 + washer into an M3&times;4 heat-set insert), 2 &times; M3 + nut (sensor), 2 &times; M3 + nut (motor), 2 &times; M2 (arm to disc), 1 &times; M3 grub screw, 2 &times; #4 wood screw.</p>
+        <p class="note"><b>Printed</b> (all without support): hub + dial (dial down, boss up), arm (flat, boss up), index tab, pulley bracket.<br>
+        <b>Bought:</b> 28BYJ-48 + ULN2003 board, DRV5013 Hall latch on a thumbnail PCB, 2 &times; 5&times;2 N52 magnets, 3 &times; V623ZZ (2 on the rail, on one M3&times;20 + nyloc with a 3&times;5&times;0.5 shim; 1 on the arm, on an M3&times;8 + washer into an M3&times;4 heat-set insert), 2 &times; M3 pan head + nut (motor), 2 &times; M2 (arm to hub), 3 &times; M2 (Hall PCB, index tab), 2 &times; #4 wood screw. No grub screw: the dial is a light press on the flats.</p>
       </div>
     </aside>
   </div>
 
   <footer>
-    <p><b>Why two printed rotor parts.</b> The fin has to point back toward the plate, and the bearing boss forward. No single part prints both without support. Splitting them also means that when real NOAA constituents replace the placeholders, only the arms get reprinted. The hubs, flag discs and sensors stay put.</p>
-    <p><b>Why 12 o'clock.</b> The TCST2202's leads leave through its seating face, so they pass through the faceplate. At 12 o'clock, space behind the plate is clear: the 28BYJ-48 hangs below its shaft, and its body reaches only 6&nbsp;mm above the shaft centre. At 6&nbsp;o'clock the leads would run into the motor's wire cover. The line runs in front of the arm, so it never reaches the sensor.</p>
-    <p><b>Resolution.</b> The TCST2202's 0.5&nbsp;mm aperture switches over 0.4&nbsp;mm of shutter travel. At the fin's radius that is about 1.1&deg; for the full 10&ndash;90% swing; the edge itself repeats far better than that. The machine only turns one way, so the timing edge is always the same edge.</p>
+    <p><b>Why two printed rotor parts.</b> When real NOAA constituents replace the placeholders, only the arms get reprinted; the hubs, dials, magnets and sensors stay put. Each part also prints flat without support.</p>
+    <p><b>Why Hall sensors, and why a magnet pair.</b> Aluminium is non-magnetic, so the sensor lives behind the plate with its chip nested in a 3.4&nbsp;mm window, 4.4&nbsp;mm from the magnets. The two magnets present opposite poles, so the field flips sign sharply between them and the latch switches at that zero crossing: about 0.15&deg; of edge shift per millitesla of threshold drift, well inside the 0.7&deg; a 28BYJ-48 loses when it skips. The faceplate must never be steel.</p>
+    <p><b>Index.</b> Each dial is read against a small printed tab at 12 o'clock, just outside its rim; the Hall sensor sits on the same radius line, so the home event happens at a known reading. The calendar has one index hand that crosses the year dial and stops at the moon disc&rsquo;s rim. The machine only turns one way, so the timing edge is always the same edge.</p>
     <p>Built by <code>station_study.py</code>, which also prints these clearances. Sensor dimensions are from Vishay document 81147; motor dimensions from the Kiatronics STEPD-01 datasheet. The line is drawn from the pulley tangent points, a close approximation. Arms turn at constant speed here; the firmware inverse makes their real speed uneven.</p>
   </footer>
 </div>
@@ -170,14 +170,22 @@ function dark(){var a=document.documentElement.getAttribute('data-theme'); if(a)
   return window.matchMedia('(prefers-color-scheme: dark)').matches;}
 
 /* ---------- parts ---------- */
-var groups={}, rotors=[], pickables=[];
+var groups={}, rotors=[], pickables=[], penGroup=null, drumGroup=null, penPulley=null;
 DATA.stations.forEach(function(s,i){
   var g=new THREE.Group(); g.position.set(s.x,0,0); scene.add(g); rotors.push(g);
 });
+if(DATA.pen){penGroup=new THREE.Group(); scene.add(penGroup);}
+if(DATA.drum){drumGroup=new THREE.Group(); drumGroup.position.set(DATA.drum.x,0,DATA.drum.z); scene.add(drumGroup);}
+var moonGroup=null, moonAngle=DATA.moon?DATA.moon.a0:0, yearGroup=null, yearAngle=DATA.year?DATA.year.a0:0;
+if(DATA.moon){moonGroup=new THREE.Group(); moonGroup.position.set(DATA.moon.x,DATA.moon.y,0); scene.add(moonGroup);}
+if(DATA.year){yearGroup=new THREE.Group(); yearGroup.position.set(DATA.year.x,DATA.year.y,0); scene.add(yearGroup);}
 DATA.parts.forEach(function(p){
   var geo=new THREE.BufferGeometry();
   var v=new Float32Array(p.v);
-  if(p.rotor>=0){var ox=DATA.stations[p.rotor].x; for(var i=0;i<v.length;i+=3) v[i]-=ox;}
+  if(p.rotor>=0&&p.rotor<100){var ox=DATA.stations[p.rotor].x; for(var i=0;i<v.length;i+=3) v[i]-=ox;}
+  if(p.rotor===200){for(var j=0;j<v.length;j+=3){v[j]-=DATA.drum.x; v[j+2]-=DATA.drum.z;}}
+  if(p.rotor===300){for(var q=0;q<v.length;q+=3){v[q]-=DATA.moon.x; v[q+1]-=DATA.moon.y;}}
+  if(p.rotor===400){for(var w=0;w<v.length;w+=3){v[w]-=DATA.year.x; v[w+1]-=DATA.year.y;}}
   geo.setAttribute('position', new THREE.BufferAttribute(v,3));
   geo.setIndex(p.t);
   var flat=geo.toNonIndexed(); flat.computeVertexNormals();
@@ -187,7 +195,14 @@ DATA.parts.forEach(function(p){
   var edges=new THREE.LineSegments(new THREE.EdgesGeometry(geo, 28),
     new THREE.LineBasicMaterial({color:0x0e1d28, transparent:true, opacity:p.opacity<1?0.12:0.28}));
   mesh.add(edges);
-  (p.rotor>=0?rotors[p.rotor]:scene).add(mesh);
+  var parent=scene;
+  if(p.rotor>=0&&p.rotor<100) parent=rotors[p.rotor];
+  else if(p.rotor===100) parent=penGroup;
+  else if(p.rotor===200) parent=drumGroup;
+  else if(p.rotor===300) parent=moonGroup;
+  else if(p.rotor===400) parent=yearGroup;
+  parent.add(mesh);
+  if(p.name==='Pen pulley V623ZZ') penPulley=mesh;
   (groups[p.group]=groups[p.group]||[]).push(mesh);
   if(p.group!=='rails') pickables.push(mesh);
 });
@@ -205,19 +220,34 @@ function tangents(px,py,ex1,ex2,ey,R){
   return o;
 }
 function arc(cx,cy,R,a0,a1,n,z,out){for(var i=0;i<=n;i++){var a=a0+(a1-a0)*i/n; out.push([cx+R*Math.cos(a), cy+R*Math.sin(a), z]);}}
+function loop(x,px,py,zIn,zOut,pts,anchor){
+  arc(x, L.rollerY, L.rollerR, Math.PI/2, 0, 8, zIn, pts);            // over the IN pulley, down its +x side
+  var t=tangents(px,py, x-L.rollerR, x+L.rollerR, L.rollerY, L.sleeveR);   // sleeveR = the moving bearing's groove root
+  var a0=t.p0, a1=t.p1; while(a1<a0) a1+=2*Math.PI;
+  pts.push([t.t1[0],t.t1[1],L.z]);
+  arc(px,py,L.sleeveR,a1,a0,20,L.z,pts);                               // U-turn under the moving bearing, right to left
+  pts.push([t.t0[0],t.t0[1],L.z]);
+  if(anchor) pts.push([x-L.rollerR, L.rollerY, zOut]);                 // up to the dead end
+  else arc(x, L.rollerY, L.rollerR, Math.PI, Math.PI/2, 8, zOut, pts); // up the -x side, over the OUT pulley
+}
+function loopLength(x,px,py){
+  var t=tangents(px,py, x-L.rollerR, x+L.rollerR, L.rollerY, L.sleeveR);
+  var wrap=2*Math.PI-(((t.p0-t.p1)%(2*Math.PI))+2*Math.PI)%(2*Math.PI);
+  return Math.hypot(x-L.rollerR-t.t0[0], L.rollerY-t.t0[1])+Math.hypot(x+L.rollerR-t.t1[0], L.rollerY-t.t1[1])+L.sleeveR*wrap;
+}
+var Lmid=DATA.stations.map(function(s){return (loopLength(s.x,s.x,s.r)+loopLength(s.x,s.x,-s.r))/2;});
+var penY=0;
 function buildLine(){
-  var st=DATA.stations, pts=[[L.x0, L.y, st[0].zIn]];
+  var st=DATA.stations, pts=[[L.x0, L.y, st[0].zIn]], sum=0;
   st.forEach(function(s,i){
     var th=angles[i]*Math.PI/180, px=s.x+s.r*Math.cos(th), py=s.r*Math.sin(th);
-    arc(s.x, L.rollerY, L.rollerR, Math.PI/2, 0, 8, s.zIn, pts);       // over the IN pulley, down its +x side
-    var t=tangents(px,py, s.x-L.rollerR, s.x+L.rollerR, L.rollerY, L.sleeveR);   // sleeveR = the arm bearing's groove root
-    var a0=t.p0, a1=t.p1; while(a1<a0) a1+=2*Math.PI;
-    pts.push([t.t1[0],t.t1[1],L.z]);
-    arc(px,py,L.sleeveR,a1,a0,20,L.z,pts);                              // U-turn under the arm bearing, right to left
-    pts.push([t.t0[0],t.t0[1],L.z]);
-    arc(s.x, L.rollerY, L.rollerR, Math.PI, Math.PI/2, 8, s.zOut, pts); // up the -x side, over the OUT pulley
+    loop(s.x,px,py,s.zIn,s.zOut,pts,false);
+    sum+=loopLength(s.x,px,py)-Lmid[i];
   });
-  pts.push([L.x1, L.y, st[st.length-1].zOut]);
+  if(DATA.pen){
+    var P=DATA.pen; penY=P.yc+sum/2;                                    // the pen rides at half the summed take-up
+    loop(P.x,P.x,penY,P.zIn,P.zOut,pts,true);
+  } else pts.push([L.x1, L.y, st[st.length-1].zOut]);
   var path=new THREE.CurvePath();
   for(var i=1;i<pts.length;i++){
     var a=pts[i-1], b=pts[i]; if(Math.hypot(b[0]-a[0],b[1]-a[1],b[2]-a[2])<1e-3) continue;
@@ -231,29 +261,60 @@ function buildLine(){
 }
 
 /* ---------- state ---------- */
-var angles=[40, 250];      // O1, M2 -- degrees; pin at the angle, fin opposite
-var rate=[13.9430356/28.9841042, 1];    // O1 turns at about half M2's rate
-var vis={rails:true, plate:true, motors:true, rollers:true, line:true};
+var angles=DATA.stations.map(function(s){return s.a0;});   // degrees; pin at the angle, magnet pair opposite
+var rate=DATA.stations.map(function(s){return s.rate;});    // relative to M2
+var vis={rails:true, plate:true, motors:true, rollers:true, line:true, pen:true};
 var playing=false;
-var ids=['aO1','aM2'];
+var ids=DATA.stations.map(function(s){return 'a'+s.name;});
+document.getElementById('angles').innerHTML=DATA.stations.map(function(s){
+  return '<div class="field"><label class="lab" for="a'+s.name+'">'+s.name+'</label>'+
+    '<input type="range" id="a'+s.name+'" min="0" max="359" step="1" style="width:'+(DATA.stations.length>2?76:120)+'px">'+
+    '<output id="o'+s.name+'" for="a'+s.name+'"></output></div>';
+}).join('');
+if(DATA.pen) document.getElementById('penChip').hidden=false;
+if(DATA.moon){
+  document.getElementById('angles').insertAdjacentHTML('beforeend','<div class="field"><label class="lab" for="aMoon">Moon</label>'+
+    '<input type="range" id="aMoon" min="0" max="29.5" step="0.1" style="width:76px"><output id="oMoon" for="aMoon"></output></div>');
+  document.getElementById('aMoon').addEventListener('input',function(){moonAngle=+this.value/29.530589*360; applyAngles();});
+}
+if(DATA.year){
+  document.getElementById('angles').insertAdjacentHTML('beforeend','<div class="field"><label class="lab" for="aYear">Day</label>'+
+    '<input type="range" id="aYear" min="0" max="365" step="1" style="width:76px"><output id="oYear" for="aYear"></output></div>');
+  document.getElementById('aYear').addEventListener('input',function(){yearAngle=+this.value/365.2422*360; applyAngles();});
+}
+var penWarn=false;
 function applyAngles(){
   rotors.forEach(function(g,i){g.rotation.z=angles[i]*Math.PI/180;});
   ids.forEach(function(id,i){
     var el=document.getElementById(id); if(document.activeElement!==el) el.value=Math.round(angles[i])%360;
-    document.getElementById('o'+id.slice(1)).textContent=Math.round(angles[i])%360+'°';
+    document.getElementById('o'+id.slice(1)).textContent=Math.round(angles[i])%360+'\u00b0';
   });
   buildLine();
+  if(moonGroup){
+    moonGroup.rotation.z=-moonAngle*Math.PI/180;      // once per synodic month; readings run clockwise
+    var age=((moonAngle%360)+360)%360/360*29.530589, el=document.getElementById('aMoon');
+    if(document.activeElement!==el) el.value=age.toFixed(1);
+    document.getElementById('oMoon').textContent=age.toFixed(1)+' d';
+  }
+  if(yearGroup){
+    yearGroup.rotation.z=-yearAngle*Math.PI/180;      // the year dial turns once a year; its readings run clockwise
+    var doy=((yearAngle%360)+360)%360/360*365.2422, ey=document.getElementById('aYear');
+    if(document.activeElement!==ey) ey.value=Math.round(doy);
+    document.getElementById('oYear').textContent='day '+Math.round(doy);
+  }
+  if(penGroup){
+    penGroup.position.y=penY;
+    var out=penY>DATA.pen.yHi||penY<DATA.pen.yLo;
+    if(penPulley) penPulley.material.emissive=new THREE.Color(out?0x9a2a12:0x000000);
+    if(out!==penWarn){penWarn=out;
+      ro.innerHTML=out?'<b>Pen outside its travel window</b>: '+(penY>DATA.pen.yHi?'its pulley hits the pen bracket\'s pulleys':'the carriage hits the bottom rail')+' (pen at '+penY.toFixed(1)+' mm).':'Hover a part to name it.';}
+  }
 }
 
 /* ---------- camera: a small orbit ---------- */
 var cam={target:new THREE.Vector3(-20,5,10), dist:420, az:0.55, el:0.32};
-var VIEWS={
-  iso:   {t:[-22,4,10],  d:430, az:0.55,  el:0.30},
-  front: {t:[-22,0,10],  d:470, az:0,     el:0},
-  sensor:{t:[0,20.5,7],  d:120, az:0.75,  el:0.42},
-  side:  {t:[0,0,10],    d:330, az:1.5708,el:0.02},
-  back:  {t:[-22,5,0],   d:360, az:2.75,  el:0.22}
-};
+var VIEWS={};
+Object.keys(DATA.views).forEach(function(k){var v=DATA.views[k]; VIEWS[k]={t:v[0], d:v[1], az:v[2], el:v[3]};});
 function setView(k){var v=VIEWS[k]; cam.target.set(v.t[0],v.t[1],v.t[2]); cam.dist=v.d; cam.az=v.az; cam.el=v.el;
   document.querySelectorAll('[data-view]').forEach(function(b){b.setAttribute('aria-pressed', b.dataset.view===k?'true':'false');});}
 function placeCamera(){
@@ -334,7 +395,10 @@ new MutationObserver(theme).observe(document.documentElement,{attributes:true,at
 var last=performance.now();
 function frame(now){
   var dt=Math.min(0.1,(now-last)/1000); last=now;
-  if(playing){for(var i=0;i<angles.length;i++) angles[i]=(angles[i]+dt*30*rate[i])%360; applyAngles();}
+  if(playing){for(var i=0;i<angles.length;i++) angles[i]=(angles[i]+dt*30*rate[i])%360; applyAngles();
+    if(drumGroup) drumGroup.rotation.y+=dt*0.08;
+    if(moonGroup) moonAngle=(moonAngle+dt*30*DATA.moon.rate*40)%360;
+    if(yearGroup) yearAngle=(yearAngle+dt*30*DATA.year.rate*400)%360;}   // year sped up 400x   // moon sped up 40x so you can see it move
   resize(); placeCamera(); renderer.render(scene,camera);
   requestAnimationFrame(frame);
 }

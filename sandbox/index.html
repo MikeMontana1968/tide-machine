@@ -371,8 +371,8 @@ input[type=range]:disabled{opacity:.38; cursor:not-allowed}
           </div>
           <div class="field">
             <label for="mH">Pulley height</label>
-            <input type="range" id="mH" min="40" max="140" step="0.2" value="59.2" style="width:104px">
-            <output for="mH" id="mHOut">59.2 mm</output>
+            <input type="range" id="mH" min="40" max="140" step="0.2" value="65.2" style="width:104px">
+            <output for="mH" id="mHOut">65.2 mm</output>
           </div>
           <div class="field">
             <label for="mA">Legs &plusmn;x</label>
@@ -460,7 +460,7 @@ input[type=range]:disabled{opacity:.38; cursor:not-allowed}
     <p><b>Form factor</b> F = (K1 + O1) / (M2 + S2) is the standard way to classify a coast: below 0.25 semidiurnal, 0.25&ndash;1.5 mixed mainly semidiurnal, 1.5&ndash;3.0 mixed mainly diurnal, above 3.0 diurnal. Watch it move as you drag the diurnal sliders &mdash; the character of a coastline really is just an amplitude ratio.</p>
     <p>The <b>epicycle view</b> chains each constituent tip-to-tail as a rotating vector: length = amplitude, angle = <code>&sigma;t &minus; g</code>. The horizontal reach of the chain's tip <i>is</i> the water level. This is why gear trains suit tides &mdash; the constituent frequencies come out of an epicyclic decomposition of the Earth&ndash;Moon&ndash;Sun geometry in the first place.</p>
     <p>Angular speeds &sigma; are the standard Doodson values in degrees per mean solar hour and are fixed. The amplitudes and phase lags in the presets are <b>illustrative of a coastal type, not a surveyed station</b> &mdash; take real ones from NOAA CO-OPS or the UKHO. Astronomical prediction only: no surge, wind or barometric pressure.</p>
-    <p><b>Arm stations</b> model the Rev M proposal. Line length is computed exactly: legs tangent to the sleeve groove, rise to the coaxial V-groove pulley pair above the station: legs at &plusmn;4.8&nbsp;mm (the pulley root radius), 59.2&nbsp;mm above the shaft. The mirrored threading swaps which leg is which, and the peak torques are the same either way. The &plusmn;2.25&nbsp;mm between the two pulley planes is ignored here; it changes take-up by under 0.5%, and the firmware table includes it. Friction uses the capstan law, e<sup>&mu;&theta;</sup>, at every eye and sleeve, with the sliding direction worked out from how fast each station is taking up line. The pen hangs on a 180&deg; pulley on a 41&nbsp;g carriage, so the line runs at 0.20&nbsp;N. The arm carries the same V623ZZ as the rail pulleys (groove root 4.8&nbsp;mm), so its legs hang vertical at mid-stroke. V-groove bearings use an effective &mu; of 0.005. The superseded alternative, a PLA sleeve on an &Oslash;8 printed pin, is kept as a switch: oiled PLA on PLA (&mu; 0.10) acting at the pin's 4&nbsp;mm radius.</p>
+    <p><b>Arm stations</b> model the Rev M proposal. Line length is computed exactly: legs tangent to the sleeve groove, rise to the coaxial V-groove pulley pair above the station: legs at &plusmn;4.8&nbsp;mm (the pulley root radius), 65.2&nbsp;mm above the shaft (rails 152&nbsp;mm apart). The mirrored threading swaps which leg is which, and the peak torques are the same either way. The &plusmn;2.25&nbsp;mm between the two pulley planes is ignored here; it changes take-up by under 0.5%, and the firmware table includes it. Friction uses the capstan law, e<sup>&mu;&theta;</sup>, at every eye and sleeve, with the sliding direction worked out from how fast each station is taking up line. The pen hangs on a 180&deg; pulley on a 41&nbsp;g carriage, so the line runs at 0.20&nbsp;N. The arm carries the same V623ZZ as the rail pulleys (groove root 4.8&nbsp;mm), so its legs hang vertical at mid-stroke. V-groove bearings use an effective &mu; of 0.005. The superseded alternative, a PLA sleeve on an &Oslash;8 printed pin, is kept as a switch: oiled PLA on PLA (&mu; 0.10) acting at the pin's 4&nbsp;mm radius.</p>
   </footer>
 </div>
 
@@ -928,7 +928,7 @@ var RING_R=0.5;                    // Rev L carriage ring: wire, line bears on ~
 var MU_ROLL=0.005, MU_BRG=0.005, MU_BORE=0.10, PIN_R=4.0;   // Ø8 printed pin, oiled PLA on PLA
 var reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-var ms={station:'M2', drive:'fw', sleeve:'groove', H:59.2, a:4.8, R:4.8,
+var ms={station:'M2', drive:'fw', sleeve:'groove', H:65.2, a:4.8, R:4.8,
         mu:0.15, eyes:'roller', bore:'bearing', order:'pen', playing:!reduced, ph:0.6};
 var sim=null;
 

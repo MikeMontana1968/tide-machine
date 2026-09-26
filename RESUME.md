@@ -12,7 +12,9 @@ The sum of the five reaches a pen carriage writing on a length of PVC pipe.
 > Until they are ported, the Rev M geometry lives in `station_study.py` + `rollers.py`, and
 > this file is the spec. See *Files* and *Open items*.
 
-Rev M fit study: https://claude.ai/artifact/RWW9Uh7phZAQicc9Ytd4kd
+Rev M full model (all five stations, pen, drum): https://claude.ai/artifact/4bxYWKxQetEjvAZvUuQHdZ
+Rev M fit study (O1 + M2): https://claude.ai/artifact/RWW9Uh7phZAQicc9Ytd4kd
+Build pack (bill of materials, wiring diagram, pin map): https://claude.ai/artifact/ANQ2MzGFirzXBYaaWWbxXQ
 Marigram Sandbox (harmonics + arm-station kinematics and friction): https://claude.ai/artifact/GJ3wLqHhHAh9vqQBS5SoKS
 Rev L 3D viewer (stale): https://claude.ai/artifact/PPe79PuxmdfM8Lc8Z9E5iv
 Companion: `Desktop\tide-harmonics.xlsx`.
@@ -48,7 +50,7 @@ speed, the same arms would score 17.6%.
 line end swings ±2Σr = ±114 mm. The line then wraps a pulley on the pen carriage and
 anchors, halving it again: **pen travel = 2Σr = 114 mm**, and the chart scale comes out as
 exactly `pin_scale`, **35 mm per metre of tide** (102 mm for a spring range, 53 for a neap).
-That last 2:1 is what makes it fit between rails 140 mm apart.
+That last 2:1 is what makes it fit between the rails, which are now **152 mm apart** (Rev L: 140).
 
 ---
 
@@ -56,16 +58,17 @@ That last 2:1 is what makes it fit between rails 140 mm apart.
 
 | | |
 |---|---|
-| Frame | **1×2 pine** (19.05 × 38.1 actual), two rails + two end posts; rail length to be reset for the shorter row |
-| Faceplate | **1.5 mm aluminium, ~285 × 164** (exact outline set in the port) |
-| Depth | motors 20.5 behind the plate; in front: arm-bearing groove −22.8, pulley brackets to −30.6, rail front −38.1 |
-| Stations | 5 × two-part printed rotor (hub + flag disc, bolt-on arm) + a V623ZZ on an M3 axle |
-| Bearings | **18 × V623ZZ**: 12 on the top rail (two per bracket, six brackets), 5 on the arms, 1 on the pen carriage |
-| Guide rods | **2**, pen carriage only |
+| Frame | **1×2 pine** (19.05 × 38.1 actual), two rails **152 apart** (inner faces) + two 152 end posts; rails ~492 long |
+| Faceplate | **1.5 mm aluminium, ~283 × 176** (12 mm landing on each rail; exact outline set in the port) |
+| Depth | motors 20.5 behind the plate; in front: dials at −3.5, arm-bearing groove **−15.0**, pen carriage to −30.3, rail front −38.1 |
+| Stations | 5 × two-part printed rotor (hub + Ø52 dial, bolt-on arm) + a V623ZZ on an M3 axle |
+| Bearings | **22 × V623ZZ**: 12 on the top rail (two per bracket, six brackets), 5 on the arms, 1 pen pulley, 4 carriage bearings |
+| Guide rods | **2 × 3 mm steel × 170** (socket bottom to socket bottom), pen carriage only |
 | Carriages | pen only |
 | Drum | 3" Sch 40 PVC, OD 88.9, 130 mm long |
-| Motors | 6 × 28BYJ-48 (five stations + drum), bolted flat, wire covers down |
-| Home sensors | 5 × **Vishay TCST2202**, flat on the plate at 12 o'clock |
+| Motors | **6 × 28BYJ-48** (five stations + drum), bolted flat, wire covers down; **1 × BKA30D-R5** (calendar) |
+| Home sensors | **7 × Hall latch (DRV5013)** behind the plate, each reading a pair of 5 × 2 N52 magnets through a window |
+| Dials | 5 × Ø52 station dials + the calendar (Ø52 year dial, Ø32 moon disc), all carrying printed decals (`decals.py`) |
 
 ---
 
@@ -95,27 +98,34 @@ Rev M hole schedule, per station at shaft (x, 0):
 | Count | Size | Where | Why |
 |---|---|---|---|
 | 5 | Ø9.2 | (x, 0) | locates the Ø9 boss |
-| 10 | Ø3.2 | (x ± 17.5, −8) | motor ears, M3 |
-| 10 | Ø3.2 | (x, 11) and (x, 30) | TCST2202 flanges, M3 |
-| 5 | 6 × 12 window | centred (x, 20.5) | sensor leads through the plate |
-| — | Ø4.0 | y = ±76, spacing to be set | #6 frame screws into the rails' rear faces |
+| 10 | Ø3.2 | (x ± 17.5, −8) | motor ears, M3 pan head |
+| 5 | 3.4 × 3.4 window | centred (x, 20.5) | the Hall latch's SOT-23 chip nests in it |
+| 10 | Ø2.2 | (x, 15) and (x, 26) | Hall board, M2 |
+| 5 | Ø2.2 | (x, 31) | index tab, M2 |
+| — | Ø4.0 | y = ±82, spacing to be set | #6 frame screws into the rails' rear faces |
+
+Calendar, centred (−140, −48): Ø12 for the BKA30D-R5's shafts and hub adapters; 3.4 windows at (0, +20.5) (year
+latch) and (0, −9) (moon latch); 4 × Ø2.2 at (±14, ±30) for the calendar board; Ø2.2 at (0, +32) for the index hand.
+**The plate must be aluminium, never steel**: the latches look through it.
 
 Still true from Rev L: the plate is **not symmetric** (a mirrored plate is scrap). Keep labels
 out of the cut DXF. Check the 100 mm calibration bar before marking metal.
 
 **Rotor: two printed parts per station.**
-- **Hub + flag disc.** Hub Ø14, D-bore on the shaft over its full 8.5 mm, with an M3 grub screw
-  on the flat. Flag disc r 22.6 × 2 mm, whose back face stands 1 mm off the sensor. On its back, a
-  **flag fin** 1.2 mm thick (radial) × 20° at r 20.5, reaching 1.7 mm past the beam. On its front,
-  a 1 mm × Ø24 **boss** the arm bolts to, so M2's arm passes 1 mm clear over O1's disc. Prints
-  disc-down, with the hub and fin growing up.
-- **Arm.** 3 mm arm on 2 × M2 into the boss, end lobe r 5.5. In front at radius r, a **stepped
-  boss**, Ø8 × 1.0 then Ø5 × 0.5, so only the bearing's inner race touches it. An **M3 × 4 heat-set
-  insert** goes in flush from the back face; a nut there would stand proud into the 1 mm gap over
-  the neighbour's disc. Prints flat, boss up. **When real constituents arrive, only the arms get reprinted.**
-- **Arm bearing.** The **same V623ZZ** as the rail pulleys, on an **M3×8** + washer into the insert,
-  with the inner race clamped. The axle tip stops 1 mm short of the arm's back face. This supersedes the thick-printed-pin
-  + PLA-sleeve design (user's call, 2026-09-26), which needed oil and let S2 reach pull-in when dry.
+- **Hub + dial.** No collar behind the dial and no grub screw (the 3.5 mm gap couldn't hold one anyway): the D-bore
+  runs through dial and boss and grips **5 mm of the shaft's flats**, which carries the torque. It's a light press
+  fit, sized from a test coupon; the line pulls in-plane, so nothing pushes it off. A dab of clear silicone is the
+  fallback for a loose one (not threadlocker, which barely cures against plastic). **Dial Ø52 × 2.5**, its back
+  **3.5 mm off the plate** (1.1 mm over the motor-ear screw heads). Two **5 × 2 mm pockets** in its back at r 20.5, 180° from the pin,
+  take the magnet pair; a V-notch in its rim at the pin direction aligns the decal. On its front, a **2.5 mm × Ø24 boss**
+  the arm bolts to: it lets M2's arm pass 2.5 mm over O1's dial, and puts the shaft tip flush with the arm's back.
+  Prints flat, dial down, boss up; the pockets get a 0.3 mm lead-in chamfer against elephant's foot.
+- **Arm.** 3 mm arm on 2 × M2 into the boss, end lobe r 5.5. In front at radius r, a **stepped boss**, Ø8 × 1.0 then
+  Ø5 × 0.5, so only the bearing's inner race touches it. An **M3 × 4 heat-set insert** goes in flush from the back
+  face. Prints flat, boss up. **When real constituents arrive, only the arms get reprinted.**
+- **Arm bearing.** The **same V623ZZ** as the rail pulleys, on an **M3×8** + washer into the insert, inner race
+  clamped. The axle tip stops 1 mm short of the arm's back face. (Supersedes the thick-printed-pin + PLA-sleeve design,
+  which needed oil and let S2 reach pull-in when dry.)
 
 **Kinematics: firmware inverse.** An arm moves its pin sideways too. Turned at constant speed that
 makes a false M4 (7.8% on its own), so **each arm is driven at an uneven rate from a per-station
@@ -127,9 +137,10 @@ whatever the real groove radius turns out to be, and every pin radius is exactly
 **Pulleys and threading** (`rollers.py`). One bracket per station, **directly above the
 shaft**, on the top rail's inner face: two V623ZZ on one M3×20 + nyloc, a **3 × 5 × 0.5 shim**
 between them (inner races only; an M3 washer rubs the shields), 0.5 mm printed bosses on the
-cheeks. Pulley axle at y 59.2 (root r 4.8, so the line runs along the tops at y 64). Planes
-**−20.55 (rear) and −25.05 (front)**, either side of the arm-bearing groove at −22.8. The bracket is
-30 × 15.5, fixed with 2 × #4 either side of the clevis, and neighbouring brackets are 26 mm apart.
+cheeks, and **0.2 mm of axial float** between the cheeks so a slightly fat print can't pinch the bearings.
+Pulley axle at y 65.2 (root r 4.8, so the line runs along the tops at y 70, 6 below the rail face). Planes
+**−12.75 (rear) and −17.25 (front)**, either side of the arm-bearing groove at −15.0. The bracket is
+30 × 15.7, fixed with 2 × #4 either side of the clevis, and neighbouring brackets are 26 mm apart.
 
 Per station: over the IN pulley (90° wrap), down the +x side, U-turn under the arm's bearing, up
 the −x side, over the OUT pulley (90°). **The order is mirrored at alternate stations**, so every run
@@ -140,68 +151,115 @@ between stations stays in one plane:
 | in over | front | rear | front | rear | front | rear |
 | out over | rear | front | rear | front | rear | front = **anchor** |
 
-Leg fleet angle: 2.3–2.6° on the small stations, 5.4° on M2 only at the top of its stroke.
+Leg fleet angle: 2.1–2.3° on the small stations, 4.3° on M2 only at the top of its stroke.
 Nothing slides at S2's IN pulley, so the far dead end can tie off right there.
 
-**Home sensing.** One sensor per station: five. The drum doesn't need one. The reason is **silent-skip
-detection**, not homing: each flag pass gives a predicted step count at a known angle, 116
-times over 60 days on M2 and 466 across all five. Open-loop steppers otherwise drift with nothing
-to tell you.
-- **Vishay TCST2202** (doc 81147): slotted optical switch, 3.1 slot, 0.5 aperture, 24.5 × 6.3
-  × 10.8, beam 8.2 above the seat, flanges Ø3.3 on 19 centres. **The leads leave through the
-  seating face.**
-- **Flat on the faceplate at 12 o'clock**, on a 1.5 mm printed insulating pad, with the leads through a
-  6 × 12 window. At 6 o'clock the leads would run into the motor's wire cover. The line
-  runs in front of the arm, so it never reaches the sensor.
-- The fin crosses the beam once per turn. The 10–90% transition is 0.4 mm of shutter travel,
-  about 1.1° at r 20.5; the switching edge repeats far better than that. Time the edge
-  **entering** the beam in the running direction; the machine turns one way only, so
-  hysteresis and gearbox backlash become one constant offset in the table.
-- Electrical: LED through **180 Ω** from 5 V (about 20 mA each, 100 mA for five). Output with a
-  **10 kΩ pull-up to 3.3 V** into the MCP23017.
+**Home sensing: Hall latches** (decided 2026-09-26). One per station, one each for the year dial and the moon disc;
+the drum doesn't need one. The reason is **silent-skip detection**, not homing: each pass gives a predicted step count
+at a known angle, 116 times over 60 days on M2 and 466 across all five stations.
+- **TI DRV5013**-class digital latch, SOT-23, on a thumbnail board (10 × 16 mm) **behind the plate**, its chip nested in
+  a 3.4 mm window so its sensing element sits 4.4 mm from the magnets. Aluminium is transparent to the field.
+- **The flag is a magnet pair**: two 5 × 2 N52 discs side by side, opposite poles toward the sensor. The field flips
+  sign sharply between them and the latch switches at that zero crossing, so the edge barely moves with gap or
+  temperature: **0.15° per mT** of threshold drift at r 20.5 (19 mT/mm), against the **0.7°** a 28BYJ-48 loses per skip.
+  A single magnet with a unipolar switch would be ±1–3°, too coarse. The moon disc sits behind the year dial, 8 mm
+  from its sensor: about 2° there, 0.17 day, fine for a moon dial. Cross-talk between the two calendar pairs: 0.26 mT.
+- Choose a latch variant that switches at a few mT, so a nearby motor's stray field can't trip it; bench-test one
+  beside a running 28BYJ-48. The machine turns one way, so each station always reports the same edge.
+- Electrical: 3.3 V, open drain, 10 kΩ pull-up and 100 nF on each board, about 3 mA each. Station latches go to
+  MCP23017 #2 (interrupt on change → ESP32); the calendar pair go straight to ESP32 pins. See the build pack.
 
-**Depth stack** (z, mm in front of the plate's front face = negative):
+**Dials and decals** (`decals.py` → `decals_1to1.pdf`, decided 2026-09-26). Each dial carries a printed
+decal read against a small printed **index tab** at 12 o'clock just outside its rim. The Hall latch is on the same
+radius line, so the home event happens at a known reading. The calendar has one **index hand** that crosses the
+year dial and stops at the moon disc's rim. **Scales read astronomical time**:
+
+| | name on the dial | scale | zero |
+|---|---|---|---|
+| S2 | Sun, twice daily | local mean solar time, 12 h clock | mean Sun on the meridian |
+| M2 | Moon, twice daily | lunar hours, 12 per turn (62.1 min each) | mean Moon on the meridian |
+| K1 | Sidereal day | local sidereal time, 24 h | 0 h LST |
+| N2 | Moon's distance | hours of its 12 h 39.5 m period | argument zero; N2 − M2 is the Moon's mean anomaly |
+| O1 | Moon, daily | hours of its 25 h 49.2 m period | argument zero; K1 − O1 tracks the Moon's declination |
+| Year | (months) | month names; ticks on the 1st, 8th, 15th, 22nd, 29th; 366 slots, Feb 29 skipped in common years | Jan 1 (= home) |
+| Moon | Moon phase (Ø32 disc) | days since new moon, 8 phase icons | new moon (= home) |
+
+- **The scales are warped:** each tick sits where the arm really is, computed with `kinematics.py`. M2's ticks move by
+  up to 15.7° (±33 min); the others by 1–4°.
+- **HW mark:** the coral tick is the constituent's high water, which is also the pin direction, so it goes over the
+  rim notch. On M2 the arm itself is the HW pointer.
+- **Readings increase clockwise,** like a clock.
+- **The decals depend on the constituent set (G), the longitude and the epoch (nodal u)**, so reprint them with the
+  arms and for each deployment year.
+- Print 1:1 on laser vinyl or waterslide paper (HP M277dw); two pages, a full set of seven on each. Station decals
+  are Ø52 with a Ø24.5 hole; the year decal is an annulus (the moon disc covers its middle); the moon decal is Ø32.
+- **Verify before printing:** the ±90° convention in K1 and O1's equilibrium arguments (Schureman, as NOAA uses) moves
+  those two zeros by 12 h if it's wrong.
+
+**Calendar dial** (decided 2026-09-26). A **BKA30D-R5** dual-concentric gauge stepper (180:1, 1/12° microsteps) at
+**(−140, −48)**, below and between N2 and K1, turns two discs: the **Ø52 year dial on its outer shaft** (same outline,
+magnet pair and index scheme as a station) and a **Ø32 moon disc on its inner shaft**, 1 mm in front. The motor and
+both Hall latches sit on one calendar board (36 × 68) behind the plate. Year: one microstep every 2.0 h; home Jan 1.
+Moon: one every 9.8 min; home at new moon; drive it to the **true** phase (low-precision ephemeris), not the mean,
+which drifts ±0.5 day. Uniform rates, so no inverse tables. Clearances: 3.6 mm to the N2/K1 dials, 2.0 mm to the
+bottom rail, 2.7 mm to the neighbouring wire covers. **Placeholders until a motor is in hand:** the family datasheet
+lists stops (outer 320°, inner 270°) while the -R5 is sold as 360°, so confirm continuous rotation on both shafts;
+shaft diameters, lengths and positions in the housing (none drawn) set the hub adapters. Its dynamic torque is
+0.8–1.2 mN·m and its rated load a 2.5 g pointer, so the dials stay light and homing runs slowly.
+
+**Depth stack** (z, mm in front of the plate's front face = negative). With nothing tall in front of the plate,
+everything moved 7.8 mm back, which also cuts the line's leverage on each motor's output bushing by about a third:
 
 | | z |
 |---|---|
-| sensor seat (pad front) | −1.5 |
-| slot floor / fin tip / beam | −5.1 / −8.0 / −9.7 |
-| shaft tip | −8.5 |
-| sensor top | −12.3 |
-| flag disc | −13.3 to −15.3 |
-| arm | −16.3 to −19.3 |
-| arm boss (Ø8 / Ø5) | −19.3 to −20.8 |
-| rear pulley plane | −20.55 |
-| **arm-bearing groove** | **−22.8** (bearing −20.8 to −24.8) |
-| front pulley plane | −25.05 |
-| arm axle head | −26.95 |
-| pulley bracket | −14.05 to −30.55 |
+| Hall element (chip in a plate window) | +0.9 |
+| motor-ear screw heads | −2.4 |
+| **dial back = magnet faces** | **−3.5** (dial −3.5 to −6.0) |
+| arm boss | −6.0 to −8.5 |
+| shaft tip = arm back | −8.5 |
+| arm front | −11.5 |
+| rear pulley plane | −12.75 |
+| **arm-bearing groove (line plane)** | **−15.0** (bearing −13.0 to −17.0) |
+| front pulley plane | −17.25 |
+| pen carriage body | −18.75 to −30.25 (rods and carriage bearings at −23.75) |
 
-All 15 clearances in the fit study are ≥ 0.95 mm. The tightest is the fin to each slot wall (0.95).
+All 13 clearances in the fit study and all 26 in the full model are at least 1 mm. The pen travel window is
+**119.2 mm against 114.1 needed (+5.1)** with 152 mm rails.
 
 **Homing can't crash the pen.** Pen position is Σdᵢ, bounded by Σr = 57.05 mm, against
 62 mm of available travel. No combination of arm angles can reach a stop.
 
-**Drive.** 28BYJ-48 direct, no reduction. ULN2003 boards. **PWM hold** on the common 5 V
-rail via one N-channel MOSFET and one ESP32 channel: idle at 60% duty (20.6 mN·m, 1.38 W for
-all six), snapping to 100% for the ~30 ms of a step. ESP32 + 2 × MCP23017: 24 stepper lines + 5
-home sensors on 2 GPIO. NTP daily.
+**Drive and electronics** (full detail in the build pack). 28BYJ-48 direct, no reduction, on ULN2003 boards. ESP32 +
+2 × MCP23017: #1 (0x20) drives S2, N2, K1, O1; #2 (0x21) drives M2 and the drum and reads the five station latches,
+raising INTB on each edge. The BKA30D-R5 runs from an AX1201728SG step/dir gauge driver through a 74AHCT245 (3.3 → 5 V);
+the calendar latches go straight to ESP32 pins. **PWM hold** through a high-side **P-channel** switch (AO3401A driven by a
+2N7000) on the motors' 5 V, so the ULN2003 logic ground stays solid: 60% idle, 100% while stepping. Fit it only if the
+holding-torque test says the motors need it. 5 V 3 A supply; about 1.5 A peak. NTP daily.
 
 **Line.** ~0.3 mm **fluorocarbon** monofilament. At 0.20 N it's ~1% of breaking strength:
 sub-millimetre creep over sixty days, and elastic stretch is a constant absorbed in the pen
 zero. Not nylon: it absorbs moisture and wanders with humidity. Crimp sleeves, not knots.
 
-**Pen — needs its Rev M redesign.** Still: a carriage on **two** rods, return force a **dead weight,
-not a spring**, 41 g all-up (0.20 N line tension through the 2:1), a 25 mm arm to the drum, and
-contact force ~0.05 N from a light leaf spring with a retract lever. What changes: it
-sits at x +70 on its own two rods (no longer sharing a rod with O1). Its moving pulley must run in
-the **arm-bearing plane (−22.8)** under the sixth bracket, on its own V623ZZ, and the line's dead end, the
-**screw-adjustable anchor**, takes that bracket's front plane. **The pen's zero is set by line
-length and nothing else**: the anchor is the physical form of Z0 from the spreadsheet.
+**Pen carriage (Rev M; modelled in `revm_model.html`).** Runs on **two 3 mm steel rods** on **four V623ZZ**, two per
+rod, each rolling on the inside of its rod. The V grooves locate it front-to-back, the two sides pushing outward
+against opposite rods locate it sideways, and the top and bottom pairs stop it rocking. **The +x pair's axle holes are
+slotted ±0.6**: set a light preload once, then lock. Rod size is set by the bearing: **3 mm** seats 0.14 below the
+V623's lip, **1/8″** 0.08 below; 4 mm and up ride on the lips. **The carriage rides in front of the line** (body z −18.75
+to −30.25, 1.5 mm in front of the front-plane leg), with its rods and bearings at z −23.75, mid-depth in the rail. The
+**pen pulley rides behind it** on a short stub in the line plane, on an M3 × 16 through the body into an insert in its
+front face. Bearing axles at ±12, rods at ±18.92 (90° V assumed), bottom pair on the pen-pulley line, top pair 14 above;
+the **U-shaped body** lets the top bearings rise past the pen bracket's cheeks. **Two flat printed parts**: a 2.5 mm
+**rear plate** carrying the pulley stub, and a **front body** (4 mm front plate plus the spacer frame, the bearing
+pockets open toward the rear plate). The four bearing axles, **M3 × 16 + nut** from the front, clamp rear plate,
+3 × 5 × 0.5 shim, inner race and front body together, so the inner races are the spacers. The nuts on the rear face
+clear the pen pulley and the bracket bearings by 2.8. Dead weight **41 g all-up** with the
+2:1 loop (0.20 N line tension). Pen arm 25 mm to the drum, contact force ~0.05 N from a light leaf spring, and a
+retract lever. **The pen's zero is set by line length and nothing else**: the screw-adjustable anchor on the pen
+bracket's front plane is the physical form of Z0 from the spreadsheet.
 
 **Drum.** 130 mm of **3" Sch 40 PVC** (OD 88.9) with two printed end caps carrying the 7 mm
 shaft, through both rails (clearance at the top, plain bearing at the bottom), washer under the bottom
-cap. Cut it square. Its x position moves with the shorter row.
+cap. Cut it square. Its axis sits at x +155.5, z −24, on the pen carriage's mid-plane.
 
 **Chart speed — still open.** Circumference 279.3 mm.
 
@@ -214,17 +272,37 @@ cap. Cut it square. Its x position moves with the shorter row.
 7 days draws a very steep trace; 3.5 days is a more classical marigram. It's a firmware constant.
 Paper: A4 wrapped the long way leaves 17.7 mm to tape; trim the 210 side to about 140.
 
-**Frame.** 1×2 pine is still right: the pulley bracket reaches z −30.55 against a 38.1 mm
-rail, where 1×1 (25.4) would be too shallow. The faceplate screws to the rails' rear faces with a 12 mm overlap.
-Rev M rail features:
-- **top rail, inner face:** 2 × #4 pilots per pulley bracket at (station x ± 11,
-  22.8 from the rear edge), six brackets; 2 pen-rod sockets
-- **bottom rail, inner face:** 2 pen-rod sockets
-- **both rails:** the drum shaft hole
+**Frame.** 1×2 pine is still right: the pen carriage reaches z −30.25 against a 38.1 mm rail, where 1×1 (25.4) would
+be too shallow. The rails are **152 apart** (posts 152), set by the pen's travel window. The faceplate screws to the
+rails' rear faces with a 12 mm overlap. Rev M rail features:
+- **top rail, inner face:** 2 × #4 pilots per pulley bracket at (station x ± 11, 15 from the rear edge), six brackets;
+  2 pen-rod sockets, Ø3.1 × 9 at (70 ± 18.92, 23.75 from the rear edge)
+- **bottom rail, inner face:** the 2 matching pen-rod sockets
+- **both rails:** the drum shaft hole at (155.5, 24 from the rear edge)
 - **rear faces:** the faceplate pilots
 
 The Rev L rules for drilling the rails as a mirrored pair (clamp **outer face to outer face**, drill from both
 sides) still apply to the rod sockets and the drum hole.
+
+**Printing.** Every printed part prints **without support** (overhang check, scratchpad `printcheck.py`: nothing
+steeper than 45° off the bed except short bridges: the 5.1 mm magnet-pocket roofs, the insert-hole ledges and the
+bracket's teardrop holes).
+
+| Part | Orientation |
+|---|---|
+| Station hub + dial ×5 | dial back down, boss up |
+| Arm ×5 | back down, bearing boss up |
+| Index tab ×5 | flat |
+| Pulley bracket ×6 | rail face down (as built in `rollers.py`) |
+| Pen carriage rear plate | front face down, pulley stub up |
+| Pen carriage front body | front face down, pockets open upward |
+| Year dial + adapter, moon disc | front (decal) face down |
+| Calendar index hand | on its flush side, or front face down |
+| Drum end caps ×2 | flat |
+
+PLA, 3 perimeters. Before the real parts, print **coupons**: the D-bore (tune to a light press on the motor flats),
+a magnet pocket at 5.1 and 5.2, the 4.0 insert hole, and a PVC-bore ring for the drum cap. Iron the dials' front
+faces if the decal shows the layer lines.
 
 ---
 
@@ -236,7 +314,12 @@ Everything lives in `C:\Users\mikem\Desktop\tide-machine\` (a git repo).
 |---|---|---|
 | `RESUME.md` | **M** | this file: the spec until the Ruby is ported |
 | `station_study.py` → `station_study.html` | **M** | two-station fit study (O1 + M2): every Rev M part, clearances, depth stack. Published (link above). Writes no STLs |
+| `buildpack.py` → `bom.csv` + `build_pack.html` | **M** | bill of materials with order quantities, wiring diagram and pin map, from one data source. Published (link above) |
+| `build_pack.tmpl.html` | **M** | the build-pack page template, including the wiring diagram |
+| `station_study.py --full` → `revm_model.html` | **M** | the whole machine from the same part code: five stations, calendar, six brackets, pen carriage, drum, frame |
 | `station_study.tmpl.html` | **M** | the viewer template it fills |
+| `kinematics.py` | **M** | line geometry + the firmware inverse (`Station(r).theta(phi)`); the decals use it, and the firmware tables should too |
+| `decals.py` → `decals_1to1.pdf` | **M** | the seven decals (five stations, year, moon), warped, astronomical zeros; two pages, a full set on each. **Placeholder constituents** |
 | `rollers.py` | **M** | pulley bracket: `build_bracket()`, `to_machine()`, `threading()`. Writes `pulley_bracket.stl` only when run directly |
 | `sandbox/index.html` | **M** | the Marigram Sandbox source: harmonics, arm kinematics, firmware inverse, friction |
 | `tide_machine.rb` | L | SketchUp builder, **stale**: discs, yokes, carriages, screw eyes, motor without its offset |
@@ -281,9 +364,14 @@ Everything lives in `C:\Users\mikem\Desktop\tide-machine\` (a git repo).
 12. **Mirror the threading at alternate stations** (Rev M). With the same order everywhere, each
     run between stations crosses 4.5 mm of depth, 4.6° off-plane at both ends, for the life of the
     machine. Mirrored, those runs are flat and only the legs skew.
-13. **The home sensor lies flat on the plate, under the arm, at 12 o'clock** (Rev M). Its leads
-    leave through its seat, so behind-the-plate space decides the angle. Everything
-    that moves forward of the arm (the arm bearing, the line) stays clear of it by construction.
+13. **Hall latches behind the plate, reading a magnet pair** (Rev M; replaces the TCST2202 on the plate). Nothing
+    tall in front of the plate means a shallow stack; the opposed-pole pair gives optical-grade edges (0.15°/mT) that a
+    single magnet can't. Consequence to remember: **the faceplate must never be steel**.
+14. **The pen carriage rides in front of the line** (Rev M). With the line plane at −15 there's no room behind it; in
+    front, the rods sit mid-depth in the rail and the pen pulley rides behind the body on a stub.
+15. **Every printed part prints without support** (printability review, 2026-09-26). This removed the hub collar
+    and grub screw, split the pen carriage into two flat parts, and made the calendar hand flush with its base
+    and 1.5 thick. Keep new parts to the same rule: one flat face, everything else growing up from it.
 
 ---
 
@@ -292,11 +380,18 @@ Everything lives in `C:\Users\mikem\Desktop\tide-machine\` (a git repo).
 - [ ] **Port Rev M into `tide_machine.rb`** (CFG + builders), then regenerate
       `faceplate.py` / `rails.py` outputs and the 3D viewer from it. **Don't order or drill
       Rev L files meanwhile.**
+- [ ] **Order parts:** `bom.csv` / the build pack. On arrival, verify the four flagged items (BKA30D-R5 continuous
+      rotation and shaft sizes; V623ZZ groove radius and V angle; DRV5013 variant beside a running motor;
+      AX1201728SG pinout and input levels) before designing further around them.
+- [ ] **Decal inputs:** NOAA G values, longitude and deployment epoch into `decals.py`; check the K1/O1
+      ±90° argument convention against NOAA before printing.
 - [ ] **Measure a V623ZZ's groove root radius** when they arrive (4.8 assumed). It sets the
       pulley axle height and feeds the firmware table. The legs stay parallel whatever it is.
-      Order 20: 18 fitted + spares.
-- [ ] **Pen carriage, Rev M**: two rods at x +70, a moving V623 in the −22.8 plane, the
-      screw-adjustable anchor in the sixth bracket's front plane, the ballast pocket.
+      Order 25: 22 fitted + spares.
+- [x] ~~Pen travel didn't fit~~: the window was 107.2 against 114.1 with 140 mm rails. **Fixed by rails 152 apart**
+      (window 119.2, +5.1; decided 2026-09-26). A one-bearing-per-side carriage would not have helped: both
+      ends of the window are set by the pen pulley itself, and two bearings would let the carriage rock.
+- [ ] Pen carriage details: ballast pocket, leaf spring and retract lever, pen holder.
 - [ ] Drum position and rail length for the shorter row; frame-screw spacing on the new
       plate outline.
 - [ ] **Measure the 28BYJ-48's holding torque** at the output shaft, powered and unpowered.
@@ -304,8 +399,8 @@ Everything lives in `C:\Users\mikem\Desktop\tide-machine\` (a git repo).
 - [ ] **Replace the placeholder constituents** from NOAA CO-OPS for the chosen port. They set
       every pin radius, and only the arms need reprinting.
 - [ ] **Decide chart speed** (7 vs 3.5 days per revolution).
-- [ ] Firmware: per-station inverse tables from the exact geometry, rates, TCST2202 edge timing,
-      skip detection, NTP, PWM hold.
+- [ ] Firmware: per-station inverse tables from `kinematics.py`, rates, Hall edge timing (MCP23017 INTB +
+      INTCAP), skip detection, the calendar (366-slot year, true moon phase), NTP, PWM hold.
 - [ ] Commissioning commands: **go-to-phase** for one station at a time (command the
       constituent phase to 0°, 90°, 180°, 270°; the pen should move ±r); **go-to-zero** (all outputs 0, for the pen datum at the anchor screw);
       a **speedup multiplier** (1000× replays 60 days in 86 minutes; stay under 5000×; re-home
@@ -313,8 +408,8 @@ Everything lives in `C:\Users\mikem\Desktop\tide-machine\` (a git repo).
 - [ ] Commissioning order: mechanical → verify each arm's r by go-to-phase → direction-check
       every motor at 1000× → home → pen zero → 90-minute soak at 1000× against the sandbox →
       NTP, re-home, start.
-- [ ] Electronics tray behind the plate: wire covers point down, and the sensor leads exit at
-      y 16.7–24.3 above each motor.
+- [ ] Main board placement behind the plate (wire covers point down; Hall boards sit at 12 o'clock above each
+      motor; the calendar board fills the gap between N2 and K1).
 
 ---
 
