@@ -1,44 +1,54 @@
 # Tide Machine — resume point
 
-**Rev L, 2026-09-24.** Five-constituent harmonic tide predictor. Six carriages in one
-row on two identical rails: five crank stations, each direct-driven by its own
-28BYJ-48 behind a sheet-metal faceplate, plus the pen as the sixth. One monofilament line
-sums them onto a pen writing on a length of PVC pipe.
+**Rev M, in progress — 2026-09-26.** Five-constituent harmonic tide predictor. Five arm
+stations in one row, each direct-driven by its own 28BYJ-48 behind a sheet-metal faceplate.
+One monofilament line runs along the top rail over a coaxial pair of V-groove pulleys above
+each station, drops to a V-groove bearing on the station's arm, U-turns, and climbs back.
+The sum of the five reaches a pen carriage writing on a length of PVC pipe.
 
-`tide_machine.rb` is the source of truth — its `CFG` block holds every dimension.
-Run it in SketchUp: `load "C:/Users/mikem/Desktop/tide-machine/tide_machine.rb"`
+> **⚠ The Rev L shop files are stale — do not order or drill from them.** `tide_machine.rb`,
+> `faceplate.py` (and `faceplate_CUT.dxf`), `rails.py` and the 3D viewer all still describe
+> Rev L: discs, yokes, carriages, screw eyes, the wrong motor offset and the old station x.
+> Until they are ported, the Rev M geometry lives in `station_study.py` + `rollers.py`, and
+> this file is the spec. See *Files* and *Open items*.
 
-3D viewer: https://claude.ai/artifact/PPe79PuxmdfM8Lc8Z9E5iv
-Companions: Marigram Sandbox (interactive harmonic model), `Desktop\tide-harmonics.xlsx`.
-Superseded sheets: General Arrangement (geared), Exploded Assembly (concentric rings).
+Rev M fit study: https://claude.ai/artifact/RWW9Uh7phZAQicc9Ytd4kd
+Marigram Sandbox (harmonics + arm-station kinematics and friction): https://claude.ai/artifact/GJ3wLqHhHAh9vqQBS5SoKS
+Rev L 3D viewer (stale): https://claude.ai/artifact/PPe79PuxmdfM8Lc8Z9E5iv
+Companion: `Desktop\tide-harmonics.xlsx`.
 
 ---
 
 ## What it does
 
 `h(t) = Σ Hᵢ · cos(σᵢt − gᵢ)` over five constituents, realised mechanically:
-crank radius = amplitude, crank angle = phase, Kelvin cable = the summation.
+pin radius = amplitude, arm angle = phase, one Kelvin line = the summation.
 
-| | r pin | disc r | slot used | crank load | margin |
-|---|---|---|---|---|---|
-| M2 | 35.00 | 47.0 | 73.0 | 14.0 mN·m | 2.4× |
-| S2 | 8.75 | 20.8 | 20.5 | 3.5 | 9.8× |
-| N2 | 7.35 | 19.4 | 17.7 | 2.9 | 11.7× |
-| K1 | 3.50 | 15.5 | 10.0 | 1.4 | 24.5× |
-| O1 | 2.45 | 14.5 | 7.9 | 1.0 | 35.0× |
+Rev M, `pin_scale` 35 mm/m, **a V623ZZ at every bend**: rail pulleys, arm bearings, pen
+pulley. Order S2 · N2 · K1 · O1 · M2 · pen:
 
-Accuracy: **12.4% of mean range, worst case, over a 60-day run** (5.1% RMS) against
-the full 15-constituent model. Target was 20%.
+| | pin r | crank load, frictionless | with friction | margin vs pull-in 29.4 |
+|---|---|---|---|---|
+| M2 | 35.00 | 14.1 mN·m | **14.5** | 2.0× |
+| S2 | 8.75 | 3.5 | 4.1 | 7.1× |
+| N2 | 7.35 | 3.0 | 3.4 | 8.7× |
+| K1 | 3.50 | 1.4 | 1.6 | 19× |
+| O1 | 2.45 | 1.0 | 1.1 | 28× |
 
-**Travel chain.** Σr = 57.05 mm. Each moving ring doubles its carriage's displacement,
-so the cable end swings ±2Σr = ±114 mm. The cable then wraps a ring on the pen carriage
-and anchors to the rail, halving it again: **pen travel = 2Σr = 114 mm**, and the chart
-scale comes out as exactly `pin_scale` — **35 mm per metre of tide** (102 mm for a
-spring range, 53 mm for a neap).
+Friction is now a rounding error. For the record, the superseded PLA sleeve on an Ø8 pin needed oil on every pin:
+dry, S2 reached 30.6 mN·m, the motor's pull-in torque. No lubrication is needed now. Lowest line
+tension anywhere: 170 mN of 201, so the line can't go slack.
 
-That last 2:1 is what makes the machine fit. The rails are 140 mm apart and a 16 mm
-carriage leaves ~124 mm of stroke; without it the pen would want 228 mm and the drum
-would tower over the frame.
+Accuracy: **12.4% of mean range, worst case, over a 60-day run** (5.1% RMS) against the
+full 15-constituent model. That's exactly what a perfect five-constituent machine gives, because the
+firmware inverse removes the arm's own geometric error. Target was 20%. Turned at constant
+speed, the same arms would score 17.6%.
+
+**Travel chain.** Σr = 57.05 mm. Each station's arm bearing takes up twice its own rise, so the
+line end swings ±2Σr = ±114 mm. The line then wraps a pulley on the pen carriage and
+anchors, halving it again: **pen travel = 2Σr = 114 mm**, and the chart scale comes out as
+exactly `pin_scale`, **35 mm per metre of tide** (102 mm for a spring range, 53 for a neap).
+That last 2:1 is what makes it fit between rails 140 mm apart.
 
 ---
 
@@ -46,146 +56,152 @@ would tower over the frame.
 
 | | |
 |---|---|
-| Frame | **1×2 pine** (19.05 × 38.1 actual), two rails 470 mm + two end posts |
-| Faceplate | **sheet metal, 321 × 164 × 1.5 mm** |
-| Overall depth | ~60 mm (motors +26 behind the plate, rail front at −34) |
-| Guide rods | **7**, all 158 mm, shared between neighbouring carriages |
-| Carriages | M2 96 × 15.6 × 12 · four at 42 × 15.6 × 12 · pen 42 × 16 × 12 |
+| Frame | **1×2 pine** (19.05 × 38.1 actual), two rails + two end posts; rail length to be reset for the shorter row |
+| Faceplate | **1.5 mm aluminium, ~285 × 164** (exact outline set in the port) |
+| Depth | motors 20.5 behind the plate; in front: arm-bearing groove −22.8, pulley brackets to −30.6, rail front −38.1 |
+| Stations | 5 × two-part printed rotor (hub + flag disc, bolt-on arm) + a V623ZZ on an M3 axle |
+| Bearings | **18 × V623ZZ**: 12 on the top rail (two per bracket, six brackets), 5 on the arms, 1 on the pen carriage |
+| Guide rods | **2**, pen carriage only |
+| Carriages | pen only |
 | Drum | 3" Sch 40 PVC, OD 88.9, 130 mm long |
-| Motors | 6 × 28BYJ-48, bolted **flat** to the sheet (no standoff) |
-| Home sensors | 5 photointerrupters, 12 o'clock, front of the plate |
+| Motors | 6 × 28BYJ-48 (five stations + drum), bolted flat, wire covers down |
+| Home sensors | 5 × **Vishay TCST2202**, flat on the plate at 12 o'clock |
 
 ---
 
 ## Configuration
 
-**Scale.** `pin_scale = 35`. Everything follows: pen travel = 3.26 × pin_scale, peak M2
-torque = 2 × tension × pin_scale. Those two fight; 35 balances them.
+**Station order and spacing.** S2 · N2 · K1 · O1 · M2 · pen, at x −224, −168, −112, −56, 0,
++70, with **equal 56 mm pitch** between the five stations (user's call). At 56 mm, M2's arm (reach 40.5) clears
+O1's arm boss (r 12) by 3.5, the tightest gap in that plane. **M2 sits next to the pen**, where its torque is lowest (14.5, against 16.4 at the far end). With a
+bearing at every bend the order hardly matters any more. O1 goes beside M2 because it has the smallest sweep.
 
-**Faceplate.** Sheet metal, **1.5 mm**. Drawings and the hole schedule are in *Faceplate drawings* below. Thickness is a *shaft* decision, not a
-stiffness one. A 28BYJ-48 gives 9.5 mm past its mounting face but the first 1.5 mm is a
-9 mm boss, so only **8.0 mm is 5 mm shaft**. A 1.5 mm plate buries the boss exactly: it
-sits inside the clearance hole and the shaft emerges at the plate's front face with all
-8.0 mm forward of it. Every millimetre of extra plate costs a millimetre of shaft.
+**Motor (28BYJ-48; Kiatronics / OSEPP STEPD-01 datasheet).** The **shaft sits 8 mm off the body
+centre**, on the perpendicular to the ear line; the ear holes are on the body centreline.
+Ear holes 2 × Ø4.2 on 35 centres, tabs R3.5, 42 tip to tip. Body Ø28 × 19; wire cover
+14.6 wide on the side away from the shaft, reaching 25 mm from the shaft. Boss Ø9 × 1.5.
+Shaft Ø5, 3 across flats, **10 ±0.5 from the mounting face, flats only 6 long**.
+**Orientation (confirmed): shaft above the body centre, wire covers down.** At 56 mm pitch the
+ears leave 14 mm between neighbours. The plate's **Ø9.2 boss hole** locates each shaft. The
+ear bolts only clamp: M3 in a Ø4.2 ear hole would let the motor wander ±0.6 mm.
+Torque: pull-in **29.4 mN·m** (300 gf·cm), in-traction and self-positioning > 34.3. **Friction torque
+59–118 mN·m**: if that means unpowered back-drive torque, the PWM hold could drop to
+zero; the bench test decides.
 
-Grip is 8.0 mm of 8.0 available, from boring the disc **through** (6 mm) plus a 3 mm hub
-reaching rearward to the plate face. Strength was never the issue — 14 mN·m on two
-flats over 8 mm is 0.12 MPa — and neither is axial retention, since the yoke slot loads
-the pin only along Y. A grub screw on a flat is ample.
+**Faceplate.** 1.5 mm aluminium; the thickness is a *shaft* decision. The 1.5 mm boss sits
+inside the plate, so 8.5 mm of shaft stands forward of the front face, the last 6 of it flatted.
+Rev M hole schedule, per station at shaft (x, 0):
 
-Clearance hole 10.0 mm (boss + 0.5), two M3 per motor, motor bolted **flat**. If you go
-thinner than 1.5 the boss stands proud and the hub grows a counterbore automatically
-(`boss_proud`). 1.5 mm aluminium is ~2.9× stiffer in bending than the 3 mm acrylic it
-replaces, drills without cracking, and gives the motors a ground plane. What it costs is
-the translucency.
+| Count | Size | Where | Why |
+|---|---|---|---|
+| 5 | Ø9.2 | (x, 0) | locates the Ø9 boss |
+| 10 | Ø3.2 | (x ± 17.5, −8) | motor ears, M3 |
+| 10 | Ø3.2 | (x, 11) and (x, 30) | TCST2202 flanges, M3 |
+| 5 | 6 × 12 window | centred (x, 20.5) | sensor leads through the plate |
+| — | Ø4.0 | y = ±76, spacing to be set | #6 frame screws into the rails' rear faces |
 
-**Frame.** **1×2 pine**, 19.05 × 38.1 actual — two rails 470 mm long plus two end
-posts between them to close the box. **1×1 is too shallow:** the rail has to span from
-the faceplate at z=0 forward to the cable rings at z=−30, with the rod sockets at
-−20 in between, and the rings *must* sit forward of the rods or the cable fouls them.
-That needs 30 + 4 = **34 mm of depth**. A 25.4 mm section leaves 2.8 mm of wood ahead
-of the rod socket and puts the ring 4.6 mm off the front face entirely. 1×2 gives
-15.5 mm ahead of the socket and 8.1 mm ahead of the ring.
+Still true from Rev L: the plate is **not symmetric** (a mirrored plate is scrap). Keep labels
+out of the cut DXF. Check the 100 mm calibration bar before marking metal.
 
-**No lip — the faceplate screws to the rails' rear faces**, overlapping them by 12 mm,
-which is a comfortable landing for a #6 wood screw. Pilot 2 mm into the pine, 3.5 mm
-through the sheet; the console prints the pattern. Pilot holes aren't modelled — you
-drill them on assembly.
+**Rotor: two printed parts per station.**
+- **Hub + flag disc.** Hub Ø14, D-bore on the shaft over its full 8.5 mm, with an M3 grub screw
+  on the flat. Flag disc r 22.6 × 2 mm, whose back face stands 1 mm off the sensor. On its back, a
+  **flag fin** 1.2 mm thick (radial) × 20° at r 20.5, reaching 1.7 mm past the beam. On its front,
+  a 1 mm × Ø24 **boss** the arm bolts to, so M2's arm passes 1 mm clear over O1's disc. Prints
+  disc-down, with the hub and fin growing up.
+- **Arm.** 3 mm arm on 2 × M2 into the boss, end lobe r 5.5. In front at radius r, a **stepped
+  boss**, Ø8 × 1.0 then Ø5 × 0.5, so only the bearing's inner race touches it. An **M3 × 4 heat-set
+  insert** goes in flush from the back face; a nut there would stand proud into the 1 mm gap over
+  the neighbour's disc. Prints flat, boss up. **When real constituents arrive, only the arms get reprinted.**
+- **Arm bearing.** The **same V623ZZ** as the rail pulleys, on an **M3×8** + washer into the insert,
+  with the inner race clamped. The axle tip stops 1 mm short of the arm's back face. This supersedes the thick-printed-pin
+  + PLA-sleeve design (user's call, 2026-09-26), which needed oil and let S2 reach pull-in when dry.
 
-Seven **blind** 5.2 mm rod sockets, 9 mm deep into the 19 mm thickness, leaving 10.1 mm
-behind them. Rod spacing and parallelism now come from **one careful drilling session**
-rather than from a print. If you pair them, clamp **outer face to outer face** with the
-rear edges and ends flush and drill each position from both sides — see *Rail
-drawings* below for why that comes out correctly handed, and why clamping the inner
-faces together cannot work.
+**Kinematics: firmware inverse.** An arm moves its pin sideways too. Turned at constant speed that
+makes a false M4 (7.8% on its own), so **each arm is driven at an uneven rate from a per-station
+lookup table** that makes the line length exactly sinusoidal. M2's speed peaks at 1.24× mean. The
+table is built from the exact line geometry: pulley root radius, legs at ±4.8, plane offsets.
+The arm bearing and the rail pulleys are the same part, so the legs hang exactly vertical at mid-stroke
+whatever the real groove radius turns out to be, and every pin radius is exactly `pin_scale × amp`. A 1 mm geometry error costs about 0.1 mm at the pen.
 
-The twelve cable rings become **screw eyes** — the right part for wood, and far better
-than drilling 1.4 mm through 19 mm of pine. The carriages keep their drilled holes and
-hand-made rings; those are still PLA. The drum shaft runs in a 7 mm hole through the
-wood: passable at one revolution a week, but a brass bushing or a scrap of PTFE tube
-costs nothing and won't wear oval.
+**Pulleys and threading** (`rollers.py`). One bracket per station, **directly above the
+shaft**, on the top rail's inner face: two V623ZZ on one M3×20 + nyloc, a **3 × 5 × 0.5 shim**
+between them (inner races only; an M3 washer rubs the shields), 0.5 mm printed bosses on the
+cheeks. Pulley axle at y 59.2 (root r 4.8, so the line runs along the tops at y 64). Planes
+**−20.55 (rear) and −25.05 (front)**, either side of the arm-bearing groove at −22.8. The bracket is
+30 × 15.5, fixed with 2 × #4 either side of the clevis, and neighbouring brackets are 26 mm apart.
 
-**Guide rods.** 5 mm, **seven**, each shared by the two carriages it sits between — the
-locating groove for the one on its right, the floating groove for the one on its left.
-158 mm, socket-bottom to socket-bottom. Cut a whisker under; forcing them home splits
-the socket walls along the layer lines. Sewing-machine oil: mineral oil is inert to PLA
-and takes μ from ~0.25 dry to 0.1, dropping total guide drag from ~0.22 N to ~0.09 N.
+Per station: over the IN pulley (90° wrap), down the +x side, U-turn under the arm's bearing, up
+the −x side, over the OUT pulley (90°). **The order is mirrored at alternate stations**, so every run
+between stations stays in one plane:
 
-**Carriages.** Two classes: 96 mm for M2, 42 mm shared by the other four. 15.6 mm tall,
-12 mm thick — webs are 1× slot height above and below. Left groove locates (0.1 mm fit),
-right groove floats (0.8 mm), so rod skew is absorbed rather than binding. 2.6 mm drill
-dimples on both faces; drill 1.4 mm by hand for the ring.
+| row | S2 | N2 | K1 | O1 | M2 | pen |
+|---|---|---|---|---|---|---|
+| in over | front | rear | front | rear | front | rear |
+| out over | rear | front | rear | front | rear | front = **anchor** |
 
-**Print upright**, on the 96 × 12 footprint, so the end grooves run vertically and come
-off as clean bearing surfaces — the only surfaces here that matter. The slot's top wall
-then bridges its full length, so turn on support inside the slot; it's a through-window
-open at both ends, so it lifts straight out.
+Leg fleet angle: 2.3–2.6° on the small stations, 5.4° on M2 only at the top of its stroke.
+Nothing slides at S2's IN pulley, so the far dead end can tie off right there.
 
-**Home sensing.** One photointerrupter per crank — five; the drum doesn't need one
-since you tape the paper on by hand anyway. The reason isn't homing (you could index by
-hand) but **silent-skip detection**: a flag passing a sensor gives a predicted step count
-at a known angle, 116 times over a 60-day run on M2, 466 across all five. Open-loop
-steppers otherwise drift with nothing to tell you.
+**Home sensing.** One sensor per station: five. The drum doesn't need one. The reason is **silent-skip
+detection**, not homing: each flag pass gives a predicted step count at a known angle, 116
+times over 60 days on M2 and 466 across all five. Open-loop steppers otherwise drift with nothing
+to tell you.
+- **Vishay TCST2202** (doc 81147): slotted optical switch, 3.1 slot, 0.5 aperture, 24.5 × 6.3
+  × 10.8, beam 8.2 above the seat, flanges Ø3.3 on 19 centres. **The leads leave through the
+  seating face.**
+- **Flat on the faceplate at 12 o'clock**, on a 1.5 mm printed insulating pad, with the leads through a
+  6 × 12 window. At 6 o'clock the leads would run into the motor's wire cover. The line
+  runs in front of the arm, so it never reaches the sensor.
+- The fin crosses the beam once per turn. The 10–90% transition is 0.4 mm of shutter travel,
+  about 1.1° at r 20.5; the switching edge repeats far better than that. Time the edge
+  **entering** the beam in the running direction; the machine turns one way only, so
+  hysteresis and gearbox backlash become one constant offset in the table.
+- Electrical: LED through **180 Ω** from 5 V (about 20 mA each, 100 mA for five). Output with a
+  **10 kΩ pull-up to 3.3 V** into the MCP23017.
 
-The flag is a **recess, not a tab.** The rims are close — 3.25 mm between M2 and S2,
-3.90 between S2 and N2 — and anything protruding sweeps a full circle into its
-neighbour. So the disc body stops 3 mm short of its OD and that last ring of rim prints
-at **2 mm instead of 6**, with a **12° notch**. Nothing sticks out; the sensor's 3 mm
-slot straddles the 2 mm band. Prints with no support: disc flat on the bed, so the
-thinned rim is a step down in layer height and the notch is a vertical-walled gap. Band
-goes on the **rear** face, leaving the front clear for the arm and pin.
+**Depth stack** (z, mm in front of the plate's front face = negative):
 
-**The notch is centred on the pin**, so the flag-to-pin angle is exact by construction.
-Time the edge the band presents entering the beam, always approaching in the running
-direction — the machine only turns one way, so sensor hysteresis and gearbox backlash
-both land as one constant offset. Resolution is a non-issue: 0.3 mm edge detection at
-40 mm radius is 0.43°, which on M2 is 53 seconds of tide phase.
+| | z |
+|---|---|
+| sensor seat (pad front) | −1.5 |
+| slot floor / fin tip / beam | −5.1 / −8.0 / −9.7 |
+| shaft tip | −8.5 |
+| sensor top | −12.3 |
+| flag disc | −13.3 to −15.3 |
+| arm | −16.3 to −19.3 |
+| arm boss (Ø8 / Ø5) | −19.3 to −20.8 |
+| rear pulley plane | −20.55 |
+| **arm-bearing groove** | **−22.8** (bearing −20.8 to −24.8) |
+| front pulley plane | −25.05 |
+| arm axle head | −26.95 |
+| pulley bracket | −14.05 to −30.55 |
 
-**Sensors at 12 o'clock**, all five identical. The sides are congested (neighbouring
-discs at 3 and 9, guide rods just beyond) but there's 23 mm clear above even M2's rim
-and 50 mm above the small ones. Bracket occupies z 0…−7 while the carriages live at
-−26…−14, so they pass in front wherever they are in their stroke. Slot the bracket's
-mounting holes radially and one design serves all five radii.
+All 15 clearances in the fit study are ≥ 0.95 mm. The tightest is the fin to each slot wall (0.95).
 
-**Homing can't crash the pen.** Pen position is Σdᵢ, bounded by Σr = 57.05 mm by
-construction, against 62.00 mm of available travel. No combination of disc angles can
-drive it into a stop, so homing needs no sequencing and no soft limits.
+**Homing can't crash the pen.** Pen position is Σdᵢ, bounded by Σr = 57.05 mm, against
+62 mm of available travel. No combination of arm angles can reach a stop.
 
-**Crank pins.** 5 mm in a 5.2 mm slot. The slot height *is* the kinematic fit; any
-clearance in it is pure backlash reversing twice per revolution. Same stock as the rods.
+**Drive.** 28BYJ-48 direct, no reduction. ULN2003 boards. **PWM hold** on the common 5 V
+rail via one N-channel MOSFET and one ESP32 channel: idle at 60% duty (20.6 mN·m, 1.38 W for
+all six), snapping to 100% for the ~30 ms of a step. ESP32 + 2 × MCP23017: 24 stepper lines + 5
+home sensors on 2 GPIO. NTP daily.
 
-**Drive.** 28BYJ-48 direct, coaxial behind the plate, no reduction anywhere. ULN2003
-boards. **PWM hold** on the common 5 V rail via one N-channel MOSFET and one ESP32
-channel: idle at 60% duty (20.6 mN·m, 1.38 W for all six), snap to 100% for the ~30 ms
-of a step. ESP32 + 2 × MCP23017 (24 stepper lines + 6 home sensors on 2 GPIO). NTP daily.
+**Line.** ~0.3 mm **fluorocarbon** monofilament. At 0.20 N it's ~1% of breaking strength:
+sub-millimetre creep over sixty days, and elastic stretch is a constant absorbed in the pen
+zero. Not nylon: it absorbs moisture and wanders with humidity. Crimp sleeves, not knots.
 
-**Line.** ~0.3 mm **fluorocarbon** monofilament. At 0.20 N that's ~1% of breaking
-strength, so creep over sixty days is sub-millimetre and elastic stretch is a constant
-offset absorbed in the pen zero. Nylon is the same price and wrong — it absorbs moisture
-and wanders with humidity. Crimp sleeves, not knots.
+**Pen — needs its Rev M redesign.** Still: a carriage on **two** rods, return force a **dead weight,
+not a spring**, 41 g all-up (0.20 N line tension through the 2:1), a 25 mm arm to the drum, and
+contact force ~0.05 N from a light leaf spring with a retract lever. What changes: it
+sits at x +70 on its own two rods (no longer sharing a rod with O1). Its moving pulley must run in
+the **arm-bearing plane (−22.8)** under the sixth bracket, on its own V623ZZ, and the line's dead end, the
+**screw-adjustable anchor**, takes that bracket's front plane. **The pen's zero is set by line
+length and nothing else**: the anchor is the physical form of Z0 from the spreadsheet.
 
-**Pen.** The **sixth carriage in the row**, closed up against O1 with the same 2 mm gap
-and sharing rod 5 with it — so only one extra rod is needed. 42 × 16 × 12, same grooves,
-a drilled ring for the cable, a 25 mm arm out to the drum. Return force is a **dead
-weight, not a spring**: ballast pocket inside the body, part-filled with lead shot and
-capped with epoxy to **41 g all-up**. A slug hung below would reach −80 mm and foul the
-bottom rail at full travel. Springs are wrong here because their force varies over the
-stroke, which would vary cable tension and therefore every crank torque.
-
-**The pen's zero is set by cable length and nothing else** — hence the screw-adjustable
-anchor at the dead end. It is the physical form of Z0 from the spreadsheet, and the one
-alignment in this machine that genuinely has to be made.
-
-**Drum.** A 130 mm length of **3" Schedule 40 PVC** (OD 88.9, bore 77.9). *Not* a
-printed part — the tube is within a millimetre of what the drum wanted. Print only the
-two **end caps**: each plugs the bore, carries the 7 mm shaft and trues up the cut end.
-~30 g of PLA against ~250 g for a printed drum that would be rounder only by luck.
-
-The shaft passes through a hole in *both* rails — clearance through the top on its way
-to the motor above, a plain bearing in the bottom. No extra bracket. The tube weighs
-~260 g, which is nothing to the motor (~4 mN·m total against 34.3) but a real thrust
-load: **washer under the bottom cap**. Cut the tube square; a wobbling drum moves the
-pen in and out and modulates its contact force.
+**Drum.** 130 mm of **3" Sch 40 PVC** (OD 88.9) with two printed end caps carrying the 7 mm
+shaft, through both rails (clearance at the top, plain bearing at the bottom), washer under the bottom
+cap. Cut it square. Its x position moves with the shorter row.
 
 **Chart speed — still open.** Circumference 279.3 mm.
 
@@ -195,218 +211,116 @@ pen in and out and modulates its contact force.
 | 5 days | 28.9 mm | 12 |
 | 3.5 days | 41.3 mm | 17 |
 
-At 7 days the trace is very steep — 20.6 mm wide per cycle against up to 102 mm of
-vertical swing. 3.5 days gives a far more classical marigram. It's a firmware constant,
-so try both. Paper: A4 wrapped the long way leaves 17.7 mm of overlap to tape; trim the
-210 mm dimension to about 140.
+7 days draws a very steep trace; 3.5 days is a more classical marigram. It's a firmware constant.
+Paper: A4 wrapped the long way leaves 17.7 mm to tape; trim the 210 side to about 140.
 
-Pen contact force is separate, acts in Z, ~0.05 N from a light leaf spring. Add a manual
-lever to retract the nib for sheet changes.
+**Frame.** 1×2 pine is still right: the pulley bracket reaches z −30.55 against a 38.1 mm
+rail, where 1×1 (25.4) would be too shallow. The faceplate screws to the rails' rear faces with a 12 mm overlap.
+Rev M rail features:
+- **top rail, inner face:** 2 × #4 pilots per pulley bracket at (station x ± 11,
+  22.8 from the rear edge), six brackets; 2 pen-rod sockets
+- **bottom rail, inner face:** 2 pen-rod sockets
+- **both rails:** the drum shaft hole
+- **rear faces:** the faceplate pilots
+
+The Rev L rules for drilling the rails as a mirrored pair (clamp **outer face to outer face**, drill from both
+sides) still apply to the rod sockets and the drum hole.
 
 ---
 
 ## Files
 
-Everything lives in `C:\Users\mikem\Desktop\tide-machine\`.
+Everything lives in `C:\Users\mikem\Desktop\tide-machine\` (a git repo).
 
-| File | What |
-|---|---|
-| `tide_machine.rb` | **the source of truth for every dimension.** `load` it in SketchUp |
-| `tide-machine-3d.html` | the Three.js viewer — a parallel implementation, published as an Artifact |
-| `faceplate.py` | emits the faceplate DXF + PDFs, parsing `CFG` out of the Ruby |
-| `rails.py` | emits the rail templates the same way |
-| `RESUME.md` | this file |
-
-The viewer used to live in a session scratchpad, which was a bad place for a
-project deliverable; it is now in the project folder with everything else.
-
-**Rev L** put the drawings' holes into the model. The faceplate had been a bare slab;
-it now carries all 35 holes as real subtracted geometry from the same arithmetic that
-writes the DXF, and the rails gained the five rear-face pilots each so you can see them
-line up under the frame screws with the explode slider. Two housekeeping fixes came out
-of reading the published page: `M.teeth` was referenced for every disc's flag band but
-never defined, so the band was falling back to THREE's default white material; and two
-footer notes still asserted printed rails with an acrylic lip and a 3 mm acrylic plate
-in present tense, contradicting newer notes in the same list. Those are marked
-superseded rather than deleted — the footer is a design log.
-
----
-
-## Faceplate drawings
-
-Four files, all regenerated by `faceplate.py`, which **parses `CFG` out of
-`tide_machine.rb`** rather than restating any dimension. Change the model and re-run;
-the drawings cannot drift from it.
-
-| File | For | Contents |
+| File | Rev | What |
 |---|---|---|
-| `faceplate_CUT.dxf` | **SendCutSend** | outline + 35 holes, nothing else |
-| `faceplate_REF.dxf` | your CAD | same geometry + text and centre marks on separate layers |
-| `faceplate_1to1_A3.pdf` | print shop | 1:1 on A3 landscape, dimensioned, + hole schedule |
-| `faceplate_1to1_tiled.pdf` | your printer | 1:1 on two Letter tiles, 30 mm overlap |
-
-**The labels are deliberately not in the cut file.** A laser house treats every closed
-path in the DXF as something to cut, so a text label in the uploaded file is at best an
-order that gets kicked back and at worst a part with the word "M2" cut through it. So
-`faceplate_CUT.dxf` carries one closed outline and 35 circles — verified with `ezdxf`:
-R12, `$INSUNITS = 4` (mm), nothing crossing the outline, no two holes closer than
-1.5 mm. That is the file to upload. Everything you actually want at the bench lives in
-`faceplate_REF.dxf` (layers `REF_TEXT` and `REF_MARKS`, toggle them off and it is the
-cut file) and in the PDFs. If you ever *do* want marks on the metal, that is an
-engraving line item quoted separately from a file that says so — not something to
-smuggle into the cut geometry.
-
-**Hole pattern.** 321 × 164 × 1.5 mm, origin on the M2 shaft, `y = 0` the crank
-centreline shared by all five stations.
-
-| Count | Ø | Where | Why |
-|---|---|---|---|
-| 5 | 10.0 | station x, y = 0 | clears the motor's 9 mm boss (`boss_d + 0.5`) |
-| 10 | 3.2 | station x ± 17.5, y = 0 | 28BYJ-48 mounting, 35 mm PCD |
-| 10 | 3.2 | station x ± 4.5, y = disc_r + 3 | home-sensor bracket |
-| 10 | 4.0 | x per `screw_xs`, y = ±76 | #6 clearance into the pine rails |
-
-Station x — M2 −88, S2 −17, N2 +27, K1 +71, O1 +115. Frame screws at
-x = −144, −69.75, +4.50, +78.75, +153 (74.25 pitch, five a rail).
-Sensor-bracket y — M2 50.0, S2 23.75, N2 22.35, K1 18.5, O1 17.45.
-
-Against 1.5 mm stock: smallest hole 3.2 mm and thinnest hole-to-edge wall 4.0 mm, both
-comfortably over the usual "≥ material thickness" laser rule. No guide-rod or
-drum-shaft holes — the rods sit at z − 20 behind the plate and the drum is at
-x 249.5, past the plate's +165 edge.
-
-**The plate is not symmetric, so a mirrored one is scrap.** The stations sit 68 mm from
-the left edge and 50 mm from the right, and the sensor holes are all on +y. Both PDFs
-carry `M2 / LEFT END`, `PEN + DRUM END →` and `FRONT FACE UP` for that reason. Check
-the 100 mm calibration bar on any sheet before marking metal — "shrink to printable
-area" is the default on most drivers and it silently destroys 1:1.
-
----
-
-## Rail drawings
-
-Three files from `rails.py`, which parses `CFG` out of `tide_machine.rb` the same way
-`faceplate.py` does.
-
-| File | For | Contents |
-|---|---|---|
-| `rails_1to1_A2.pdf` | print shop | every face at 1:1 on one A2 sheet, + drill schedule, cut list, ordinates |
-| `rails_1to1_tiled.pdf` | your printer | cover + 3 Letter tiles, 30 mm overlap, all three faces per tile |
-| `rails_REF.dxf` | your CAD | each face on its own layer (`TOP_INNER`, `BOT_INNER`, `REAR_FACE`, `POST`) |
-
-**There is no vendor cut file here, and that is the point.** The rails are pine you cut
-yourself, so these are **drilling templates**: tape a sheet to the wood, centre-punch
-every cross, drill. The DXF is for your own CAD or a router, not for a laser house.
-
-**The two rails are mirror images.** Both carry identical features at identical machine
-(x, z), but each is drilled on its **inner** face — the one that looks at the other
-rail. Laying the top rail inner-face-up turns it over, so with the rear edge toward you
-on both, machine x runs left-to-right on one and right-to-left on the other. Drill both
-from one template and the second rail is scrap. Hence a separately named sheet per rail,
-each stating which way x runs.
-
-There *is* a clamping trick that gets the hand right for free, and it is the accurate
-version of "drill them as a pair": clamp them **outer face to outer face**, rear edges
-flush and ends flush, then drill each rod position from both sides of the stack to 9 mm.
-Both inner faces end up with the same (u from the end, w from the rear edge) — and
-because seating each rail means rotating it about its *transverse* axis, the same
-physical end lands at opposite ends of the machine. Clamping them inner-face-to-inner-face
-does not work: those are the faces you need to drill.
-
-**Drill schedule**, all ordinates in machine x, `v` measured from the rear edge:
-
-| Count | Ø | Depth | v | Where |
-|---|---|---|---|---|
-| 7 | 5.2 | 9, blind | 20 | rod sockets: x −137, −39, +5, +49, +93, +137, +181 |
-| 12 | 2.0 | 9 | 30 | screw-eye pilots: each station ±6 mm |
-| 1 | 7.0 | through 19.05 | 20 | drum shaft at x +249.5, both rails |
-| 5 | 2.0 | ~10 | — | faceplate pilots, **rear** face, 6 mm in from the inner edge |
-
-The screw-eye pilots leave only **8.1 mm** of wood to the front edge — drill them
-square or pine will blow out. Closest two centres anywhere on the inner face are 12 mm
-apart, so nothing crowds anything.
-
-**Cut list:** 2 rails 470 mm, 2 posts 140 mm, both from 1×2 pine (1220 mm of stock,
-so one 8 ft length); 7 rods Ø5 × 158 mm. Post joinery is deliberately not drawn
-— fit the rails and rods dry, get it square, then fasten the posts to whatever you
-have.
+| `RESUME.md` | **M** | this file: the spec until the Ruby is ported |
+| `station_study.py` → `station_study.html` | **M** | two-station fit study (O1 + M2): every Rev M part, clearances, depth stack. Published (link above). Writes no STLs |
+| `station_study.tmpl.html` | **M** | the viewer template it fills |
+| `rollers.py` | **M** | pulley bracket: `build_bracket()`, `to_machine()`, `threading()`. Writes `pulley_bracket.stl` only when run directly |
+| `sandbox/index.html` | **M** | the Marigram Sandbox source: harmonics, arm kinematics, firmware inverse, friction |
+| `tide_machine.rb` | L | SketchUp builder, **stale**: discs, yokes, carriages, screw eyes, motor without its offset |
+| `faceplate.py` + `faceplate_*.dxf/pdf` | L | **stale; do not order `faceplate_CUT.dxf`** |
+| `rails.py` + `rails_*.pdf/dxf` | L | **stale**: 7 rod sockets, 12 screw-eye pilots |
+| `tide-machine-3d.html` | L | **stale** viewer |
 
 ---
 
 ## Decisions worth not relitigating
 
-1. **Not cycloids.** Tides are a sum of sinusoids. A pin at radius r on a disc turning
-   at the constituent's rate gives `r·cos θ` free. Lobes are only legitimate for M4/M6,
-   which are true harmonics of M2.
-2. **Scotch yoke, never a connecting rod.** Con-rod obliquity error lands at exactly 2×
-   the crank frequency — it fabricates a false M4 around 5% of M2. The #1 gotcha.
-3. **Direct drive beats gearing** once you PWM the hold. Torque scales with current,
-   heat with current squared, so topping up the gearbox is nearly free.
-4. **The line passes *around* each carriage, never attaches.** The 180° wrap is what
-   turns displacement d into 2d of take-up; tying it would rigidly couple all six.
-5. **Sliding rings cost capstan friction a roller wouldn't** (1.87× per station at
-   μ 0.2). Accepted deliberately in favour of hand-fabrication. If the pen ever feels
-   notchy or direction-dependent, that's where it's coming from.
-6. **Backlash in the drive is nearly free** — every shaft turns one direction
-   continuously, so it becomes a fixed phase offset absorbed in firmware. Only the
-   yokes reverse.
-7. **Yoke convention:** horizontal slot, vertical travel, so each station contributes
-   `r·sin θ`, not `r·cos θ`. A 90° offset folded into every phase constant. Don't
-   forget it.
-8. **Both cable legs must be parallel to the carriage's travel.** A moving ring gives
-   exactly 2d of take-up only when its legs leave it along the slide direction; splayed
-   at angle α it gives 2d·cosα, and α changes as the carriage moves, so the gain isn't
-   even constant. One rail ring *between* stations swung M2's gain from 0.78 to 1.77.
-   Two rings per station, straddling it by 6 mm, gets residual error to 0.58% of trace.
-9. **Layout between stations is therefore free.** Everything between moving rings runs
-   fixed point to fixed point, and that distance never changes — so the cable can take
-   any path at all between stations and contribute nothing to the sum. Station order,
-   spacing, position and even slide direction are unconstrained. Only the local geometry
-   at each moving ring matters. The row is a packaging choice, not a functional one.
-10. **The viewer and the builder are parallel implementations.** Every visual check in
-    this project has been of the Three.js viewer, which has its own geometry code. Three
-    placement bugs lived in the Ruby for many revisions because of it: `disc_z()`
-    translated by z1 instead of z0 (every solid of revolution a full thickness rearward,
-    putting the crank disc and pin *inside* the faceplate), the hub sat forward of the
-    disc so it never reached the shaft, and a 4 mm motor standoff ate the shaft length
-    the hub needed. **Run the Ruby before trusting a dimension.**
-11. **The pen must swing further than any crank** — it carries the sum, so its range is
-   Σr = 57.05 against M2's 35.00, a ratio of ΣA/A_M2 = 1.630. That mismatch *is* the
-   summation. Over a real 60-day run it reaches +56.6 / −53.5 mm, so the theoretical
-   bound is barely conservative.
+1. **Not cycloids.** Tides are a sum of sinusoids; a pin at radius r gives `r·cos θ` free.
+   Lobes are only legitimate for M4/M6, true harmonics of M2.
+2. **Firmware inverse, not a Scotch yoke** (Rev M; replaces "never a connecting rod"). Arm
+   obliquity is real: at constant speed it fabricates a false M4 (7.8% on its own). With one stepper per
+   station, the arm is driven at whatever uneven rate makes the line length exactly sinusoidal.
+   **Never run an arm at constant speed**, not even in fast-forward.
+3. **Direct drive beats gearing** once you PWM the hold. Torque scales with current, heat
+   with current squared.
+4. **The line passes *around* each arm's bearing, never attaches.** The U-turn is what turns a
+   rise d into 2d of take-up.
+5. **Every bend in the line, fixed or moving, is a V623ZZ** (Rev M; replaces "sliding rings
+   accepted", and then the PLA sleeve). Capstan friction multiplies from bend to bend down the
+   line: Rev L as drawn needed ~1250 mN·m on M2, 36× the motor.
+6. **Backlash is nearly free.** Every shaft turns one way, so gearbox backlash is a
+   constant in the table. The line always pulls each arm bearing toward its pulleys, so its internal
+   clearance never reverses either. Rev M has no reversing joint in the drive.
+7. **Phase bookkeeping lives in the firmware table** (Rev M; replaces the yoke's `r·sin θ`
+   convention). The table maps constituent phase straight to arm angle, including the flag-to-pin
+   angle and the direction of rotation.
+8. **Legs no longer need to be exactly parallel** (Rev M). Splay changes the station's gain
+   along the stroke, but the firmware inverse absorbs any monotonic geometry. Keep them near
+   vertical anyway. With the same bearing on the arm and the rail they hang exactly vertical at mid-stroke.
+9. **Layout between stations is free for the kinematics** (only the local geometry at each
+   arm bearing matters). With a bearing at every bend, friction barely breaks the symmetry (M2 beside
+   the pen is 14.5 mN·m, at the far end 16.4). The equal 56 mm pitch is a packaging choice.
+10. **Parallel implementations drift.** Three placement bugs lived in the Rev L Ruby because
+    the checks were done in a separate viewer. Right now Rev M exists only in `station_study.py`
+    and `rollers.py`; **port it to the Ruby before trusting any shop file.**
+11. **The pen must swing further than any crank.** It carries the sum: Σr = 57.05 against
+    M2's 35.00. A real 60-day run reaches +56.6 / −53.5 mm.
+12. **Mirror the threading at alternate stations** (Rev M). With the same order everywhere, each
+    run between stations crosses 4.5 mm of depth, 4.6° off-plane at both ends, for the life of the
+    machine. Mirrored, those runs are flat and only the legs skew.
+13. **The home sensor lies flat on the plate, under the arm, at 12 o'clock** (Rev M). Its leads
+    leave through its seat, so behind-the-plate space decides the angle. Everything
+    that moves forward of the arm (the arm bearing, the line) stays clear of it by construction.
 
 ---
 
 ## Open items
 
-- [ ] **Measure the 28BYJ-48's holding torque** at the output shaft, powered and
-      unpowered (string, known-radius pulley, add weight until it creeps). The only
-      number still resting on a datasheet; it sets how far `hold_duty` can drop.
-- [ ] **Replace the placeholder constituents.** Amplitudes and phases throughout are
-      illustrative of a semidiurnal coast, not a surveyed station. Pull real ones from
-      NOAA CO-OPS for the chosen port — they set every pin radius and every disc.
-- [ ] **Decide chart speed** (7 vs 3.5 days per revolution) before committing to paper.
-- [ ] Firmware: rates, phase constants (with the sin/cos offset), NTP, PWM hold, homing.
-- [ ] Firmware needs three commissioning commands: **go-to-angle** (for verifying pin
-      radius — command θ=90°, measure the carriage rise, it should equal r),
-      **go-to-zero** (all θ=0 so Σd=0, for setting the pen datum at the anchor screw),
-      and a **speedup multiplier**. 1000× is the sweet spot: 92 steps/s on M2, 9% of the
-      28BYJ-48's ~15 rpm ceiling, replays the whole 60-day run in 86 minutes and a
-      spring/neap envelope in 21. Don't exceed 5000× (45% of max, torque falling off);
-      a skip during fast-forward loses the phase reference, so re-home after.
-- [ ] Commissioning order: mechanical → set the three slotted pin radii and verify each
-      by go-to-angle → direction-check every motor at 1000× (a reversed motor is
-      invisible at real speed) → home → pen zero at go-to-zero → 90-minute soak at
-      1000× against the sandbox → NTP, re-home, start.
-- [ ] Electronics tray placement behind the plate.
-- [ ] Run Solid Tools before STL export if watertight solids are wanted; parts are
-      modelled as interpenetrating solids inside each group.
+- [ ] **Port Rev M into `tide_machine.rb`** (CFG + builders), then regenerate
+      `faceplate.py` / `rails.py` outputs and the 3D viewer from it. **Don't order or drill
+      Rev L files meanwhile.**
+- [ ] **Measure a V623ZZ's groove root radius** when they arrive (4.8 assumed). It sets the
+      pulley axle height and feeds the firmware table. The legs stay parallel whatever it is.
+      Order 20: 18 fitted + spares.
+- [ ] **Pen carriage, Rev M**: two rods at x +70, a moving V623 in the −22.8 plane, the
+      screw-adjustable anchor in the sixth bracket's front plane, the ballast pocket.
+- [ ] Drum position and rail length for the shorter row; frame-screw spacing on the new
+      plate outline.
+- [ ] **Measure the 28BYJ-48's holding torque** at the output shaft, powered and unpowered.
+      The datasheet's 59–118 mN·m "friction torque" hints the hold could go to zero.
+- [ ] **Replace the placeholder constituents** from NOAA CO-OPS for the chosen port. They set
+      every pin radius, and only the arms need reprinting.
+- [ ] **Decide chart speed** (7 vs 3.5 days per revolution).
+- [ ] Firmware: per-station inverse tables from the exact geometry, rates, TCST2202 edge timing,
+      skip detection, NTP, PWM hold.
+- [ ] Commissioning commands: **go-to-phase** for one station at a time (command the
+      constituent phase to 0°, 90°, 180°, 270°; the pen should move ±r); **go-to-zero** (all outputs 0, for the pen datum at the anchor screw);
+      a **speedup multiplier** (1000× replays 60 days in 86 minutes; stay under 5000×; re-home
+      after any skip).
+- [ ] Commissioning order: mechanical → verify each arm's r by go-to-phase → direction-check
+      every motor at 1000× → home → pen zero → 90-minute soak at 1000× against the sandbox →
+      NTP, re-home, start.
+- [ ] Electronics tray behind the plate: wire covers point down, and the sensor leads exit at
+      y 16.7–24.3 above each motor.
 
 ---
 
 ## If the ULN2003 drop bites
 
-The Darlington eats ~1 V of the 5 V rail — 20% of driving torque. If steps look marginal
+The Darlington eats ~1 V of the 5 V rail, 20% of driving torque. If steps look marginal
 at M2, swap to logic-level MOSFETs for a free ~22% before touching anything else.
 Beyond that: bipolar conversion (cut the centre-tap trace) for ~1.4×, then a chopper
 driver to set current against a thermal budget you choose.

@@ -1,0 +1,343 @@
+<title>Arm Station Study</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+:root{
+  --bg:#E6EBEF; --paper:#F6F8FA; --sunk:#DCE3E9; --stage:#DFE6EB;
+  --ink:#0E1D28; --ink2:#46596A; --ink3:#7E93A3;
+  --rule:#C6D2DB; --rule-2:#DCE4EA;
+  --sig:#9C5F17; --acc:#1F6FB2;
+  --ok:#0D6A52; --warn:#9A6B0E; --bad:#96431F;
+  --ok-soft:rgba(13,106,82,.12); --warn-soft:rgba(154,107,14,.14); --bad-soft:rgba(150,67,31,.14);
+  --shadow:0 1px 2px rgba(14,29,40,.06), 0 8px 24px -16px rgba(14,29,40,.35);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0A131A; --paper:#101C25; --sunk:#16242F; --stage:#0C1720;
+    --ink:#DEE9F0; --ink2:#9FB4C2; --ink3:#6B8496;
+    --rule:#243544; --rule-2:#1A2833;
+    --sig:#E3A64C; --acc:#5AAEEA;
+    --ok:#42C398; --warn:#E3B54C; --bad:#E28A5C;
+    --ok-soft:rgba(66,195,152,.14); --warn-soft:rgba(227,181,76,.14); --bad-soft:rgba(226,138,92,.16);
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0A131A; --paper:#101C25; --sunk:#16242F; --stage:#0C1720;
+  --ink:#DEE9F0; --ink2:#9FB4C2; --ink3:#6B8496;
+  --rule:#243544; --rule-2:#1A2833;
+  --sig:#E3A64C; --acc:#5AAEEA;
+  --ok:#42C398; --warn:#E3B54C; --bad:#E28A5C;
+  --ok-soft:rgba(66,195,152,.14); --warn-soft:rgba(227,181,76,.14); --bad-soft:rgba(226,138,92,.16);
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg); color:var(--ink); font-family:'Archivo','Helvetica Neue',Arial,sans-serif;
+  font-size:14px; line-height:1.45; -webkit-font-smoothing:antialiased}
+.wrap{max-width:1280px; margin:0 auto; padding-inline:16px; padding-block:22px 44px}
+.kicker{font-family:'IBM Plex Mono',monospace; font-size:10.5px; font-weight:500; letter-spacing:.17em;
+  text-transform:uppercase; color:var(--ink3); margin:0 0 3px}
+h1{font-size:clamp(23px,3.4vw,31px); font-weight:700; letter-spacing:-.022em; margin:0; text-wrap:balance}
+.lede{color:var(--ink2); max-width:80ch; margin:10px 0 18px}
+.stage{display:grid; grid-template-columns:minmax(0,1fr) 330px; gap:16px; align-items:start}
+@media (max-width:980px){.stage{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--paper); border:1px solid var(--rule); box-shadow:var(--shadow)}
+.card-head{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 14px;
+  border-bottom:1px solid var(--rule-2)}
+.card-head h2{font-family:'IBM Plex Mono',monospace; font-size:10.5px; font-weight:600; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--ink3); margin:0}
+.hint{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ink3)}
+#view{display:block; width:100%; height:580px; background:var(--stage); touch-action:none; cursor:grab}
+#view.drag{cursor:grabbing}
+@media (max-width:640px){#view{height:420px}}
+.readout{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink2); padding:8px 14px;
+  border-top:1px solid var(--rule-2); min-height:36px}
+.readout b{color:var(--ink); font-weight:600}
+.toolbar{display:flex; flex-wrap:wrap; gap:10px 20px; align-items:center; padding:11px 14px; border-top:1px solid var(--rule-2)}
+.grp{display:flex; flex-wrap:wrap; align-items:center; gap:5px 8px}
+.lab{font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:.13em; text-transform:uppercase; color:var(--ink3)}
+.chip{font:500 12px/1 'Archivo',sans-serif; color:var(--ink2); background:var(--paper); border:1px solid var(--rule);
+  border-radius:2px; padding:6px 9px; cursor:pointer}
+.chip:hover{color:var(--ink); border-color:var(--ink3)}
+.chip[aria-pressed="true"]{background:var(--ink); color:var(--bg); border-color:var(--ink)}
+.chip:focus-visible,input:focus-visible{outline:2px solid var(--acc); outline-offset:2px}
+.field{display:flex; align-items:center; gap:8px}
+.field output{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink); min-width:38px}
+input[type=range]{accent-color:var(--acc); width:120px}
+.side{display:flex; flex-direction:column; gap:16px}
+table{width:100%; border-collapse:collapse; font-size:12px}
+td{padding:7px 14px; border-bottom:1px solid var(--rule-2); vertical-align:baseline; color:var(--ink2)}
+tr:last-child td{border-bottom:0}
+td.v{font-family:'IBM Plex Mono',monospace; font-variant-numeric:tabular-nums; text-align:right; color:var(--ink); white-space:nowrap}
+.pill{display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:.08em; text-transform:uppercase;
+  padding:2px 6px; border-radius:2px; margin-left:6px}
+.pill.ok{color:var(--ok); background:var(--ok-soft)} .pill.warn{color:var(--warn); background:var(--warn-soft)}
+.pill.bad{color:var(--bad); background:var(--bad-soft)}
+.note{font-size:12.5px; color:var(--ink2); padding:10px 14px 12px; margin:0; line-height:1.55}
+.note b{color:var(--ink)}
+footer{margin-top:26px; padding-top:14px; border-top:1px solid var(--rule); color:var(--ink3); font-size:12px}
+footer p{max-width:86ch; margin:0 0 8px}
+footer b{color:var(--ink2)}
+</style>
+
+<div class="wrap">
+  <p class="kicker">Tide machine &middot; Rev M fit study</p>
+  <h1>Arm Station Study</h1>
+  <p class="lede">Two neighbouring stations, O1 and M2, at the 56&nbsp;mm pitch. This is the tightest pair, because M2's arm sweeps over O1's flag disc. Each rotor is two printed parts: a hub with a flag disc, and a bolt-on arm carrying a V623ZZ, the same V-groove bearing as the rail pulleys, on a short M3 axle. A Vishay TCST2202 sits flat on the faceplate at 12&nbsp;o'clock, and a fin on the back of the disc passes through its beam once per turn. Above each shaft, two V-groove bearings share one axle. The line drops from one, U-turns under the arm's bearing and climbs to the other, and the threading is mirrored at alternate stations. Press <b>Play</b> to watch everything clear everything else.</p>
+
+  <div class="stage">
+    <div class="card">
+      <div class="card-head"><h2>Model</h2><span class="hint">drag to orbit &middot; right-drag to pan &middot; wheel to zoom</span></div>
+      <canvas id="view" aria-label="3D model of two tide machine stations"></canvas>
+      <div class="readout" id="readout">Hover a part to name it.</div>
+      <div class="toolbar">
+        <div class="grp"><button class="chip" id="play" type="button">Play</button></div>
+        <div class="field"><label class="lab" for="aM2">M2</label><input type="range" id="aM2" min="0" max="359" step="1"><output id="oM2" for="aM2"></output></div>
+        <div class="field"><label class="lab" for="aO1">O1</label><input type="range" id="aO1" min="0" max="359" step="1"><output id="oO1" for="aO1"></output></div>
+      </div>
+      <div class="toolbar">
+        <div class="grp" role="group" aria-label="View">
+          <span class="lab">View</span>
+          <button class="chip" type="button" data-view="iso">Iso</button>
+          <button class="chip" type="button" data-view="front">Front</button>
+          <button class="chip" type="button" data-view="sensor">Sensor</button>
+          <button class="chip" type="button" data-view="side">Side</button>
+          <button class="chip" type="button" data-view="back">Behind plate</button>
+        </div>
+        <div class="grp" role="group" aria-label="Show">
+          <span class="lab">Show</span>
+          <button class="chip" type="button" data-group="rails" aria-pressed="true">Rails</button>
+          <button class="chip" type="button" data-group="plate" aria-pressed="true">Faceplate</button>
+          <button class="chip" type="button" data-group="motors" aria-pressed="true">Motors</button>
+          <button class="chip" type="button" data-group="rollers" aria-pressed="true">Pulleys</button>
+          <button class="chip" type="button" data-group="line" aria-pressed="true">Line</button>
+        </div>
+      </div>
+    </div>
+
+    <aside class="side">
+      <div class="card">
+        <div class="card-head"><h2>Clearances</h2><span class="hint" id="clearSum"></span></div>
+        <table id="clear"></table>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>Depth stack</h2><span class="hint">z, mm in front of plate</span></div>
+        <table id="stack"></table>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>Threading</h2></div>
+        <table id="thread"></table>
+        <p class="note">Each station's line comes in over one pulley, drops on the +x side, U-turns under the arm's bearing, and climbs on the &minus;x side to the other pulley. Alternate stations swap the order, so every run between stations stays in one plane. <b>Fleet angle</b> is the worst skew of a leg out of its pulley's plane (&plusmn;2.25&nbsp;mm over the shortest leg). It peaks only at the top of M2's stroke. Because the arm and rail bearings are the same part, the legs hang exactly vertical at mid-stroke, whatever the real groove radius turns out to be.</p>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>Per station</h2></div>
+        <p class="note"><b>Printed:</b> hub + flag disc (print disc-down, so the hub and fin grow up), arm (print flat, boss up), sensor pad, pulley bracket.<br>
+        <b>Bought:</b> 28BYJ-48, TCST2202 + 180&nbsp;&Omega; + 10&nbsp;k&Omega;, 3 &times; V623ZZ (2 on the rail, on one M3&times;20 + nyloc with a 3&times;5&times;0.5 shim; 1 on the arm, on an M3&times;8 + washer into an M3&times;4 heat-set insert), 2 &times; M3 + nut (sensor), 2 &times; M3 + nut (motor), 2 &times; M2 (arm to disc), 1 &times; M3 grub screw, 2 &times; #4 wood screw.</p>
+      </div>
+    </aside>
+  </div>
+
+  <footer>
+    <p><b>Why two printed rotor parts.</b> The fin has to point back toward the plate, and the bearing boss forward. No single part prints both without support. Splitting them also means that when real NOAA constituents replace the placeholders, only the arms get reprinted. The hubs, flag discs and sensors stay put.</p>
+    <p><b>Why 12 o'clock.</b> The TCST2202's leads leave through its seating face, so they pass through the faceplate. At 12 o'clock, space behind the plate is clear: the 28BYJ-48 hangs below its shaft, and its body reaches only 6&nbsp;mm above the shaft centre. At 6&nbsp;o'clock the leads would run into the motor's wire cover. The line runs in front of the arm, so it never reaches the sensor.</p>
+    <p><b>Resolution.</b> The TCST2202's 0.5&nbsp;mm aperture switches over 0.4&nbsp;mm of shutter travel. At the fin's radius that is about 1.1&deg; for the full 10&ndash;90% swing; the edge itself repeats far better than that. The machine only turns one way, so the timing edge is always the same edge.</p>
+    <p>Built by <code>station_study.py</code>, which also prints these clearances. Sensor dimensions are from Vishay document 81147; motor dimensions from the Kiatronics STEPD-01 datasheet. The line is drawn from the pulley tangent points, a close approximation. Arms turn at constant speed here; the firmware inverse makes their real speed uneven.</p>
+  </footer>
+</div>
+
+<script>
+(function(){
+'use strict';
+var DATA=/*DATA*/null;
+if(!DATA||!window.THREE) return;
+
+var cv=document.getElementById('view');
+var renderer=new THREE.WebGLRenderer({canvas:cv, antialias:true});
+renderer.setPixelRatio(Math.min(2, window.devicePixelRatio||1));
+var scene=new THREE.Scene();
+var camera=new THREE.PerspectiveCamera(32, 1, 1, 5000);
+scene.add(new THREE.HemisphereLight(0xffffff, 0x6f7f8c, 0.75));
+var key=new THREE.DirectionalLight(0xffffff, 0.75); key.position.set(120, 200, 260); scene.add(key);
+var fill=new THREE.DirectionalLight(0xffffff, 0.3); fill.position.set(-200, -60, -150); scene.add(fill);
+
+function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+function dark(){var a=document.documentElement.getAttribute('data-theme'); if(a) return a==='dark';
+  return window.matchMedia('(prefers-color-scheme: dark)').matches;}
+
+/* ---------- parts ---------- */
+var groups={}, rotors=[], pickables=[];
+DATA.stations.forEach(function(s,i){
+  var g=new THREE.Group(); g.position.set(s.x,0,0); scene.add(g); rotors.push(g);
+});
+DATA.parts.forEach(function(p){
+  var geo=new THREE.BufferGeometry();
+  var v=new Float32Array(p.v);
+  if(p.rotor>=0){var ox=DATA.stations[p.rotor].x; for(var i=0;i<v.length;i+=3) v[i]-=ox;}
+  geo.setAttribute('position', new THREE.BufferAttribute(v,3));
+  geo.setIndex(p.t);
+  var flat=geo.toNonIndexed(); flat.computeVertexNormals();
+  var mat=new THREE.MeshStandardMaterial({color:p.color, roughness:0.62, metalness:0.08, flatShading:true,
+    transparent:p.opacity<1, opacity:p.opacity, depthWrite:p.opacity>=0.9, side:THREE.DoubleSide});
+  var mesh=new THREE.Mesh(flat, mat); mesh.userData.name=p.name;
+  var edges=new THREE.LineSegments(new THREE.EdgesGeometry(geo, 28),
+    new THREE.LineBasicMaterial({color:0x0e1d28, transparent:true, opacity:p.opacity<1?0.12:0.28}));
+  mesh.add(edges);
+  (p.rotor>=0?rotors[p.rotor]:scene).add(mesh);
+  (groups[p.group]=groups[p.group]||[]).push(mesh);
+  if(p.group!=='rails') pickables.push(mesh);
+});
+
+/* ---------- the line (machine xy, fixed z) ---------- */
+var L=DATA.line, lineMesh=null;
+var lineMat=new THREE.MeshStandardMaterial({color:0xC0781E, roughness:0.4});
+groups.line=[];
+function tangents(px,py,ex1,ex2,ey,R){
+  var o={};
+  [[ex1,1],[ex2,-1]].forEach(function(e,s){
+    var dx=e[0]-px, dy=ey-py, d=Math.hypot(dx,dy), al=Math.atan2(dy,dx), be=Math.acos(Math.min(1,R/d));
+    var phi=al+e[1]*be; o['p'+s]=phi; o['t'+s]=[px+R*Math.cos(phi), py+R*Math.sin(phi)];
+  });
+  return o;
+}
+function arc(cx,cy,R,a0,a1,n,z,out){for(var i=0;i<=n;i++){var a=a0+(a1-a0)*i/n; out.push([cx+R*Math.cos(a), cy+R*Math.sin(a), z]);}}
+function buildLine(){
+  var st=DATA.stations, pts=[[L.x0, L.y, st[0].zIn]];
+  st.forEach(function(s,i){
+    var th=angles[i]*Math.PI/180, px=s.x+s.r*Math.cos(th), py=s.r*Math.sin(th);
+    arc(s.x, L.rollerY, L.rollerR, Math.PI/2, 0, 8, s.zIn, pts);       // over the IN pulley, down its +x side
+    var t=tangents(px,py, s.x-L.rollerR, s.x+L.rollerR, L.rollerY, L.sleeveR);   // sleeveR = the arm bearing's groove root
+    var a0=t.p0, a1=t.p1; while(a1<a0) a1+=2*Math.PI;
+    pts.push([t.t1[0],t.t1[1],L.z]);
+    arc(px,py,L.sleeveR,a1,a0,20,L.z,pts);                              // U-turn under the arm bearing, right to left
+    pts.push([t.t0[0],t.t0[1],L.z]);
+    arc(s.x, L.rollerY, L.rollerR, Math.PI, Math.PI/2, 8, s.zOut, pts); // up the -x side, over the OUT pulley
+  });
+  pts.push([L.x1, L.y, st[st.length-1].zOut]);
+  var path=new THREE.CurvePath();
+  for(var i=1;i<pts.length;i++){
+    var a=pts[i-1], b=pts[i]; if(Math.hypot(b[0]-a[0],b[1]-a[1],b[2]-a[2])<1e-3) continue;
+    path.add(new THREE.LineCurve3(new THREE.Vector3(a[0],a[1],a[2]), new THREE.Vector3(b[0],b[1],b[2])));
+  }
+  var geo=new THREE.TubeGeometry(path, 400, 0.3, 6, false);
+  if(lineMesh){lineMesh.geometry.dispose(); lineMesh.geometry=geo;}
+  else {lineMesh=new THREE.Mesh(geo, lineMat); lineMesh.userData.name='Line, 0.3 fluorocarbon'; scene.add(lineMesh);
+        groups.line.push(lineMesh); pickables.push(lineMesh);}
+  lineMesh.visible=vis.line;
+}
+
+/* ---------- state ---------- */
+var angles=[40, 250];      // O1, M2 -- degrees; pin at the angle, fin opposite
+var rate=[13.9430356/28.9841042, 1];    // O1 turns at about half M2's rate
+var vis={rails:true, plate:true, motors:true, rollers:true, line:true};
+var playing=false;
+var ids=['aO1','aM2'];
+function applyAngles(){
+  rotors.forEach(function(g,i){g.rotation.z=angles[i]*Math.PI/180;});
+  ids.forEach(function(id,i){
+    var el=document.getElementById(id); if(document.activeElement!==el) el.value=Math.round(angles[i])%360;
+    document.getElementById('o'+id.slice(1)).textContent=Math.round(angles[i])%360+'°';
+  });
+  buildLine();
+}
+
+/* ---------- camera: a small orbit ---------- */
+var cam={target:new THREE.Vector3(-20,5,10), dist:420, az:0.55, el:0.32};
+var VIEWS={
+  iso:   {t:[-22,4,10],  d:430, az:0.55,  el:0.30},
+  front: {t:[-22,0,10],  d:470, az:0,     el:0},
+  sensor:{t:[0,20.5,7],  d:120, az:0.75,  el:0.42},
+  side:  {t:[0,0,10],    d:330, az:1.5708,el:0.02},
+  back:  {t:[-22,5,0],   d:360, az:2.75,  el:0.22}
+};
+function setView(k){var v=VIEWS[k]; cam.target.set(v.t[0],v.t[1],v.t[2]); cam.dist=v.d; cam.az=v.az; cam.el=v.el;
+  document.querySelectorAll('[data-view]').forEach(function(b){b.setAttribute('aria-pressed', b.dataset.view===k?'true':'false');});}
+function placeCamera(){
+  var ce=Math.cos(cam.el);
+  camera.position.set(cam.target.x+cam.dist*ce*Math.sin(cam.az), cam.target.y+cam.dist*Math.sin(cam.el),
+                      cam.target.z+cam.dist*ce*Math.cos(cam.az));
+  camera.lookAt(cam.target);
+}
+var drag=null;
+cv.addEventListener('contextmenu',function(e){e.preventDefault();});
+cv.addEventListener('pointerdown',function(e){
+  drag={x:e.clientX,y:e.clientY,pan:e.button===2||e.shiftKey}; cv.setPointerCapture(e.pointerId); cv.classList.add('drag');
+  document.querySelectorAll('[data-view]').forEach(function(b){b.setAttribute('aria-pressed','false');});
+});
+cv.addEventListener('pointermove',function(e){
+  if(drag){
+    var dx=e.clientX-drag.x, dy=e.clientY-drag.y; drag.x=e.clientX; drag.y=e.clientY;
+    if(drag.pan){
+      var s=cam.dist/cv.clientHeight*0.9;
+      var right=new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld,0), up=new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld,1);
+      cam.target.addScaledVector(right,-dx*s).addScaledVector(up,dy*s);
+    } else {cam.az-=dx*0.006; cam.el=Math.max(-1.5,Math.min(1.5,cam.el+dy*0.006));}
+  } else pick(e);
+});
+cv.addEventListener('pointerup',function(){drag=null; cv.classList.remove('drag');});
+cv.addEventListener('wheel',function(e){e.preventDefault(); cam.dist=Math.max(40,Math.min(1500,cam.dist*Math.exp(e.deltaY*0.0012)));},{passive:false});
+
+var ray=new THREE.Raycaster(), mouse=new THREE.Vector2(), ro=document.getElementById('readout');
+function pick(e){
+  var r=cv.getBoundingClientRect();
+  mouse.set((e.clientX-r.left)/r.width*2-1, -(e.clientY-r.top)/r.height*2+1);
+  ray.setFromCamera(mouse,camera);
+  var hits=ray.intersectObjects(pickables.filter(function(m){return m.visible&&m.parent.visible!==false;}), false);
+  ro.innerHTML=hits.length?'<b>'+hits[0].object.userData.name+'</b>':'Hover a part to name it.';
+}
+
+/* ---------- controls ---------- */
+document.getElementById('play').addEventListener('click',function(){
+  playing=!playing; this.textContent=playing?'Pause':'Play'; this.setAttribute('aria-pressed',playing?'true':'false');
+});
+ids.forEach(function(id,i){
+  document.getElementById(id).addEventListener('input',function(){angles[i]=+this.value; applyAngles();});
+});
+document.querySelectorAll('[data-view]').forEach(function(b){b.addEventListener('click',function(){setView(b.dataset.view);});});
+document.querySelectorAll('[data-group]').forEach(function(b){
+  b.addEventListener('click',function(){
+    var g=b.dataset.group; vis[g]=!vis[g]; b.setAttribute('aria-pressed',vis[g]?'true':'false');
+    (groups[g]||[]).forEach(function(m){m.visible=vis[g];});
+  });
+});
+
+/* ---------- side tables ---------- */
+var nOk=0;
+document.getElementById('clear').innerHTML=DATA.clear.map(function(c){
+  var v=c[1], cls=v<0.5?'bad':(v<1.0?'warn':'ok'), txt=v<0.5?'clash':(v<1.0?'tight':'clear');
+  if(cls==='ok') nOk++;
+  return '<tr><td>'+c[0]+'</td><td class="v">'+v.toFixed(2)+'<span class="pill '+cls+'">'+txt+'</span></td></tr>';
+}).join('');
+document.getElementById('clearSum').textContent=nOk+' of '+DATA.clear.length+' at 1 mm or more';
+document.getElementById('thread').innerHTML=DATA.stations.map(function(s){
+  return '<tr><td><b>'+s.name+'</b> &nbsp;'+s.order+'</td><td class="v">'+s.fleet.toFixed(1)+'&deg;</td></tr>';
+}).join('');
+document.getElementById('stack').innerHTML=DATA.stack.map(function(s){
+  return '<tr><td>'+s[0]+'</td><td class="v">'+(s[1]===0?'0.0':s[1].toFixed(1))+'</td></tr>';
+}).join('');
+
+/* ---------- loop ---------- */
+function resize(){
+  var w=cv.clientWidth, h=cv.clientHeight;
+  if(cv.width!==Math.round(w*renderer.getPixelRatio())||cv.height!==Math.round(h*renderer.getPixelRatio())){
+    renderer.setSize(w,h,false); camera.aspect=w/h; camera.updateProjectionMatrix();
+  }
+}
+function theme(){renderer.setClearColor(new THREE.Color(css('--stage')||'#DFE6EB'));}
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',theme);
+new MutationObserver(theme).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+
+var last=performance.now();
+function frame(now){
+  var dt=Math.min(0.1,(now-last)/1000); last=now;
+  if(playing){for(var i=0;i<angles.length;i++) angles[i]=(angles[i]+dt*30*rate[i])%360; applyAngles();}
+  resize(); placeCamera(); renderer.render(scene,camera);
+  requestAnimationFrame(frame);
+}
+theme(); setView('iso'); applyAngles(); requestAnimationFrame(frame);
+})();
+</script>

@@ -1,0 +1,738 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Marigram Sandbox</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+:root{
+  --bg:#E6EBEF; --paper:#F6F8FA; --sunk:#DCE3E9;
+  --ink:#0E1D28; --ink2:#46596A; --ink3:#7E93A3;
+  --rule:#C6D2DB; --rule-2:#DCE4EA;
+  --signal:#9C5F17; --signal-soft:rgba(156,95,23,.12);
+  --hw:#0D6A52; --lw:#96431F;
+  --focus:#1F6FB2;
+  --shadow:0 1px 2px rgba(14,29,40,.06), 0 8px 24px -16px rgba(14,29,40,.35);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0A131A; --paper:#101C25; --sunk:#0C161E;
+    --ink:#DEE9F0; --ink2:#9FB4C2; --ink3:#6B8496;
+    --rule:#243544; --rule-2:#1A2833;
+    --signal:#E3A64C; --signal-soft:rgba(227,166,76,.12);
+    --hw:#42C398; --lw:#E28A5C;
+    --focus:#5AAEEA;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0A131A; --paper:#101C25; --sunk:#0C161E;
+  --ink:#DEE9F0; --ink2:#9FB4C2; --ink3:#6B8496;
+  --rule:#243544; --rule-2:#1A2833;
+  --signal:#E3A64C; --signal-soft:rgba(227,166,76,.12);
+  --hw:#42C398; --lw:#E28A5C;
+  --focus:#5AAEEA;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+}
+
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:'Archivo','Helvetica Neue',Arial,sans-serif;
+  font-size:14px; line-height:1.45;
+  -webkit-font-smoothing:antialiased;
+}
+.mono{font-family:'IBM Plex Mono',ui-monospace,Consolas,monospace; font-variant-numeric:tabular-nums}
+
+.wrap{max-width:1240px; margin:0 auto; padding-inline:16px; padding-block:22px 44px}
+
+/* ---------- header ---------- */
+.masthead{display:flex; flex-wrap:wrap; align-items:flex-end; gap:8px 22px; margin-bottom:6px}
+h1{
+  font-size:clamp(23px,3.4vw,31px); font-weight:700; letter-spacing:-.022em;
+  margin:0; text-wrap:balance;
+}
+.kicker{
+  font-family:'IBM Plex Mono',monospace; font-size:10.5px; font-weight:500;
+  letter-spacing:.17em; text-transform:uppercase; color:var(--ink3);
+  margin:0 0 3px;
+}
+.equation{
+  font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink2);
+  padding-bottom:4px;
+}
+.equation b{color:var(--signal); font-weight:600}
+.lede{color:var(--ink2); max-width:66ch; margin:10px 0 0}
+
+/* ---------- presets ---------- */
+.presets{display:flex; flex-wrap:wrap; gap:6px; margin:18px 0 14px; align-items:center}
+.presets .tag{
+  font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--ink3); margin-right:4px;
+}
+.chip{
+  font:500 12.5px/1 'Archivo',sans-serif; color:var(--ink2);
+  background:var(--paper); border:1px solid var(--rule); border-radius:2px;
+  padding:7px 11px; cursor:pointer; transition:border-color .12s, color .12s, background .12s;
+}
+.chip:hover{color:var(--ink); border-color:var(--ink3)}
+.chip[aria-pressed="true"]{background:var(--ink); color:var(--bg); border-color:var(--ink)}
+.chip:focus-visible,.icon-btn:focus-visible,input:focus-visible,.swatch:focus-visible{
+  outline:2px solid var(--focus); outline-offset:2px
+}
+
+/* ---------- stage ---------- */
+.stage{display:grid; grid-template-columns:minmax(0,1fr) 266px; gap:16px; align-items:start}
+@media (max-width:900px){.stage{grid-template-columns:minmax(0,1fr)}}
+
+.card{background:var(--paper); border:1px solid var(--rule); box-shadow:var(--shadow)}
+.card-head{
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:10px 14px; border-bottom:1px solid var(--rule-2);
+}
+.card-head h2{
+  font-family:'IBM Plex Mono',monospace; font-size:10.5px; font-weight:600;
+  letter-spacing:.16em; text-transform:uppercase; color:var(--ink3); margin:0;
+}
+
+.plot-body{padding:6px 6px 0}
+#plot{display:block; width:100%; height:372px; touch-action:none}
+@media (max-width:640px){#plot{height:282px}}
+
+.scrub{
+  display:flex; flex-wrap:wrap; gap:4px 18px; align-items:baseline;
+  padding:9px 14px 11px; border-top:1px solid var(--rule-2);
+  font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink2);
+  min-height:40px;
+}
+.scrub b{color:var(--ink); font-weight:600}
+.scrub .muted{color:var(--ink3)}
+
+/* ---------- toolbar ---------- */
+.toolbar{
+  display:flex; flex-wrap:wrap; gap:10px 20px; align-items:center;
+  padding:11px 14px; border-top:1px solid var(--rule-2);
+}
+.field{display:flex; align-items:center; gap:9px}
+.field > label{
+  font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:.13em;
+  text-transform:uppercase; color:var(--ink3); white-space:nowrap;
+}
+.field output{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink); min-width:56px}
+.check{display:flex; align-items:center; gap:7px; font-size:12.5px; color:var(--ink2); cursor:pointer}
+.check input{accent-color:var(--focus); width:14px; height:14px; cursor:pointer}
+
+input[type=range]{
+  -webkit-appearance:none; appearance:none; background:transparent; cursor:pointer;
+  height:18px; margin:0;
+}
+input[type=range]::-webkit-slider-runnable-track{height:2px; background:var(--rule); border-radius:0}
+input[type=range]::-moz-range-track{height:2px; background:var(--rule)}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none; width:13px; height:13px; border-radius:50%;
+  background:var(--paper); border:2px solid var(--ink2); margin-top:-5.5px;
+}
+input[type=range]::-moz-range-thumb{
+  width:13px; height:13px; border-radius:50%; background:var(--paper); border:2px solid var(--ink2);
+}
+input[type=range]:hover::-webkit-slider-thumb{border-color:var(--ink)}
+input[type=range]:hover::-moz-range-thumb{border-color:var(--ink)}
+
+/* ---------- side ---------- */
+.side{display:flex; flex-direction:column; gap:16px}
+#phasor{display:block; width:100%; height:246px}
+.phasor-body{padding:8px}
+.icon-btn{
+  font:500 11px/1 'IBM Plex Mono',monospace; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--ink2); background:transparent; border:1px solid var(--rule);
+  border-radius:2px; padding:5px 9px; cursor:pointer;
+}
+.icon-btn:hover{color:var(--ink); border-color:var(--ink3)}
+
+.stats{padding:4px 0 2px}
+.stat{
+  display:flex; align-items:baseline; justify-content:space-between; gap:10px;
+  padding:8px 14px; border-bottom:1px solid var(--rule-2);
+}
+.stat:last-child{border-bottom:0}
+.stat .k{font-size:12px; color:var(--ink2)}
+.stat .v{font-family:'IBM Plex Mono',monospace; font-size:13px; font-weight:500; color:var(--ink)}
+.stat.lead{background:var(--sunk)}
+.stat.lead .v{font-size:17px; font-weight:600}
+.form-class{
+  font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--ink3); padding:0 14px 10px; margin-top:-4px;
+}
+
+/* ---------- rack ---------- */
+.rack{margin-top:16px}
+.band{margin-top:14px}
+.band-head{
+  display:flex; align-items:center; gap:10px; padding:0 0 7px;
+  border-bottom:1px solid var(--rule); margin-bottom:2px;
+}
+.band-head h3{
+  font-family:'IBM Plex Mono',monospace; font-size:10.5px; font-weight:600;
+  letter-spacing:.16em; text-transform:uppercase; color:var(--ink2); margin:0;
+}
+.band-head .note{font-size:11.5px; color:var(--ink3); margin-right:auto}
+
+.row{
+  display:grid; align-items:center; gap:0 12px;
+  grid-template-columns:132px minmax(90px,1fr) 62px minmax(90px,1fr) 52px;
+  padding:6px 0; border-bottom:1px solid var(--rule-2);
+}
+.row.off .ampv,.row.off .phv,.row.off .cname{opacity:.4}
+.swatch{
+  display:flex; align-items:center; gap:8px; background:transparent;
+  border:0; padding:0; cursor:pointer; text-align:left; width:100%;
+}
+.dot{width:11px; height:11px; border-radius:50%; flex:none; transition:opacity .12s}
+.row.off .dot{opacity:.22}
+.csym{font-family:'IBM Plex Mono',monospace; font-size:13px; font-weight:600; color:var(--ink); width:32px}
+.cname{font-size:11.5px; color:var(--ink3); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.ampv,.phv{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink2); text-align:right}
+.unit{color:var(--ink3)}
+@media (max-width:720px){
+  .row{grid-template-columns:1fr 56px 1fr 48px; gap:2px 10px}
+  .swatch{grid-column:1/-1; padding-bottom:2px}
+  .cname{white-space:normal}
+}
+
+footer{margin-top:30px; padding-top:16px; border-top:1px solid var(--rule); color:var(--ink3); font-size:12px}
+footer p{max-width:78ch; margin:0 0 7px}
+footer code{font-family:'IBM Plex Mono',monospace; color:var(--ink2)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+
+  <div class="masthead">
+    <div>
+      <p class="kicker">Harmonic tide sandbox</p>
+      <h1>Marigram Sandbox</h1>
+    </div>
+    <p class="equation">h(t) = &Sigma; <b>H</b><sub>i</sub> &middot; cos(&sigma;<sub>i</sub>t &minus; <b>g</b><sub>i</sub>)</p>
+  </div>
+  <p class="lede">Fifteen sine waves, each with a fixed astronomical frequency &sigma; and two knobs you control: amplitude <b>H</b> and phase lag <b>g</b>. Drag them and watch where the high and low waters land.</p>
+
+  <div class="presets">
+    <span class="tag">Start from</span>
+    <button class="chip" data-preset="m2">M2 alone</button>
+    <button class="chip" data-preset="m2s2">M2 + S2</button>
+    <button class="chip" data-preset="semi">Semidiurnal coast</button>
+    <button class="chip" data-preset="diurnal">Diurnal coast</button>
+    <button class="chip" data-preset="mixed">Mixed coast</button>
+    <button class="chip" data-preset="estuary">Shallow estuary</button>
+  </div>
+
+  <div class="stage">
+
+    <div class="card">
+      <div class="card-head">
+        <h2>Tide curve &mdash; constituents overlaid</h2>
+        <span class="mono" style="font-size:11px;color:var(--ink3)" id="spanLabel">7 days</span>
+      </div>
+      <div class="plot-body"><canvas id="plot"></canvas></div>
+
+      <div class="scrub" id="scrub"><span class="muted">Hover or drag across the chart to read the water level and see which constituents are pushing it.</span></div>
+
+      <div class="toolbar">
+        <div class="field">
+          <label for="span">Span</label>
+          <input type="range" id="span" min="0" max="8" step="1" value="4" style="width:118px">
+          <output for="span" id="spanOut">7 d</output>
+        </div>
+        <label class="check"><input type="checkbox" id="showParts" checked> Individual waves</label>
+        <label class="check"><input type="checkbox" id="showM2"> M2-only reference</label>
+        <label class="check"><input type="checkbox" id="showMarks" checked> High / low markers</label>
+      </div>
+    </div>
+
+    <aside class="side">
+
+      <div class="card">
+        <div class="card-head">
+          <h2>Epicycle view</h2>
+          <button class="icon-btn" id="play">Play</button>
+        </div>
+        <div class="phasor-body"><canvas id="phasor"></canvas></div>
+        <div class="stat" style="border-top:1px solid var(--rule-2)">
+          <span class="k">Chain tip &rarr; water level</span>
+          <span class="v" id="phasorH">+0.00 m</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h2>Read-out</h2></div>
+        <div class="stats">
+          <div class="stat lead"><span class="k">Form factor F</span><span class="v" id="formF">0.00</span></div>
+          <div class="form-class" id="formClass">&mdash;</div>
+          <div class="stat"><span class="k">Spring range</span><span class="v" id="springR">0.00 m</span></div>
+          <div class="stat"><span class="k">Neap range</span><span class="v" id="neapR">0.00 m</span></div>
+          <div class="stat"><span class="k">Highest / lowest shown</span><span class="v" id="hilo">&mdash;</span></div>
+          <div class="stat"><span class="k">High waters per day</span><span class="v" id="hwDay">0.00</span></div>
+        </div>
+      </div>
+
+    </aside>
+  </div>
+
+  <div class="rack" id="rack"></div>
+
+  <footer>
+    <p><b>Form factor</b> F = (K1 + O1) / (M2 + S2) is the standard way to classify a coast: below 0.25 semidiurnal, 0.25&ndash;1.5 mixed mainly semidiurnal, 1.5&ndash;3.0 mixed mainly diurnal, above 3.0 diurnal. Watch it move as you drag the diurnal sliders &mdash; the character of a coastline really is just an amplitude ratio.</p>
+    <p>The <b>epicycle view</b> chains each constituent tip-to-tail as a rotating vector: length = amplitude, angle = <code>&sigma;t &minus; g</code>. The horizontal reach of the chain's tip <i>is</i> the water level. This is why gear trains suit tides &mdash; the constituent frequencies come out of an epicyclic decomposition of the Earth&ndash;Moon&ndash;Sun geometry in the first place.</p>
+    <p>Angular speeds &sigma; are the standard Doodson values in degrees per mean solar hour and are fixed. The amplitudes and phase lags in the presets are <b>illustrative of a coastal type, not a surveyed station</b> &mdash; take real ones from NOAA CO-OPS or the UKHO. Astronomical prediction only: no surge, wind or barometric pressure.</p>
+  </footer>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+var CONS = [
+  {s:'M2', n:'Principal lunar',            w:28.9841042, b:'semi',  c:['#0F5C9E','#5AAEEA']},
+  {s:'S2', n:'Principal solar',            w:30.0000000, b:'semi',  c:['#2E86C8','#7FC3F0']},
+  {s:'N2', n:'Lunar elliptic',             w:28.4397295, b:'semi',  c:['#56A4DC','#A2D5F5']},
+  {s:'K2', n:'Luni-solar',                 w:30.0821373, b:'semi',  c:['#8AC2E9','#C3E4F8']},
+  {s:'K1', n:'Luni-solar diurnal',         w:15.0410686, b:'diur',  c:['#6B3FA0','#A98BE0']},
+  {s:'O1', n:'Principal lunar diurnal',    w:13.9430356, b:'diur',  c:['#8B5EC0','#C0A4EC']},
+  {s:'P1', n:'Principal solar diurnal',    w:14.9589314, b:'diur',  c:['#A583D4','#D2BFF3']},
+  {s:'Q1', n:'Lunar elliptic diurnal',     w:13.3986609, b:'diur',  c:['#C0A8E3','#E0D3F8']},
+  {s:'M4', n:'Overtide of M2',             w:57.9682084, b:'shal',  c:['#1E7A52','#4FC493']},
+  {s:'MS4',n:'Lunisolar quarter-diurnal',  w:58.9841042, b:'shal',  c:['#35996B','#6FD6AB']},
+  {s:'M6', n:'Sixth-diurnal overtide',     w:86.9523127, b:'shal',  c:['#59B489','#93E3C2']},
+  {s:'Mf', n:'Lunar fortnightly',          w: 1.0980331, b:'long',  c:['#9A6B1E','#D9A64F']},
+  {s:'Mm', n:'Lunar monthly',              w: 0.5443747, b:'long',  c:['#B58838','#E6BC72']},
+  {s:'Ssa',n:'Solar semiannual',           w: 0.0821373, b:'long',  c:['#C4A05A','#EFD49A']},
+  {s:'Sa', n:'Solar annual',               w: 0.0410686, b:'long',  c:['#D2B884','#F5E3BC']}
+];
+var IDX={}; CONS.forEach(function(c,i){IDX[c.s]=i;});
+
+var BANDS=[
+  {k:'semi', t:'Semidiurnal band', n:'two highs a day — periods near 12 h'},
+  {k:'diur', t:'Diurnal band',     n:'one high a day — periods near 24 h'},
+  {k:'shal', t:'Shallow-water overtides', n:'harmonics of M2 — these bend the curve out of shape'},
+  {k:'long', t:'Long-period band', n:'fortnightly to annual — they shift the whole sea up and down'}
+];
+
+var PAL={
+  light:{grid:'#DCE4EA',gridDay:'#BCCAD4',axis:'#7E93A3',text:'#46596A',dim:'#7E93A3',
+         sum:'#9C5F17',fill:'rgba(156,95,23,0.09)',ghost:'#7E93A3',
+         hw:'#0D6A52',lw:'#96431F',datum:'#BCCAD4',paper:'#F6F8FA',sunk:'#DCE3E9',ink:'#0E1D28'},
+  dark: {grid:'#1A2833',gridDay:'#2B3F4E',axis:'#6B8496',text:'#9FB4C2',dim:'#6B8496',
+         sum:'#E3A64C',fill:'rgba(227,166,76,0.10)',ghost:'#6B8496',
+         hw:'#42C398',lw:'#E28A5C',datum:'#2B3F4E',paper:'#101C25',sunk:'#0C161E',ink:'#DEE9F0'}
+};
+function mode(){
+  var a=document.documentElement.getAttribute('data-theme');
+  if(a==='dark') return 'dark';
+  if(a==='light') return 'light';
+  return window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
+}
+function P(){return PAL[mode()];}
+function col(c){return c.c[mode()==='dark'?1:0];}
+
+var PRESETS={
+  m2:{M2:[1.00,0]},
+  m2s2:{M2:[1.00,0], S2:[0.35,0]},
+  semi:{M2:[1.00,0],S2:[0.25,20],N2:[0.21,350],K2:[0.07,20],
+        K1:[0.10,120],O1:[0.07,105],P1:[0.03,118],Q1:[0.02,100],
+        M4:[0.03,60],MS4:[0.01,80],M6:[0.01,120],
+        Mf:[0.02,0],Mm:[0.01,0],Ssa:[0.03,250],Sa:[0.06,200]},
+  diurnal:{M2:[0.10,0],S2:[0.04,30],N2:[0.02,350],K2:[0.01,30],
+           K1:[0.45,0],O1:[0.42,350],P1:[0.15,0],Q1:[0.08,345],
+           Mf:[0.02,0],Sa:[0.05,190]},
+  mixed:{M2:[0.55,0],S2:[0.14,25],N2:[0.13,345],K2:[0.04,25],
+         K1:[0.38,100],O1:[0.24,85],P1:[0.12,98],Q1:[0.05,80],
+         M4:[0.02,40],Sa:[0.05,200]},
+  estuary:{M2:[1.60,0],S2:[0.40,25],N2:[0.32,350],K2:[0.11,25],
+           K1:[0.12,120],O1:[0.08,105],
+           M4:[0.35,150],MS4:[0.14,170],M6:[0.18,40],
+           Mf:[0.02,0],Sa:[0.05,200]}
+};
+
+var SPANS=[1,2,3,4,5,7,10,14,30];
+var st={amp:[],ph:[],on:[],span:7,parts:true,ghost:false,marks:true,cursor:null,t0:3.1,playing:false,preset:'semi'};
+
+function applyPreset(key){
+  var p=PRESETS[key]||{};
+  CONS.forEach(function(c,i){
+    var v=p[c.s];
+    st.amp[i]=v?v[0]:0;
+    st.ph[i] =v?v[1]:0;
+    st.on[i] =!!v && v[0]>0;
+  });
+  st.preset=key;
+  document.querySelectorAll('.chip[data-preset]').forEach(function(b){
+    b.setAttribute('aria-pressed', b.dataset.preset===key?'true':'false');
+  });
+}
+
+/* ---------- model ---------- */
+var D2R=Math.PI/180;
+function terms(){
+  var a=[];
+  for(var i=0;i<CONS.length;i++) if(st.on[i]&&st.amp[i]>0)
+    a.push({i:i,A:st.amp[i],w:CONS[i].w*D2R,g:st.ph[i]*D2R});
+  return a;
+}
+function h(T,t){var s=0; for(var k=0;k<T.length;k++) s+=T[k].A*Math.cos(T[k].w*t-T[k].g); return s;}
+function scaleMax(){
+  var s=0; for(var i=0;i<CONS.length;i++) if(st.on[i]) s+=st.amp[i];
+  return Math.max(0.5, s*1.06);
+}
+function extrema(T,t1){
+  var out=[]; if(!T.length) return out;
+  var dt=Math.max(1/60, t1/24000), y0=h(T,-dt), y1=h(T,0), y2;
+  for(var t=dt;t<=t1;t+=dt){
+    y2=h(T,t+dt);
+    if((y1>y0&&y1>=y2)||(y1<y0&&y1<=y2)){
+      var den=y0-2*y1+y2, o=den!==0?0.5*(y0-y2)/den:0;
+      if(o>-1&&o<1) out.push({t:t+o*dt, y:y1-0.25*(y0-y2)*o, high:y1>y0});
+    }
+    y0=y1; y1=y2;
+  }
+  return out;
+}
+
+/* ---------- canvas plumbing ---------- */
+function fit(cv){
+  var r=cv.getBoundingClientRect(), d=window.devicePixelRatio||1;
+  cv.width=Math.max(1,Math.round(r.width*d)); cv.height=Math.max(1,Math.round(r.height*d));
+  var x=cv.getContext('2d'); x.setTransform(d,0,0,d,0,0);
+  return {ctx:x,w:r.width,h:r.height};
+}
+function fmtT(hr){
+  var d=Math.floor(hr/24)+1, r=hr-(d-1)*24, hh=Math.floor(r), mm=Math.round((r-hh)*60);
+  if(mm===60){mm=0;hh++;} if(hh===24){hh=0;d++;}
+  return 'D'+d+' '+(hh<10?'0':'')+hh+':'+(mm<10?'0':'')+mm;
+}
+function sgn(v){return (v>=0?'+':'−')+Math.abs(v).toFixed(2);}
+
+/* ---------- main plot ---------- */
+var plot=document.getElementById('plot');
+function drawPlot(){
+  var f=fit(plot), c=f.ctx, W=f.w, H=f.h, p=P();
+  c.clearRect(0,0,W,H);
+  var L=44, R=12, Tp=12, B=26, pw=W-L-R, ph=H-Tp-B;
+  if(pw<10||ph<10) return;
+
+  var span=st.span*24, T=terms(), S=scaleMax();
+  var X=function(t){return L+t/span*pw;}, Y=function(v){return Tp+ph/2-v/S*(ph/2);};
+
+  c.fillStyle=p.paper; c.fillRect(L,Tp,pw,ph);
+
+  /* grid */
+  var hourStep = span<=48?6: span<=120?12:24;
+  c.lineWidth=1;
+  for(var t=0;t<=span+0.01;t+=hourStep){
+    var day=(t%24===0);
+    c.strokeStyle=day?p.gridDay:p.grid;
+    c.beginPath(); c.moveTo(Math.round(X(t))+.5,Tp); c.lineTo(Math.round(X(t))+.5,Tp+ph); c.stroke();
+  }
+  var vstep = S>3?1: S>1.2?0.5: S>0.6?0.25:0.1;
+  c.font='500 10px "IBM Plex Mono",monospace'; c.textAlign='right'; c.textBaseline='middle';
+  for(var v=-Math.floor(S/vstep)*vstep; v<=S; v+=vstep){
+    if(Math.abs(v)>S) continue;
+    var yy=Math.round(Y(v))+.5;
+    c.strokeStyle=Math.abs(v)<1e-9?p.datum:p.grid;
+    c.beginPath(); c.moveTo(L,yy); c.lineTo(L+pw,yy); c.stroke();
+    c.fillStyle=Math.abs(v)<1e-9?p.text:p.dim;
+    c.fillText(v.toFixed(vstep<0.5?2:1),L-7,Y(v));
+  }
+  c.save(); c.translate(11,Tp+ph/2); c.rotate(-Math.PI/2);
+  c.textAlign='center'; c.fillStyle=p.dim;
+  c.font='500 9.5px "IBM Plex Mono",monospace'; c.fillText('METRES ABOVE MEAN LEVEL',0,0); c.restore();
+
+  /* day labels */
+  c.textAlign='center'; c.textBaseline='top'; c.fillStyle=p.dim;
+  c.font='500 10px "IBM Plex Mono",monospace';
+  var lblStep = span<=72?12: span<=168?24: span<=360?48:120;
+  for(var t2=0;t2<=span-0.01;t2+=lblStep){
+    var lab, lx;
+    if(lblStep>=24){ lab='Day '+Math.round(t2/24+1); lx=X(Math.min(t2+lblStep/2,span)); }
+    else { lab=fmtT(t2).slice(3); lx=X(t2); }
+    if(lx<L+8||lx>L+pw-8) continue;
+    c.fillText(lab, lx, Tp+ph+7);
+  }
+
+  c.save(); c.beginPath(); c.rect(L,Tp,pw,ph); c.clip();
+
+  var N=Math.max(320,Math.round(pw*2)), i, k, tt;
+
+  /* individual constituents */
+  if(st.parts){
+    c.lineWidth=1.3; c.globalAlpha=0.72;
+    for(k=0;k<T.length;k++){
+      var tm=T[k];
+      c.strokeStyle=col(CONS[tm.i]); c.beginPath();
+      for(i=0;i<=N;i++){
+        tt=i/N*span;
+        var yv=tm.A*Math.cos(tm.w*tt-tm.g);
+        i?c.lineTo(X(tt),Y(yv)):c.moveTo(X(tt),Y(yv));
+      }
+      c.stroke();
+    }
+    c.globalAlpha=1;
+  }
+
+  /* M2-only ghost */
+  if(st.ghost && st.on[0]){
+    c.strokeStyle=p.ghost; c.lineWidth=1.4; c.setLineDash([5,4]); c.beginPath();
+    for(i=0;i<=N;i++){
+      tt=i/N*span;
+      var g2=st.amp[0]*Math.cos(CONS[0].w*D2R*tt-st.ph[0]*D2R);
+      i?c.lineTo(X(tt),Y(g2)):c.moveTo(X(tt),Y(g2));
+    }
+    c.stroke(); c.setLineDash([]);
+  }
+
+  /* the sum */
+  var pts=new Array(N+1);
+  for(i=0;i<=N;i++){tt=i/N*span; pts[i]=[X(tt),Y(h(T,tt))];}
+  c.beginPath(); c.moveTo(pts[0][0],Y(0));
+  for(i=0;i<=N;i++) c.lineTo(pts[i][0],pts[i][1]);
+  c.lineTo(pts[N][0],Y(0)); c.closePath();
+  c.fillStyle=p.fill; c.fill();
+  c.beginPath();
+  for(i=0;i<=N;i++) i?c.lineTo(pts[i][0],pts[i][1]):c.moveTo(pts[i][0],pts[i][1]);
+  c.strokeStyle=p.sum; c.lineWidth=2.4; c.lineJoin='round'; c.stroke();
+
+  /* markers */
+  var ex=extrema(T,span), labels = st.span<=4;
+  if(st.marks){
+    c.font='500 10px "IBM Plex Mono",monospace'; c.textAlign='center';
+    for(k=0;k<ex.length;k++){
+      var e=ex[k], mx=X(e.t), my=Y(e.y), up=e.high, mc=up?p.hw:p.lw;
+      c.fillStyle=mc; c.beginPath();
+      if(up){c.moveTo(mx,my-10);c.lineTo(mx-4.6,my-3.4);c.lineTo(mx+4.6,my-3.4);}
+      else  {c.moveTo(mx,my+10);c.lineTo(mx-4.6,my+3.4);c.lineTo(mx+4.6,my+3.4);}
+      c.closePath(); c.fill();
+      if(labels){
+        c.textBaseline=up?'bottom':'top';
+        c.fillText(e.y.toFixed(2), mx, up?my-12:my+12);
+        c.fillStyle=p.dim;
+        c.fillText(fmtT(e.t).slice(3), mx, up?my-23:my+23);
+      }
+    }
+  }
+
+  /* cursor */
+  if(st.cursor!==null){
+    var ct=st.cursor, cx=X(ct);
+    c.strokeStyle=p.text; c.lineWidth=1; c.setLineDash([2,3]);
+    c.beginPath(); c.moveTo(cx+.5,Tp); c.lineTo(cx+.5,Tp+ph); c.stroke(); c.setLineDash([]);
+    if(st.parts) for(k=0;k<T.length;k++){
+      var tk=T[k], yv2=tk.A*Math.cos(tk.w*ct-tk.g);
+      c.fillStyle=col(CONS[tk.i]); c.beginPath(); c.arc(cx,Y(yv2),2.6,0,6.2832); c.fill();
+    }
+    c.fillStyle=p.sum; c.beginPath(); c.arc(cx,Y(h(T,ct)),4.4,0,6.2832); c.fill();
+    c.strokeStyle=p.paper; c.lineWidth=1.6; c.stroke();
+  }
+  c.restore();
+
+  c.strokeStyle=p.gridDay; c.lineWidth=1;
+  c.strokeRect(L+.5,Tp+.5,pw-1,ph-1);
+
+  updateStats(T,ex,span);
+}
+
+/* ---------- epicycle panel ---------- */
+var pha=document.getElementById('phasor');
+function drawPhasor(){
+  var f=fit(pha), c=f.ctx, W=f.w, H=f.h, p=P();
+  c.clearRect(0,0,W,H);
+  var T=terms(), S=scaleMax();
+  var cx=W*0.5, cy=H*0.52, rad=Math.min(W,H)*0.40, k=rad/S;
+  var t=st.cursor===null?st.t0:st.cursor;
+
+  c.strokeStyle=p.grid; c.lineWidth=1;
+  c.beginPath(); c.arc(cx,cy,rad,0,6.2832); c.stroke();
+  c.beginPath(); c.moveTo(cx-rad-4,cy); c.lineTo(cx+rad+4,cy); c.stroke();
+
+  var x=cx, y=cy, hx=0;
+  for(var i=0;i<T.length;i++){
+    var tm=T[i], a=tm.w*t-tm.g;
+    var nx=x+Math.cos(a)*tm.A*k, ny=y-Math.sin(a)*tm.A*k;
+    c.strokeStyle=col(CONS[tm.i]); c.lineWidth=1.9; c.lineCap='round';
+    c.beginPath(); c.moveTo(x,y); c.lineTo(nx,ny); c.stroke();
+    x=nx; y=ny; hx+=Math.cos(a)*tm.A;
+  }
+  c.lineCap='butt';
+
+  /* projection of the chain tip onto the horizontal = water level */
+  c.strokeStyle=p.dim; c.lineWidth=1; c.setLineDash([2,3]);
+  c.beginPath(); c.moveTo(x,y); c.lineTo(x,cy); c.stroke(); c.setLineDash([]);
+  c.strokeStyle=p.sum; c.lineWidth=3.2;
+  c.beginPath(); c.moveTo(cx,cy); c.lineTo(cx+hx*k,cy); c.stroke();
+  c.fillStyle=p.sum; c.beginPath(); c.arc(cx+hx*k,cy,3.6,0,6.2832); c.fill();
+  c.fillStyle=p.text; c.beginPath(); c.arc(x,y,2.8,0,6.2832); c.fill();
+
+  c.font='500 9.5px "IBM Plex Mono",monospace'; c.fillStyle=p.dim;
+  c.textAlign='center'; c.textBaseline='top';
+  c.fillText(fmtT(t), cx, cy+rad+9);
+
+  document.getElementById('phasorH').textContent=sgn(hx)+' m';
+}
+
+/* ---------- read-outs ---------- */
+function eff(s){var i=IDX[s]; return st.on[i]?st.amp[i]:0;}
+function updateStats(T,ex,span){
+  var m2=eff('M2'), s2=eff('S2'), den=m2+s2;
+  var F=den>0?(eff('K1')+eff('O1'))/den:0;
+  document.getElementById('formF').textContent=den>0?F.toFixed(2):'—';
+  var cls = den<=0?'No semidiurnal energy':
+            F<0.25?'Semidiurnal — two near-equal tides a day':
+            F<1.5 ?'Mixed, mainly semidiurnal':
+            F<3.0 ?'Mixed, mainly diurnal':'Diurnal — one tide a day';
+  document.getElementById('formClass').textContent=cls;
+  var n2=eff('N2');
+  document.getElementById('springR').textContent=(2*(m2+s2+n2)).toFixed(2)+' m';
+  document.getElementById('neapR').textContent=(2*Math.max(0,m2-s2)).toFixed(2)+' m';
+
+  var hi=null,lo=null,nh=0;
+  for(var i=0;i<ex.length;i++){
+    if(ex[i].high){nh++; if(hi===null||ex[i].y>hi) hi=ex[i].y;}
+    else if(lo===null||ex[i].y<lo) lo=ex[i].y;
+  }
+  document.getElementById('hilo').textContent = hi===null?'—':(sgn(hi)+' / '+sgn(lo));
+  document.getElementById('hwDay').textContent=(nh/(span/24)).toFixed(2);
+}
+
+function updateScrub(){
+  var el=document.getElementById('scrub');
+  if(st.cursor===null){
+    el.innerHTML='<span class="muted">Hover or drag across the chart to read the water level and see which constituents are pushing it.</span>';
+    return;
+  }
+  var T=terms(), t=st.cursor, tot=h(T,t);
+  var parts=T.map(function(k){
+    return {s:CONS[k.i].s, v:k.A*Math.cos(k.w*t-k.g), c:col(CONS[k.i])};
+  }).sort(function(a,b){return Math.abs(b.v)-Math.abs(a.v);}).slice(0,5);
+  var html='<span><span class="muted">'+fmtT(t)+'</span>&nbsp;&nbsp;<b>'+sgn(tot)+' m</b></span>';
+  html+='<span class="muted">of which</span>';
+  parts.forEach(function(p2){
+    html+='<span style="color:'+p2.c+'">'+p2.s+' '+sgn(p2.v)+'</span>';
+  });
+  el.innerHTML=html;
+}
+
+/* ---------- rack ---------- */
+function buildRack(){
+  var rack=document.getElementById('rack'), html='';
+  BANDS.forEach(function(b){
+    html+='<div class="band"><div class="band-head"><h3>'+b.t+'</h3><span class="note">'+b.n+'</span>'+
+          '<button class="icon-btn" data-solo="'+b.k+'">Solo</button></div>';
+    CONS.forEach(function(c,i){
+      if(c.b!==b.k) return;
+      html+='<div class="row" data-i="'+i+'">'+
+        '<button class="swatch" data-tog="'+i+'" aria-pressed="true" title="Mute / unmute '+c.s+'">'+
+          '<span class="dot" style="background:'+col(c)+'"></span>'+
+          '<span class="csym">'+c.s+'</span><span class="cname">'+c.n+'</span></button>'+
+        '<input type="range" data-amp="'+i+'" min="0" max="1.8" step="0.005" aria-label="'+c.s+' amplitude">'+
+        '<span class="ampv" data-av="'+i+'">0.000<span class="unit"> m</span></span>'+
+        '<input type="range" data-ph="'+i+'" min="0" max="359" step="1" aria-label="'+c.s+' phase lag">'+
+        '<span class="phv" data-pv="'+i+'">0<span class="unit">°</span></span>'+
+      '</div>';
+    });
+    html+='</div>';
+  });
+  rack.innerHTML=html;
+
+  rack.addEventListener('input',function(e){
+    var t=e.target;
+    if(t.dataset.amp!==undefined){st.amp[+t.dataset.amp]=+t.value;}
+    else if(t.dataset.ph!==undefined){st.ph[+t.dataset.ph]=+t.value;}
+    else return;
+    clearPreset(); syncRack(); render();
+  });
+  rack.addEventListener('click',function(e){
+    var tg=e.target.closest('[data-tog]'), so=e.target.closest('[data-solo]');
+    if(tg){var i=+tg.dataset.tog; st.on[i]=!st.on[i]; clearPreset(); syncRack(); render();}
+    else if(so){
+      var band=so.dataset.solo, any=CONS.some(function(c,j){return c.b===band&&!st.on[j];});
+      CONS.forEach(function(c,j){st.on[j]= c.b===band ? true : (any?false:st.on[j]);});
+      if(!any) CONS.forEach(function(c,j){if(c.b!==band) st.on[j]=false;});
+      clearPreset(); syncRack(); render();
+    }
+  });
+}
+function clearPreset(){
+  st.preset=null;
+  document.querySelectorAll('.chip[data-preset]').forEach(function(b){b.setAttribute('aria-pressed','false');});
+}
+function syncRack(){
+  CONS.forEach(function(c,i){
+    var row=document.querySelector('.row[data-i="'+i+'"]'); if(!row) return;
+    row.classList.toggle('off',!st.on[i]);
+    row.querySelector('[data-tog]').setAttribute('aria-pressed',st.on[i]?'true':'false');
+    row.querySelector('.dot').style.background=col(c);
+    var a=row.querySelector('[data-amp]'), p=row.querySelector('[data-ph]');
+    if(document.activeElement!==a) a.value=st.amp[i];
+    if(document.activeElement!==p) p.value=st.ph[i];
+    row.querySelector('[data-av]').innerHTML=st.amp[i].toFixed(3)+'<span class="unit"> m</span>';
+    row.querySelector('[data-pv]').innerHTML=Math.round(st.ph[i])+'<span class="unit">°</span>';
+  });
+}
+
+/* ---------- interaction ---------- */
+function tFromEvent(e){
+  var r=plot.getBoundingClientRect(), L=44, R=12, pw=r.width-L-R;
+  var x=(e.clientX!==undefined?e.clientX:e.touches[0].clientX)-r.left-L;
+  if(pw<=0) return null;
+  return Math.max(0,Math.min(1,x/pw))*st.span*24;
+}
+['pointermove','pointerdown'].forEach(function(ev){
+  plot.addEventListener(ev,function(e){
+    st.cursor=tFromEvent(e); if(st.cursor===null) return;
+    e.preventDefault(); render();
+  });
+});
+plot.addEventListener('pointerleave',function(){st.cursor=null; render();});
+
+document.querySelectorAll('.chip[data-preset]').forEach(function(b){
+  b.addEventListener('click',function(){applyPreset(b.dataset.preset); syncRack(); render();});
+});
+var spanIn=document.getElementById('span');
+spanIn.addEventListener('input',function(){
+  st.span=SPANS[+spanIn.value];
+  document.getElementById('spanOut').textContent=st.span+' d';
+  document.getElementById('spanLabel').textContent=st.span+(st.span===1?' day':' days');
+  render();
+});
+document.getElementById('showParts').addEventListener('change',function(e){st.parts=e.target.checked; render();});
+document.getElementById('showM2').addEventListener('change',function(e){st.ghost=e.target.checked; render();});
+document.getElementById('showMarks').addEventListener('change',function(e){st.marks=e.target.checked; render();});
+
+var playBtn=document.getElementById('play'), raf=null, last=0;
+playBtn.addEventListener('click',function(){
+  st.playing=!st.playing; playBtn.textContent=st.playing?'Pause':'Play';
+  if(st.playing){last=performance.now(); raf=requestAnimationFrame(step);}
+  else if(raf){cancelAnimationFrame(raf); raf=null;}
+});
+function step(now){
+  var dt=(now-last)/1000; last=now;
+  st.t0=(st.t0+dt*3)%(st.span*24);
+  if(st.cursor===null) drawPhasor();
+  raf=requestAnimationFrame(step);
+}
+
+function render(){drawPlot(); drawPhasor(); updateScrub();}
+
+var ro=new ResizeObserver(function(){render();});
+ro.observe(plot); ro.observe(pha);
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',function(){syncRack(); render();});
+new MutationObserver(function(){syncRack(); render();})
+  .observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+
+buildRack();
+applyPreset('semi');
+syncRack();
+render();
+})();
+</script>
+
+</body></html>
