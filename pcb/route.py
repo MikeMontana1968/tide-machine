@@ -22,7 +22,8 @@ MARGIN = 0.07
 EDGE_CLEAR = 0.3
 HOLE_KEEPOUT = 3.3
 VIA = {"small": (0.6, 0.3), "power": (0.8, 0.4)}
-TCLS = {"Default": (0.25, 0.2), "Motor": (0.4, 0.2), "Supply": (0.5, 0.2), "Power": (1.0, 0.25), "Gnd": (0.5, 0.25)}
+TCLS = {"Default": design.DEFAULT, **{k: (w, c) for k, (w, c, _) in design.NETCLASS.items()}}
+TCLS.setdefault("Gnd", (0.5, 0.25))
 QCLS = {f"T_{k}": (w / 2, c) for k, (w, c) in TCLS.items()}
 QCLS.update({"V_small": (0.3, 0.2), "V_power": (0.4, 0.25)})
 LAYERS = ["F.Cu", "B.Cu"]
@@ -35,8 +36,7 @@ VIA_COST = 8.0
 def netclass(net):
     if net == "GND":
         return ("Gnd",) + TCLS["Gnd"]
-    name, w, c = design.netclass(net)
-    return name, w, c
+    return design.netclass(net)
 
 class Router:
     def __init__(self, data):

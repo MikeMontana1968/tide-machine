@@ -1,10 +1,9 @@
 Mouser Part Number,Manufacturer Part Number,Manufacturer,Quantity,Description,Customer Part Number,Notes
-356-ESP32-DEVKITC32E,ESP32-DevKitC-32E,Espressif Systems,2,"ESP32 dev board, WROOM-32E",(plugs into J1/J2),"Must be a WROOM board (32E or 32D), never WROVER: WROVER reserves GPIO16/17. Backorder? ESP32-DevKitC-32D works too."
-,SSW-119-01-T-S,Samtec,3,"Socket strip 1x19, 2.54 mm, through hole: the ESP32 socket","J1, J2",Any 1x19 (or 1x20 cut down) 2.54 mm female header about 8.5 mm tall will do.
-,MCP23017-E/SP,Microchip,3,"I/O expander, I2C, DIP-28 (0.3 in)","U2, U3",
+,SSW-109-01-T-S,Samtec,3,"Socket strip 1x9, 2.54 mm, through hole: the ESP32-C6 socket","J1, J2",Any 1x9 2.54 mm female header about 8.5 mm tall will do. (The Waveshare ESP32-C6-LCD-1.47 itself is bought separately.)
+,MCP23017-E/SP,Microchip,4,"I/O expander, I2C, DIP-28 (0.3 in)","U2, U3, U8",
 511-ULN2803A,ULN2803A,STMicroelectronics,4,"8x Darlington array, DIP-18","U4, U5, U6",
 ,SN74AHCT245N,Texas Instruments,2,"Octal buffer, TTL inputs, DIP-20",U7,
-,110-43-328-41-001000,Mill-Max,2,"DIP socket 28-pin, 0.300 in rows","U2, U3",0.3 in (skinny) -- not the 0.6 in 28-pin.
+,110-43-328-41-001000,Mill-Max,3,"DIP socket 28-pin, 0.300 in rows","U2, U3, U8",0.3 in (skinny) -- not the 0.6 in 28-pin.
 ,110-43-318-41-001000,Mill-Max,3,"DIP socket 18-pin, 0.300 in",U4-U6,
 ,110-43-320-41-001000,Mill-Max,1,"DIP socket 20-pin, 0.300 in",U7,
 ,IRLIB9343PBF,Infineon,2,"P-channel MOSFET, logic level, -55 V, TO-220 FullPAK",Q1,
@@ -12,9 +11,9 @@ Mouser Part Number,Manufacturer Part Number,Manufacturer,Quantity,Description,Cu
 ,1N5819G,onsemi,5,"Schottky diode 1 A 40 V, DO-41","D1, D2",
 ,MF-R250,Bourns,2,"PTC resettable fuse 2.5 A hold, radial, 5.1 mm leads",F1,
 ,EEU-FR1C102,Panasonic,2,"Electrolytic 1000 uF 16 V, 10 x 16 mm, 5 mm pitch",C1,
-,C320C104K5R5TA,KEMET,25,"Ceramic 100 nF 50 V X7R, radial, 2.54 mm leads",C5-C7 + Hall carriers,
+,C320C104K5R5TA,KEMET,25,"Ceramic 100 nF 50 V X7R, radial, 2.54 mm leads",C5-C8 + Hall carriers,
 ,MFR-25FBF52-1K,YAGEO,10,Resistor 1 k 1/4 W 1% metal film,"R5, R6, R8",
-,MFR-25FBF52-10K,YAGEO,10,Resistor 10 k 1/4 W 1% metal film,"R3, R4, R7",
+,MFR-25FBF52-10K,YAGEO,10,Resistor 10 k 1/4 W 1% metal film,"R3, R4, R7, R9",
 ,MFR-25FBF52-4K7,YAGEO,10,Resistor 4.7 k 1/4 W 1% metal film,"R1, R2",
 ,4608X-101-103LF,Bourns,2,"Resistor network 7x 10 k bussed, SIP-8",RN2,
 ,4609X-101-103LF,Bourns,2,"Resistor network 8x 10 k bussed, SIP-9",RN1,

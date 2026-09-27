@@ -118,7 +118,7 @@ code{font-family:'IBM Plex Mono',monospace; color:var(--ink2)}
   </div>
 
   <h2>Mouser order</h2>
-  <p class="sub">The electronics as {{NMOUSER}} lines of manufacturer part numbers, in <b>mouser_bom.csv</b>: upload it to Mouser's BOM Tool (mouser.com/bom), which matches each part and prices the cart. Quantities include spares. Motors, the calendar motor, the PCB, bearings, magnets and hardware come from elsewhere.</p>
+  <p class="sub">The electronics as {{NMOUSER}} lines of manufacturer part numbers, in <b>mouser_bom.csv</b>: upload it to Mouser's BOM Tool (mouser.com/bom), which matches each part and prices the cart. Quantities include spares. The ESP32-C6 board, motors, the calendar motor, the PCB, bearings, magnets and hardware come from elsewhere.</p>
   <div class="card scroll">
     <table>
       <thead><tr><th scope="col">Part</th><th scope="col">Qty</th><th scope="col">What it is</th></tr></thead>
@@ -134,10 +134,10 @@ code{font-family:'IBM Plex Mono',monospace; color:var(--ink2)}
     <div class="scroll diagram">
 <svg viewBox="0 0 1120 720" role="img" aria-labelledby="wd-t wd-d">
 <title id="wd-t">Tide machine wiring diagram</title>
-<desc id="wd-d">A through-hole main board carries an ESP32 in a socket, two MCP23017 expanders driving three ULN2803A motor drivers for six 28BYJ-48 sockets, a 74AHCT245 driving the BKA30D-R5 calendar motor's coils directly, and a P-channel MOSFET that PWMs the motors' 5 V. Seven Hall latches plug into the board's bottom edge.</desc>
+<desc id="wd-d">A through-hole main board carries an ESP32-C6 display board in a socket and three MCP23017 expanders: two drive three ULN2803A motor drivers for six 28BYJ-48 sockets and read the station Hall latches; the third drives a 74AHCT245 that powers the BKA30D-R5 calendar motor's coils and reads the year and moon latches. A P-channel MOSFET PWMs the motors' 5 V.</desc>
 
 <rect x="8" y="8" width="1104" height="530" rx="8" fill="none" stroke="currentColor" stroke-opacity=".35" stroke-dasharray="6 5"/>
-<text class="s" x="20" y="530">main board · 127 × 81.3 mm · all through-hole</text>
+<text class="s" x="20" y="530">main board · 140 × 81.3 mm · all through-hole</text>
 
 <!-- supply and hold switch -->
 <rect class="blk" x="20" y="20" width="180" height="62" rx="3"/>
@@ -156,20 +156,26 @@ code{font-family:'IBM Plex Mono',monospace; color:var(--ink2)}
 <g transform="translate(140,278)"><rect class="flagh" x="0" y="-9" width="54" height="16" rx="3"/><text class="flagtxt" x="7" y="3">HOLD</text></g>
 
 <!-- ESP32 -->
-<rect class="blk" x="270" y="120" width="200" height="370" rx="3"/>
-<text class="t" x="282" y="144">ESP32-DevKitC-32E</text>
-<text class="s" x="282" y="160">in 2 × 1×19 sockets</text>
+<rect class="blk" x="270" y="120" width="200" height="250" rx="3"/>
+<text class="t" x="282" y="144">ESP32-C6-LCD-1.47</text>
+<text class="s" x="282" y="160">in 2 × 1×9 sockets</text>
 <text class="p" x="282" y="186">5V</text><g transform="translate(222,182)"><rect class="flag5" x="0" y="-9" width="44" height="16" rx="3"/><text class="flagtxt" x="7" y="3">+5V</text></g>
 <text class="s" x="306" y="186">via 1N5819</text>
 <text class="p" x="282" y="212">3V3 out</text><g transform="translate(222,208)"><rect class="flag3" x="0" y="-9" width="44" height="16" rx="3"/><text class="flagtxt" x="7" y="3">3V3</text></g>
-<text class="p" x="282" y="262">GPIO25 PWM</text>
-<text class="p" x="282" y="402">GPIO32 year</text>
-<text class="p" x="282" y="428">GPIO33 moon</text>
-<text class="p" x="458" y="172" text-anchor="end">GPIO21 SDA</text>
-<text class="p" x="458" y="198" text-anchor="end">GPIO22 SCL</text>
-<text class="p" x="458" y="234" text-anchor="end">GPIO27 INT</text>
-<text class="s" x="282" y="458">calendar coils:</text>
-<text class="p" x="282" y="478">16 17 18 19 · 23 4 13 26</text>
+<text class="p" x="282" y="262">GPIO2 PWM</text>
+<text class="p" x="458" y="172" text-anchor="end">GPIO19 SDA</text>
+<text class="p" x="458" y="198" text-anchor="end">GPIO18 SCL</text>
+<text class="p" x="458" y="234" text-anchor="end">GPIO20 INT A</text>
+<text class="p" x="458" y="352" text-anchor="end">GPIO23 INT B</text>
+<text class="s" x="282" y="318">LCD, SD card, RGB LED</text>
+<text class="s" x="282" y="334">stay on board</text>
+
+<!-- MCP23017 0x22 (calendar) -->
+<rect class="blk" x="270" y="395" width="200" height="105" rx="3"/>
+<text class="t" x="282" y="419">MCP23017 · 0x22</text>
+<text class="p" x="282" y="441">GPB0 year · GPB1 moon</text>
+<text class="p" x="458" y="463" text-anchor="end">INTB</text>
+<text class="p" x="458" y="485" text-anchor="end">GPA0–7 coils</text>
 
 <!-- MCP23017 0x20 -->
 <rect class="blk" x="560" y="20" width="190" height="210" rx="3"/>
@@ -213,8 +219,8 @@ code{font-family:'IBM Plex Mono',monospace; color:var(--ink2)}
 <g transform="translate(1040,490)"><rect class="flag3" x="0" y="-9" width="40" height="16" rx="3"/><text class="flagtxt" x="6" y="3">3V3</text></g>
 
 <!-- calendar Hall sockets -->
-<rect class="blk" x="20" y="380" width="180" height="46" rx="3"/><text class="t" x="32" y="400">Year Hall socket</text><text class="s" x="32" y="416">10 k&#937; pull-up</text>
-<rect class="blk" x="20" y="440" width="180" height="46" rx="3"/><text class="t" x="32" y="460">Moon Hall socket</text><text class="s" x="32" y="476">10 k&#937; pull-up</text>
+<rect class="blk" x="20" y="380" width="180" height="46" rx="3"/><text class="t" x="32" y="400">Year Hall socket</text><text class="s" x="32" y="416">&#8594; 0x22 GPB0</text>
+<rect class="blk" x="20" y="440" width="180" height="46" rx="3"/><text class="t" x="32" y="460">Moon Hall socket</text><text class="s" x="32" y="476">&#8594; 0x22 GPB1</text>
 
 <!-- calendar drive -->
 <rect class="blk" x="560" y="505" width="190" height="30" rx="3"/>
@@ -257,11 +263,14 @@ code{font-family:'IBM Plex Mono',monospace; color:var(--ink2)}
 <text class="p" x="806" y="450">/5</text>
 <!-- wires: PWM -->
 <path class="w pwm" d="M270 258 H212 V248 H200"/>
-<!-- wires: calendar Halls -> ESP32 -->
-<path class="w int" d="M200 403 H270"/>
-<path class="w int" d="M200 463 H240 V424 H270"/>
+<!-- wires: calendar Halls -> MCP 0x22 -->
+<path class="w int" d="M200 403 H240 V437 H270"/>
+<path class="w int" d="M200 463 H250 V445 H270"/>
+<!-- wires: I2C to MCP 0x22, its interrupt back to the ESP32 -->
+<path class="w i2c" d="M515 302 V520 H476 V430 H470"/>
+<path class="w int" d="M470 459 H490 V348 H470"/>
 <!-- wires: ESP32 -> 74AHCT245 -> BKA30D-R5 -->
-<path class="w cal" d="M470 470 H500 V520 H560"/><text class="p" x="508" y="512">/8</text>
+<path class="w cal" d="M470 481 H540 V520 H560"/><text class="p" x="544" y="512">/8</text>
 <path class="w cal" d="M750 520 H1000 V580"/><text class="p" x="872" y="512">/8 · 5 V coil drive</text>
 <!-- wires: off-board -->
 <path class="w sig" d="M145 580 V540"/><path class="w int" d="M425 580 V540"/>
@@ -271,7 +280,7 @@ code{font-family:'IBM Plex Mono',monospace; color:var(--ink2)}
       <span><i class="sw" style="background:var(--wi2c)"></i>I&#178;C</span>
       <span><i class="sw" style="background:var(--wsig)"></i>stepper phases (4 per motor)</span>
       <span><i class="sw" style="background:var(--wint)"></i>Hall outputs and interrupt</span>
-      <span><i class="sw" style="background:var(--wcal)"></i>calendar coils</span>
+      <span><i class="sw" style="background:var(--wcal)"></i>calendar coils (via the 0x22 expander)</span>
       <span><i class="sw" style="background:var(--whold)"></i>PWM / HOLD rail</span>
       <span><i class="sw" style="background:var(--w5v)"></i>+5V</span>
       <span><i class="sw" style="background:var(--w3v3)"></i>3V3</span>
@@ -281,9 +290,9 @@ code{font-family:'IBM Plex Mono',monospace; color:var(--ink2)}
   <div class="notes">
     <div class="note-card"><h3>Power budget</h3><p>Six 28BYJ-48 draw about <b>200 mA each</b> with two coils on: 1.2 A at 100% duty, about 0.7 A at the 60% hold. Add the ESP32 (0.25 A), one BKA30D-R5 motor at a time (0.04 A) and Hall latches (0.02 A): <b>about 1.5 A peak</b>. The 5 V 3 A supply leaves headroom.</p></div>
     <div class="note-card"><h3>Hold switch</h3><p>The P-channel switch sits on the motors' 5 V, not their ground, so the ULN2803A logic ground stays solid. When it opens, the 1N5819 carries the coil current, so the rail can't swing below ground. The datasheet's 59&#8211;118 mN&#183;m friction torque hints the motors may hold unpowered; <b>run the holding-torque test first</b> and leave this out if they do.</p></div>
-    <div class="note-card"><h3>Hall timing</h3><p>The 0x21 MCP23017 raises <b>INTB</b> on any station latch edge; the ESP32 timestamps the interrupt and reads INTCAP to see which station passed. The year and moon latches go straight to ESP32 interrupts. The machine turns one way, so each station always reports the same edge.</p></div>
-    <div class="note-card"><h3>Logic levels</h3><p>MCP23017s and Hall latches run at 3.3 V; ULN2803A inputs switch fine from 3.3 V. The calendar's coils are driven at 5 V by the <b>74AHCT245</b>, whose TTL-level inputs accept 3.3 V. Step <b>one gauge motor at a time</b> and leave the coils off between moves: that keeps the chip inside its 75 mA supply limit, and the gauge motors hold position unpowered.</p></div>
-    <div class="note-card"><h3>USB and the supply</h3><p>The <b>1N5819</b> between the 5 V bus and the ESP32's 5V pin keeps a plugged-in USB cable from back-feeding the motor supply, and the supply from back-feeding your computer.</p></div>
+    <div class="note-card"><h3>Hall timing</h3><p>The 0x21 MCP23017 raises <b>INTB</b> on any station latch edge (ESP32 GPIO20), and the 0x22 does the same for the year and moon latches (GPIO23); the ESP32 timestamps the interrupt and reads INTCAP to see which latch passed. The machine turns one way, so each station always reports the same edge.</p></div>
+    <div class="note-card"><h3>Logic levels</h3><p>MCP23017s and Hall latches run at 3.3 V; ULN2803A inputs switch fine from 3.3 V. The calendar's coils are driven at 5 V by the <b>74AHCT245</b>, whose TTL-level inputs take the 0x22 expander's 3.3 V outputs. Step <b>one gauge motor at a time</b> and leave the coils off between moves: that keeps the chip inside its 75 mA supply limit, and the gauge motors hold position unpowered.</p></div>
+    <div class="note-card"><h3>USB and the supply</h3><p>The <b>1N5819</b> between the 5 V bus and the ESP32-C6 board's 5V pin keeps a plugged-in USB cable from back-feeding the motor supply, and the supply from back-feeding your computer.</p></div>
     <div class="note-card"><h3>Faceplate</h3><p>Must be <b>aluminium, never steel</b>: the latches look through it at the magnets. Each station gets a window at 12 o'clock, r 20.5, with two M2 holes for the sensor carrier. The window grows from 3.4 mm square to fit the TO-92 latch (to be re-cut in the Rev M plate).</p></div>
   </div>
 

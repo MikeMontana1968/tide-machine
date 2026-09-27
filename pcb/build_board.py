@@ -19,7 +19,7 @@ GRID = 0.254
 MM = pcbnew.FromMM
 KI_SAFE = {"◄": "<", "⊕": "(+)"}          # glyphs the stroke font may lack
 _sp = os.path.join(HERE, "solid_pads.json")
-SOLID = {tuple(x) for x in json.load(open(_sp))} if os.path.exists(_sp) else {("J1", "1")}
+SOLID = {tuple(x) for x in json.load(open(_sp))} if os.path.exists(_sp) else set()
 
 def V(x, y):
     return pcbnew.VECTOR2I(MM(x + OX), MM(y + OY))
@@ -120,8 +120,8 @@ def zone(board, net, layer, pts, rule_area=False):
     board.Add(z)
     return z
 
-def build():
-    board = pcbnew.NewBoard(BOARD)
+def build(zones=True, path=BOARD):
+    board = pcbnew.NewBoard(path)
     rules(board)
     open(BOARD.replace(".kicad_pcb", ".kicad_dru"), "w").write(DRU)
     nets = {}
@@ -162,8 +162,9 @@ def build():
             circle(board, pcbnew.F_SilkS, (x, y), r, 0.15)
     edge = 0.5
     outline = [(edge, edge), (W - edge, edge), (W - edge, H - edge), (edge, H - edge)]
-    for layer in (pcbnew.F_Cu, pcbnew.B_Cu):
-        zone(board, nets["GND"], layer, outline)
+    if zones:
+        for layer in (pcbnew.F_Cu, pcbnew.B_Cu):
+            zone(board, nets["GND"], layer, outline)
     # no copper under the DevKit's antenna end
     for layer in (pcbnew.F_Cu, pcbnew.B_Cu):
         z = zone(board, None, layer, design.ANTENNA_KEEPOUT, rule_area=True)
@@ -173,8 +174,9 @@ def build():
         ring = [(hx + 3.3 * math.cos(2 * math.pi * k / 24), hy + 3.3 * math.sin(2 * math.pi * k / 24)) for k in range(24)]
         for layer in (pcbnew.F_Cu, pcbnew.B_Cu):
             zone(board, None, layer, ring, rule_area=True)
-    pcbnew.SaveBoard(BOARD, board)
-    export_pads(board)
+    pcbnew.SaveBoard(path, board)
+    if path == BOARD:
+        export_pads(board)
     return board
 
 def export_pads(board):
@@ -245,8 +247,57 @@ def apply():
     export_zones(board)
     print(f"applied {len(r['tracks'])} tracks, {len(r['vias'])} vias; zones filled")
 
+ROUTE_IN = os.path.join(HERE, "route_in.kicad_pcb")
+DSN, SES = os.path.join(HERE, "tide_main.dsn"), os.path.join(HERE, "tide_main.ses")
+
+def dsn():
+    """Specctra design for Freerouting: the board without its pours, and without the GND net (the pours carry it)"""
+    board = build(zones=False, path=ROUTE_IN)
+    if not pcbnew.ExportSpecctraDSN(board, DSN):
+        raise SystemExit("DSN export failed")
+    s = open(DSN, encoding="utf8").read()
+    for key in ("(net GND", '(net "GND"'):
+        i = s.find(key)
+        if i >= 0:
+            depth, j = 0, i
+            while True:
+                if s[j] == "(":
+                    depth += 1
+                elif s[j] == ")":
+                    depth -= 1
+                    if depth == 0:
+                        break
+                j += 1
+            s = s[:i] + s[j + 1:]
+    import re
+    s = re.sub(r"(\(class\s+\S+[^()]*?)\sGND(?=[\s)])", r"", s)
+    open(DSN, "w", encoding="utf8").write(s)
+    print("wrote", DSN)
+
+def ses():
+    """read Freerouting's session back and store its tracks and vias as routes.json"""
+    board = build(zones=False, path=ROUTE_IN)
+    if not pcbnew.ImportSpecctraSES(board, SES):
+        raise SystemExit("SES import failed")
+    tracks, vias = [], []
+    mm = lambda v: round(pcbnew.ToMM(v), 4)
+    for t in board.GetTracks():
+        if t.GetClass() == "PCB_VIA":
+            vias.append(dict(net=t.GetNetname(), c=[mm(t.GetPosition().x) - OX, mm(t.GetPosition().y) - OY],
+                             d=mm(t.GetWidth(pcbnew.F_Cu)), drill=mm(t.GetDrillValue())))
+        else:
+            tracks.append(dict(net=t.GetNetname(), a=[mm(t.GetStart().x) - OX, mm(t.GetStart().y) - OY],
+                               b=[mm(t.GetEnd().x) - OX, mm(t.GetEnd().y) - OY], w=mm(t.GetWidth()),
+                               layer="F.Cu" if t.GetLayer() == pcbnew.F_Cu else "B.Cu"))
+    json.dump(dict(tracks=tracks, vias=vias, failed=[]), open(os.path.join(HERE, "routes.json"), "w"), indent=0)
+    print(f"SES: {len(tracks)} tracks, {len(vias)} vias -> routes.json")
+
 if __name__ == "__main__":
-    if "--apply" in sys.argv:
+    if "--dsn" in sys.argv:
+        dsn()
+    elif "--ses" in sys.argv:
+        ses()
+    elif "--apply" in sys.argv:
         apply()
     else:
         build()

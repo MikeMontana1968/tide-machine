@@ -232,33 +232,41 @@ All 13 clearances in the fit study and all 26 in the full model are at least 1 m
 62 mm of available travel. No combination of arm angles can reach a stop.
 
 **Drive and electronics** (full detail in the build pack). 28BYJ-48 direct, no reduction, plugged into the main board.
-ESP32 + 2 × MCP23017: 0x20 drives O1, K1, N2, S2; 0x21 drives M2 and the drum and reads the five station latches,
-raising INTB on each edge. Three **ULN2803A** drive the six motors. The BKA30D-R5's coils are driven **directly by a
-74AHCT245** (3.3 V in, 5 V out) from eight ESP32 pins, one gauge motor at a time with the coils off between moves; the
-AX1201728SG microstep driver was dropped (SMD-only, and the calendar creeps ~1°/day, so microsteps bought nothing).
-The calendar latches go straight to ESP32 pins. **PWM hold** through a high-side **P-channel** switch (IRLIB9343,
+**Waveshare ESP32-C6-LCD-1.47** (user's choice, 2026-09-27; 1.47-inch 172 × 320 LCD on board) + **3 × MCP23017**:
+0x20 drives O1, K1, N2, S2; 0x21 drives M2 and the drum and reads the five station latches; 0x22 drives the calendar
+coils and reads the year and moon latches. Each reading expander raises INTB on a latch edge (0x21 → GPIO20, 0x22 →
+GPIO23). The C6 board has only 8 free, safe GPIOs (0, 1, 2, 3, 18, 19, 20, 23: the LCD, SD card, RGB LED and native USB
+take the rest), which is why the third expander exists: the ESP32 uses five pins (18 SCL, 19 SDA, 20, 23, 2 = hold
+PWM), and 1 and 3 go to the expansion header. Three **ULN2803A** drive the six motors. The BKA30D-R5's coils are
+driven **by a 74AHCT245** (3.3 V in from the 0x22 expander, 5 V out), one gauge motor at a time with the coils off
+between moves; the AX1201728SG microstep driver was dropped (SMD-only, and the calendar creeps ~1°/day, so microsteps
+bought nothing). **PWM hold** through a high-side **P-channel** switch (IRLIB9343,
 TO-220, logic level, driven by a 2N3904) on the motors' 5 V, with a 1N5819 freewheel diode, so the ULN2803A logic ground
 stays solid: 60% idle, 100% while stepping. Fit it only if the holding-torque test says the motors need it. 5 V 3 A
-supply through a 2.5 A resettable fuse; about 1.5 A peak. NTP daily. The MCP bit ↔ motor-wire table and the calendar
-GPIO table are in `pcb/design.py` (`MOTOR_BITS`, `CAL_GPIO`); firmware reads them from there.
+supply through a 2.5 A resettable fuse; about 1.5 A peak. NTP daily. The firmware tables are in `pcb/design.py`: `MOTOR_BITS`
+(MCP bit ↔ motor wire), `HALL_BITS`, `CAL_BITS` and `CAL_HALL_BITS` (the 0x22 expander), `ESP_GPIO`. The C6's LCD is
+on the board's top face, so it faces the back of the machine: handy as a status/debug screen from behind.
 
-**Main board** (in progress, 2026-09-26). One **127 × 81.3 mm (5 × 3.2 in)** two-layer board, **all through-hole** (user
-decision: no SMD), on **4 × M3 × 30 standoffs** at the corners, behind the faceplate, clear of the motors (20.5 deep).
-ESP32-DevKitC in two 1 × 19 female headers (socketed, per the user) with **nothing underneath it** (user request; the
-layout check enforces the DevKit's 54.4 × 27.9 outline) and its **USB at the left edge**; DIP chips in sockets; 1/4 W
-resistors standing up; bussed SIP networks for the pull-ups. Grown from 4 × 3 in so it isn't compressed. Edges: six motor sockets across the top (JST-XH 5: the 28BYJ-48's own plug, so the kit's
+**Main board** (rev B, 2026-09-27). One **140 × 81.3 mm (5.5 × 3.2 in)** two-layer board, **all through-hole**
+(user decision: no SMD), on **4 × M3 × 30 standoffs** at the corners, behind the faceplate, clear of the motors
+(20.5 deep). The ESP32-C6-LCD-1.47 sits in two 1 × 9 female headers (rows 17.78 apart; socketed, per the user) with
+**nothing underneath it** (user request; the layout check enforces its 36.4 × 20.3 outline) and its **USB-C at the left
+edge**; no copper under its antenna end. DIP chips in sockets; 1/4 W resistors standing up; bussed SIP networks for the
+pull-ups. Widened from 127 mm for the third expander and some breathing room. Edges: six motor sockets across the top (JST-XH 5: the 28BYJ-48's own plug, so the kit's
 ULN2003 boards go unused), seven Hall sockets along the bottom (JST-XH 3), the calendar (JST-XH 8) and the barrel jack on
-the right, a 1 × 6 expansion header (3V3, GND, SDA, SCL, GPIO14, GPIO34: room for an RTC) on the left. Parts, placement and
+the right, a 1 × 6 expansion header (3V3, GND, SDA, SCL, GPIO1, GPIO3: room for an RTC) on the left. Parts, placement and
 netlist are data in `pcb/design.py`; `python pcb/layout.py` checks courtyards, edges and the DevKit keep-out
 (clean). **`python pcb/silk.py`** draws the silkscreen-only layout: `pcb/silk_layout.png`, and
-`pcb/silk_layout_1to1.pdf` to print at 100% and test-fit real parts (check its 50 mm bar). **Routed and DRC-clean in KiCad 10** (2026-09-27): 708 track segments, 66 signal vias, GND poured on both layers
-with ~100 stitching vias, KiCad's DRC 0 errors / 0 unconnected (2 warnings: the barrel jack's silk runs past the
-edge, as the jack overhangs by design). Fab files: `pcb/tide_main_gerbers.zip` (Gerbers + drill, Protel names, for
-JLCPCB: 2 layers, 1.6 mm, 127 × 81.28, 0.25 mm min track / 0.2 clearance / 0.3 mm via drill, all standard).
+`pcb/silk_layout_1to1.pdf` to print at 100% and test-fit real parts (check its 50 mm bar). **Routed with Freerouting and DRC-clean in KiCad 10** (2026-09-27): 569 track segments, 8 signal vias, GND poured on
+both layers with ~95 stitching vias; KiCad's DRC 0 errors / 0 unconnected (2 warnings: the barrel jack's silk runs past
+the edge, as the jack overhangs by design). Fab files: `pcb/tide_main_gerbers.zip` (Gerbers + drill, Protel names, for
+JLCPCB: 2 layers, 1.6 mm, 140 × 81.28, 0.25 mm min track / 0.2 clearance / 0.3 mm via drill, all standard).
 **`python pcb/make_board.py`** regenerates everything from `design.py`: builds the board in KiCad's Python
-(`build_board.py`), routes it with `route.py` (my own two-layer A* router: Freerouting couldn't be downloaded, as
-every GitHub download host was throttled to ~2 KB/s on that network), pours and stitches ground, loops on KiCad's
-DRC until clean, then plots. `--keep` reuses `routes.json` (silkscreen or rule tweaks without re-routing).
+(`build_board.py`), exports a Specctra DSN without the GND net, runs **Freerouting 2.4.1** headless (jar + a portable
+Java 25 in `~\Tools\freerouting`: Freerouting 2.4 needs Java 25), imports the session, pours and stitches ground,
+loops on KiCad's DRC until clean, then plots. `--own-router` uses `route.py` (my A* router, from when GitHub was
+throttled) instead; `--keep` reuses `routes.json` (silkscreen or rule tweaks without re-routing). Net classes: HOLD/+5V/
+VIN 1.0 mm, ESP_5V 0.5, +3V3 0.3 (narrow enough to pass between 2.54 mm pads), motors 0.4, signals 0.25; GND is poured.
 
 **Line.** ~0.3 mm **fluorocarbon** monofilament. At 0.20 N it's ~1% of breaking strength:
 sub-millimetre creep over sixty days, and elastic stretch is a constant absorbed in the pen
@@ -404,10 +412,13 @@ Everything lives in `C:\Users\mikem\Desktop\tide-machine\` (a git repo).
 15. **Every printed part prints without support** (printability review, 2026-09-26). This removed the hub collar
     and grub screw, split the pen carriage into two flat parts, and made the calendar hand flush with its base
     and 1.5 thick. Keep new parts to the same rule: one flat face, everything else growing up from it.
-16. **One through-hole main board** (2026-09-26): 4 × 3 in behind the plate, everything else wired to it; DIP chips in
+16. **One through-hole main board** (2026-09-26): behind the plate, everything else wired to it; DIP chips in
     sockets, the ESP32 socketed, **no SMD anywhere** (the user can't hand-solder it). That dropped the AX1201728SG for
     direct 74AHCT245 coil drive, moved the Hall latch to the TO-92 package, and replaced the SOT-23 MOSFETs with an
     IRLIB9343 (TO-220) and a 2N3904.
+17. **ESP32-C6-LCD-1.47 with three MCP23017s** (2026-09-27, the user's choice of MCU). Its 8 free GPIOs can't carry
+    the calendar's 8 coil lines directly, so a third expander (0x22) runs the calendar and its two latches, and the
+    ESP32 needs only I²C, two interrupts and the PWM. Board widened to 140 mm.
 
 ---
 
@@ -416,8 +427,9 @@ Everything lives in `C:\Users\mikem\Desktop\tide-machine\` (a git repo).
 - [ ] **Port Rev M into `tide_machine.rb`** (CFG + builders), then regenerate
       `faceplate.py` / `rails.py` outputs and the 3D viewer from it. **Don't order or drill
       Rev L files meanwhile.**
-- [x] ~~Route the main board~~: done in KiCad 10, DRC clean (2026-09-27). Open `pcb/tide_main.kicad_pcb` in KiCad to
-      inspect; regenerate with `python pcb/make_board.py`.
+- [x] ~~Route the main board~~: rev B (ESP32-C6) routed by Freerouting, DRC clean (2026-09-27). Open
+      `pcb/tide_main.kicad_pcb` in KiCad to inspect; regenerate with `python pcb/make_board.py`.
+- [ ] **Firmware for the ESP32-C6:** three MCP23017s at 0x20/0x21/0x22 on GPIO19/18; the tables in `pcb/design.py`.
 - [ ] **Order the PCB:** upload `pcb/tide_main_gerbers.zip` to JLCPCB (2 layers, 1.6 mm, HASL, 5 pcs). Print
       `pcb/silk_layout_1to1.pdf` first and test-fit the XH sockets, jack and TO-220.
 - [ ] **Order parts:** `bom.csv` / the build pack. On arrival, verify the three flagged items (BKA30D-R5 continuous
