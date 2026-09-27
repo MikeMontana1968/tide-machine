@@ -251,7 +251,14 @@ ULN2003 boards go unused), seven Hall sockets along the bottom (JST-XH 3), the c
 the right, a 1 × 6 expansion header (3V3, GND, SDA, SCL, GPIO14, GPIO34: room for an RTC) on the left. Parts, placement and
 netlist are data in `pcb/design.py`; `python pcb/layout.py` checks courtyards, edges and the DevKit keep-out
 (clean). **`python pcb/silk.py`** draws the silkscreen-only layout: `pcb/silk_layout.png`, and
-`pcb/silk_layout_1to1.pdf` to print at 100% and test-fit real parts (check its 50 mm bar). **Not routed yet**: that happens in KiCad with Freerouting (see Open items).
+`pcb/silk_layout_1to1.pdf` to print at 100% and test-fit real parts (check its 50 mm bar). **Routed and DRC-clean in KiCad 10** (2026-09-27): 708 track segments, 66 signal vias, GND poured on both layers
+with ~100 stitching vias, KiCad's DRC 0 errors / 0 unconnected (2 warnings: the barrel jack's silk runs past the
+edge, as the jack overhangs by design). Fab files: `pcb/tide_main_gerbers.zip` (Gerbers + drill, Protel names, for
+JLCPCB: 2 layers, 1.6 mm, 127 × 81.28, 0.25 mm min track / 0.2 clearance / 0.3 mm via drill, all standard).
+**`python pcb/make_board.py`** regenerates everything from `design.py`: builds the board in KiCad's Python
+(`build_board.py`), routes it with `route.py` (my own two-layer A* router: Freerouting couldn't be downloaded, as
+every GitHub download host was throttled to ~2 KB/s on that network), pours and stitches ground, loops on KiCad's
+DRC until clean, then plots. `--keep` reuses `routes.json` (silkscreen or rule tweaks without re-routing).
 
 **Line.** ~0.3 mm **fluorocarbon** monofilament. At 0.20 N it's ~1% of breaking strength:
 sub-millimetre creep over sixty days, and elastic stretch is a constant absorbed in the pen
@@ -336,6 +343,11 @@ Everything lives in `C:\Users\mikem\Desktop\tide-machine\` (a git repo).
 | `pcb/design.py` | **M** | main board as data: parts, KiCad footprints, placement, netlist, net classes, firmware bit tables |
 | `pcb/layout.py`, `pcb/fplib.py`, `pcb/render.py` | **M** | placement checker (courtyards, edges, DevKit keep-out) and preview (`pcb/placement.png`), reading the real KiCad footprints in `pcb/footprints/` |
 | `pcb/silk.py` → `pcb/silk_layout.png` + `_1to1.pdf` | **M** | silkscreen-only layout: outlines, refs and values, connector names and pinouts; the PDF is true scale |
+| `pcb/silk_labels.py` | **M** | the silkscreen labels as data, shared by the preview and the KiCad board |
+| `pcb/make_board.py` | **M** | one command: build → route → pour/stitch → DRC loop → Gerbers, drill, zip, 3D renders |
+| `pcb/build_board.py`, `pcb/route.py` | **M** | KiCad-side board builder (run under KiCad's Python) and the two-layer grid router |
+| `pcb/tide_main.kicad_pcb` (+ `.kicad_pro`, `.kicad_dru`) | **M** | the routed board, openable in KiCad 10 |
+| `pcb/tide_main_gerbers.zip`, `pcb/gerbers/`, `pcb/render_top.png` | **M** | fab files and KiCad's 3D renders |
 | `station_study.py --full` → `revm_model.html` | **M** | the whole machine from the same part code: five stations, calendar, six brackets, pen carriage, drum, frame |
 | `station_study.tmpl.html` | **M** | the viewer template it fills |
 | `kinematics.py` | **M** | line geometry + the firmware inverse (`Station(r).theta(phi)`); the decals use it, and the firmware tables should too |
@@ -404,11 +416,10 @@ Everything lives in `C:\Users\mikem\Desktop\tide-machine\` (a git repo).
 - [ ] **Port Rev M into `tide_machine.rb`** (CFG + builders), then regenerate
       `faceplate.py` / `rails.py` outputs and the 3D viewer from it. **Don't order or drill
       Rev L files meanwhile.**
-- [ ] **Route the main board in KiCad** (next session; KiCad wasn't installable on in-flight Wi-Fi). Install KiCad 10
-      (`winget install --id KiCad.KiCad --source winget`) and Freerouting (needs Java 21). Then write
-      `pcb/build_board.py` for KiCad's Python: load `design.py`, place the footprints, assign nets and net classes,
-      draw the outline and holes, export Specctra DSN → Freerouting → import SES, pour GND on both layers, run DRC,
-      plot Gerbers + drill, zip for the fab. Keep copper pour out from under the DevKit's antenna end (x 47–54).
+- [x] ~~Route the main board~~: done in KiCad 10, DRC clean (2026-09-27). Open `pcb/tide_main.kicad_pcb` in KiCad to
+      inspect; regenerate with `python pcb/make_board.py`.
+- [ ] **Order the PCB:** upload `pcb/tide_main_gerbers.zip` to JLCPCB (2 layers, 1.6 mm, HASL, 5 pcs). Print
+      `pcb/silk_layout_1to1.pdf` first and test-fit the XH sockets, jack and TO-220.
 - [ ] **Order parts:** `bom.csv` / the build pack. On arrival, verify the three flagged items (BKA30D-R5 continuous
       rotation and shaft sizes; V623ZZ groove radius and V angle; DRV5013 variant beside a running motor) before
       designing further around them. Order the PCB only after its DRC is clean.

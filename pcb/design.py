@@ -22,6 +22,9 @@ rising to the right along the bottom row, and the last pin above pin 1.
 BOARD_W, BOARD_H = 127.0, 81.28
 HOLES = [(3.5, 3.5), (123.5, 3.5), (3.5, 77.78), (123.5, 77.78)]      # M3, for 30 mm standoffs to the plate
 DEVKIT = (0.0, 40.152, 54.4, 68.052)     # the DevKit's own outline (54.4 x 27.9): every other part stays out of it
+# no copper under the DevKit's antenna end: beyond the pin-1 pads, and between the socket rows near that end
+ANTENNA_KEEPOUT = [(47.4, 43.4), (51.2, 43.4), (51.2, 40.152), (54.4, 40.152), (54.4, 68.052), (51.2, 68.052),
+                   (51.2, 64.8), (47.4, 64.8)]
 ESP_PIN1_X = 50.038                      # antenna end right; pin 19 at x 4.318 puts the USB end flush with the left edge
 
 FP = {
@@ -35,7 +38,7 @@ FP = {
     "CP10": "Capacitor_THT:CP_Radial_D10.0mm_P5.00mm",
     "DO41": "Diode_THT:D_DO-41_SOD81_P10.16mm_Horizontal",
     "TO220": "Package_TO_SOT_THT:TO-220-3_Vertical",
-    "TO92": "Package_TO_SOT_THT:TO-92_Inline",
+    "TO92": "Package_TO_SOT_THT:TO-92_Inline_Wide",
     "LED3": "LED_THT:LED_D3.0mm",
     "PTC": "Fuse:Fuse_Bourns_MF-RG300",
     "XH3": "Connector_JST:JST_XH_B3B-XH-A_1x03_P2.50mm_Vertical",
@@ -147,7 +150,7 @@ part("F1", "PTC", "PTC 2.5A", "Bourns MF-R250 (2.5 A hold, radial)", 106.0, 68.0
 part("C1", "CP10", "1000uF 10V", "1000 uF 10 V radial, 10 mm dia, 5 mm pitch", 88.0, 60.0, 0, {1: "+5V", 2: "GND"})
 part("Q1", "TO220", "IRLIB9343", "IRLIB9343PBF logic-level P-FET, TO-220", 80.0, 42.5, 0, {1: "Q1_G", 2: "HOLD", 3: "+5V"})
 part("R5", "RV", "1k", "1/4 W", 88.0, 48.5, 0, {1: "Q1_G", 2: "+5V"}, "gate pull-up: 1k so the gate turns off fast at 20 kHz")
-part("Q2", "TO92", "2N3904", "2N3904 NPN, TO-92 (E B C)", 80.5, 49.0, 0, {1: "GND", 2: "Q2_B", 3: "Q1_G"})
+part("Q2", "TO92", "2N3904", "2N3904 NPN, TO-92 (E B C)", 79.9, 49.0, 0, {1: "GND", 2: "Q2_B", 3: "Q1_G"})
 part("R6", "RV", "1k", "1/4 W", 74.5, 49.0, 0, {1: "PWM", 2: "Q2_B"})
 part("R7", "RV", "10k", "1/4 W", 74.5, 53.5, 0, {1: "Q2_B", 2: "GND"}, "holds the motors off while the ESP32 boots")
 part("D2", "DO41", "1N5819", "1N5819 Schottky", 89.3, 42.0, 0, {1: "HOLD", 2: "GND"}, "freewheel path when the PWM switch opens")

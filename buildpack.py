@@ -35,7 +35,7 @@ BOM = [
      "Each holds a latch flat in its plate window, with a 100 nF capacitor across its supply and a 3-core lead to the main board.", ""),
 
     ("Main board", "Printed circuit board", "2-layer, 1.6 mm, 127 × 81.3 mm (5 × 3.2 in), from the Gerbers in pcb/", "1", "5 (the usual minimum)",
-     "Routed in KiCad next; order once its design-rule check is clean. Mounts behind the faceplate on four standoffs.", LATER),
+     "Routed and DRC-clean: upload pcb/tide_main_gerbers.zip to JLCPCB (2 layers, 1.6 mm, HASL). Mounts behind the faceplate on four standoffs.", ""),
     ("Main board", "Microcontroller", "ESP32-DevKitC-32E (ESP32-WROOM-32E)", "1", "2", "Plugs into the socket below.", ""),
     ("Main board", "ESP32 socket", "1 × 19 female header, 2.54 mm pitch, about 8.5 mm tall (Samtec SSW-119-01-T-S)", "2", "3",
      "The DevKit plugs in, so it can be swapped or flashed off the board. Rows are 25.4 mm apart.", ""),
