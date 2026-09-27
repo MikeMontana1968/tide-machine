@@ -98,11 +98,11 @@ code{font-family:'IBM Plex Mono',monospace; color:var(--ink2)}
 <div class="wrap">
   <p class="kicker">Tide machine &middot; Rev M</p>
   <h1>Build Pack</h1>
-  <p class="lede">Everything to order and how it wires together, for the Rev M design: five arm stations and the drum on 28BYJ-48 steppers, a BKA30D-R5 turning the calendar dial, seven Hall latches reading magnet pairs through the aluminium faceplate, and 22 V623ZZ bearings carrying the line. Quantities to order include spares.</p>
+  <p class="lede">Everything to order and how it wires together, for the Rev M design: five arm stations and the drum on 28BYJ-48 steppers, a BKA30D-R5 turning the calendar dial, seven Hall latches reading magnet pairs through the aluminium faceplate, and 22 V623ZZ bearings carrying the line. One through-hole main board behind the faceplate carries all the electronics; everything else plugs into it. Quantities to order include spares.</p>
   <div class="chips">
     <span class="chip"><b>{{NLINES}}</b> order lines</span>
     <span class="chip"><b>{{NVERIFY}}</b> to verify before building around them</span>
-    <span class="chip"><b>1</b> not yet: the faceplate waits for the Ruby port</span>
+    <span class="chip"><b>{{NLATER}}</b> not yet: the faceplate and the main board's Gerbers</span>
     <span class="chip">also in <b>bom.csv</b></span>
   </div>
 
@@ -117,34 +117,50 @@ code{font-family:'IBM Plex Mono',monospace; color:var(--ink2)}
     </table>
   </div>
 
+  <h2>Mouser order</h2>
+  <p class="sub">The electronics as {{NMOUSER}} lines of manufacturer part numbers, in <b>mouser_bom.csv</b>: upload it to Mouser's BOM Tool (mouser.com/bom), which matches each part and prices the cart. Quantities include spares. Motors, the calendar motor, the PCB, bearings, magnets and hardware come from elsewhere.</p>
+  <div class="card scroll">
+    <table>
+      <thead><tr><th scope="col">Part</th><th scope="col">Qty</th><th scope="col">What it is</th></tr></thead>
+      <tbody>
+{{MOUSER}}
+      </tbody>
+    </table>
+  </div>
+
   <h2>Wiring</h2>
-  <p class="sub">Signals are drawn; power is shown as labelled nets. Every GND is common. Numbers in brackets are package pins.</p>
+  <p class="sub">Everything inside the dashed outline is on the main board; the rest plugs into its edge sockets. Power is shown as labelled nets, and every GND is common.</p>
   <div class="card">
     <div class="scroll diagram">
 <svg viewBox="0 0 1120 720" role="img" aria-labelledby="wd-t wd-d">
 <title id="wd-t">Tide machine wiring diagram</title>
-<desc id="wd-d">An ESP32 talks over I2C to two MCP23017 expanders that drive six ULN2003 stepper boards and read five station Hall latches. The ESP32 also drives a 74AHCT245 level shifter feeding an AX1201728SG gauge driver for the BKA30D-R5 calendar motor, reads the year and moon Hall latches directly, and PWMs a P-channel MOSFET that switches the motors' 5 V.</desc>
+<desc id="wd-d">A through-hole main board carries an ESP32 in a socket, two MCP23017 expanders driving three ULN2803A motor drivers for six 28BYJ-48 sockets, a 74AHCT245 driving the BKA30D-R5 calendar motor's coils directly, and a P-channel MOSFET that PWMs the motors' 5 V. Seven Hall latches plug into the board's bottom edge.</desc>
+
+<rect x="8" y="8" width="1104" height="530" rx="8" fill="none" stroke="currentColor" stroke-opacity=".35" stroke-dasharray="6 5"/>
+<text class="s" x="20" y="530">main board · 127 × 81.3 mm · all through-hole</text>
 
 <!-- supply and hold switch -->
 <rect class="blk" x="20" y="20" width="180" height="62" rx="3"/>
-<text class="t" x="32" y="44">5 V 3 A supply</text>
-<text class="s" x="32" y="64">1000 &#181;F across 5 V / GND</text>
+<text class="t" x="32" y="44">5 V jack → fuse</text>
+<text class="s" x="32" y="64">MF-R250, 1000 &#181;F</text>
 <g transform="translate(150,70)"><rect class="flag5" x="0" y="-9" width="44" height="16" rx="3"/><text class="flagtxt" x="7" y="3">+5V</text></g>
 
-<rect class="blk" x="20" y="150" width="180" height="104" rx="3"/>
+<rect class="blk" x="20" y="150" width="180" height="120" rx="3"/>
 <text class="t" x="32" y="174">HOLD switch</text>
-<text class="s" x="32" y="194">AO3401A P-FET</text>
-<text class="s" x="32" y="210">2N7000 gate driver</text>
-<text class="s" x="32" y="226">20 kHz PWM: 100% stepping,</text>
-<text class="s" x="32" y="242">~60% hold</text>
+<text class="s" x="32" y="194">IRLIB9343 P-FET (TO-220)</text>
+<text class="s" x="32" y="210">2N3904 gate driver</text>
+<text class="s" x="32" y="226">1N5819 freewheel</text>
+<text class="s" x="32" y="242">20 kHz PWM: 100% stepping,</text>
+<text class="s" x="32" y="258">~60% hold</text>
 <g transform="translate(150,164)"><rect class="flag5" x="0" y="-9" width="44" height="16" rx="3"/><text class="flagtxt" x="7" y="3">+5V</text></g>
-<g transform="translate(140,262)"><rect class="flagh" x="0" y="-9" width="54" height="16" rx="3"/><text class="flagtxt" x="7" y="3">HOLD</text></g>
+<g transform="translate(140,278)"><rect class="flagh" x="0" y="-9" width="54" height="16" rx="3"/><text class="flagtxt" x="7" y="3">HOLD</text></g>
 
 <!-- ESP32 -->
 <rect class="blk" x="270" y="120" width="200" height="370" rx="3"/>
 <text class="t" x="282" y="144">ESP32-DevKitC-32E</text>
-<text class="p" x="282" y="172">5V</text><g transform="translate(222,168)"><rect class="flag5" x="0" y="-9" width="44" height="16" rx="3"/><text class="flagtxt" x="7" y="3">+5V</text></g>
-<text class="s" x="282" y="186">via 1N5819</text>
+<text class="s" x="282" y="160">in 2 × 1×19 sockets</text>
+<text class="p" x="282" y="186">5V</text><g transform="translate(222,182)"><rect class="flag5" x="0" y="-9" width="44" height="16" rx="3"/><text class="flagtxt" x="7" y="3">+5V</text></g>
+<text class="s" x="306" y="186">via 1N5819</text>
 <text class="p" x="282" y="212">3V3 out</text><g transform="translate(222,208)"><rect class="flag3" x="0" y="-9" width="44" height="16" rx="3"/><text class="flagtxt" x="7" y="3">3V3</text></g>
 <text class="p" x="282" y="262">GPIO25 PWM</text>
 <text class="p" x="282" y="402">GPIO32 year</text>
@@ -152,77 +168,76 @@ code{font-family:'IBM Plex Mono',monospace; color:var(--ink2)}
 <text class="p" x="458" y="172" text-anchor="end">GPIO21 SDA</text>
 <text class="p" x="458" y="198" text-anchor="end">GPIO22 SCL</text>
 <text class="p" x="458" y="234" text-anchor="end">GPIO27 INT</text>
-<text class="p" x="296" y="482">16</text><text class="p" x="326" y="482">17</text><text class="p" x="356" y="482">18</text><text class="p" x="386" y="482">19</text><text class="p" x="416" y="482">23</text>
-<text class="s" x="298" y="466">calendar step / dir / reset</text>
+<text class="s" x="282" y="458">calendar coils:</text>
+<text class="p" x="282" y="478">16 17 18 19 · 23 4 13 26</text>
 
-<!-- MCP23017 #1 -->
+<!-- MCP23017 0x20 -->
 <rect class="blk" x="560" y="20" width="190" height="210" rx="3"/>
-<text class="t" x="572" y="44">MCP23017 #1 &#183; 0x20</text>
+<text class="t" x="572" y="44">MCP23017 &#183; 0x20</text>
 <text class="p" x="572" y="66">SDA (13)</text>
 <text class="p" x="572" y="86">SCL (12)</text>
 <text class="p" x="572" y="106">VDD (9)</text><g transform="translate(628,102)"><rect class="flag3" x="0" y="-9" width="40" height="16" rx="3"/><text class="flagtxt" x="6" y="3">3V3</text></g>
 <text class="s" x="572" y="126">A0&#8211;A2 &#8594; GND</text>
-<text class="p" x="738" y="66" text-anchor="end">GPA0&#8211;3</text>
-<text class="p" x="738" y="111" text-anchor="end">GPA4&#8211;7</text>
-<text class="p" x="738" y="156" text-anchor="end">GPB0&#8211;3</text>
-<text class="p" x="738" y="201" text-anchor="end">GPB4&#8211;7</text>
+<text class="p" x="738" y="66" text-anchor="end">GPA7&#8211;4</text>
+<text class="p" x="738" y="111" text-anchor="end">GPA3&#8211;0</text>
+<text class="p" x="738" y="156" text-anchor="end">GPB7&#8211;4</text>
+<text class="p" x="738" y="201" text-anchor="end">GPB3&#8211;0</text>
 
-<!-- MCP23017 #2 -->
+<!-- MCP23017 0x21 -->
 <rect class="blk" x="560" y="260" width="190" height="240" rx="3"/>
-<text class="t" x="572" y="284">MCP23017 #2 &#183; 0x21</text>
+<text class="t" x="572" y="284">MCP23017 &#183; 0x21</text>
 <text class="p" x="572" y="306">SDA (13)</text>
 <text class="p" x="572" y="326">SCL (12)</text>
 <text class="p" x="572" y="346">VDD (9)</text><g transform="translate(628,342)"><rect class="flag3" x="0" y="-9" width="40" height="16" rx="3"/><text class="flagtxt" x="6" y="3">3V3</text></g>
 <text class="s" x="572" y="366">A0 &#8594; 3V3</text>
 <text class="p" x="572" y="446">INTB (19)</text>
-<text class="p" x="738" y="306" text-anchor="end">GPA0&#8211;3</text>
-<text class="p" x="738" y="351" text-anchor="end">GPA4&#8211;7</text>
+<text class="p" x="738" y="306" text-anchor="end">GPA7&#8211;4</text>
+<text class="p" x="738" y="351" text-anchor="end">GPA3&#8211;0</text>
 <text class="p" x="738" y="436" text-anchor="end">GPB0&#8211;4</text>
 
-<!-- ULN2003 boards -->
-<g>
-<rect class="blk" x="840" y="20" width="260" height="46" rx="3"/><text class="t" x="852" y="40">ULN2003 #1 &#8594; S2</text><text class="s" x="852" y="57">28BYJ-48, IN1&#8211;4</text>
-<rect class="blk" x="840" y="80" width="260" height="46" rx="3"/><text class="t" x="852" y="100">ULN2003 #2 &#8594; N2</text><text class="s" x="852" y="117">28BYJ-48, IN1&#8211;4</text>
-<rect class="blk" x="840" y="140" width="260" height="46" rx="3"/><text class="t" x="852" y="160">ULN2003 #3 &#8594; K1</text><text class="s" x="852" y="177">28BYJ-48, IN1&#8211;4</text>
-<rect class="blk" x="840" y="200" width="260" height="46" rx="3"/><text class="t" x="852" y="220">ULN2003 #4 &#8594; O1</text><text class="s" x="852" y="237">28BYJ-48, IN1&#8211;4</text>
-<rect class="blk" x="840" y="280" width="260" height="46" rx="3"/><text class="t" x="852" y="300">ULN2003 #5 &#8594; M2</text><text class="s" x="852" y="317">28BYJ-48, IN1&#8211;4</text>
-<rect class="blk" x="840" y="340" width="260" height="46" rx="3"/><text class="t" x="852" y="360">ULN2003 #6 &#8594; drum</text><text class="s" x="852" y="377">28BYJ-48, IN1&#8211;4</text>
-</g>
+<!-- ULN2803A drivers, each feeding two motor sockets -->
+<rect class="blk" x="840" y="20" width="260" height="106" rx="3"/><text class="t" x="852" y="42">ULN2803A</text>
+<text class="s" x="852" y="62">1&#8211;4 &#8594; O1 socket</text><text class="s" x="852" y="80">5&#8211;8 &#8594; K1 socket</text><text class="s" x="852" y="112">COM &#8592; HOLD</text>
+<rect class="blk" x="840" y="140" width="260" height="106" rx="3"/><text class="t" x="852" y="162">ULN2803A</text>
+<text class="s" x="852" y="182">1&#8211;4 &#8594; N2 socket</text><text class="s" x="852" y="200">5&#8211;8 &#8594; S2 socket</text><text class="s" x="852" y="232">COM &#8592; HOLD</text>
+<rect class="blk" x="840" y="280" width="260" height="106" rx="3"/><text class="t" x="852" y="302">ULN2803A</text>
+<text class="s" x="852" y="322">1&#8211;4 &#8594; drum socket</text><text class="s" x="852" y="340">5&#8211;8 &#8594; M2 socket</text><text class="s" x="852" y="372">COM &#8592; HOLD</text>
 <g transform="translate(1040,28)"><rect class="flagh" x="0" y="-9" width="54" height="16" rx="3"/><text class="flagtxt" x="7" y="3">HOLD</text></g>
-<text class="bus" x="1094" y="400" text-anchor="end">all six boards: + &#8592; HOLD</text>
+<text class="bus" x="1094" y="404" text-anchor="end">socket pin 5 (red) &#8592; HOLD</text>
 
-<!-- station Hall latches -->
+<!-- station Hall pull-ups -->
 <rect class="blk" x="840" y="418" width="260" height="82" rx="3"/>
-<text class="t" x="852" y="440">5 &#215; Hall latch &#183; DRV5013</text>
-<text class="s" x="852" y="458">S2, N2, K1, O1, M2 &#8594; GPB0&#8211;4</text>
-<text class="s" x="852" y="474">open drain, 10 k&#937; pull-up each</text>
+<text class="t" x="852" y="440">5 &#215; Hall socket</text>
+<text class="s" x="852" y="458">M2, O1, K1, N2, S2 &#8594; GPB0&#8211;4</text>
+<text class="s" x="852" y="474">10 k&#937; bussed pull-ups</text>
 <g transform="translate(1040,490)"><rect class="flag3" x="0" y="-9" width="40" height="16" rx="3"/><text class="flagtxt" x="6" y="3">3V3</text></g>
 
-<!-- calendar Hall latches -->
-<rect class="blk" x="20" y="380" width="180" height="46" rx="3"/><text class="t" x="32" y="400">Year Hall &#183; DRV5013</text><text class="s" x="32" y="416">on the calendar board</text>
-<rect class="blk" x="20" y="440" width="180" height="46" rx="3"/><text class="t" x="32" y="460">Moon Hall &#183; DRV5013</text><text class="s" x="32" y="476">on the calendar board</text>
+<!-- calendar Hall sockets -->
+<rect class="blk" x="20" y="380" width="180" height="46" rx="3"/><text class="t" x="32" y="400">Year Hall socket</text><text class="s" x="32" y="416">10 k&#937; pull-up</text>
+<rect class="blk" x="20" y="440" width="180" height="46" rx="3"/><text class="t" x="32" y="460">Moon Hall socket</text><text class="s" x="32" y="476">10 k&#937; pull-up</text>
 
 <!-- calendar drive -->
-<rect class="blk" x="270" y="560" width="180" height="120" rx="3"/>
-<text class="t" x="282" y="584">74AHCT245</text>
-<text class="s" x="282" y="602">3.3 V &#8594; 5 V buffer</text>
-<text class="s" x="282" y="618">DIR (1) &#8594; 5 V, OE (19) &#8594; GND</text>
-<text class="p" x="282" y="646">A1&#8211;A5 in &#183; B1&#8211;B5 out</text>
-<g transform="translate(398,668)"><rect class="flag5" x="0" y="-9" width="44" height="16" rx="3"/><text class="flagtxt" x="7" y="3">+5V</text></g>
+<rect class="blk" x="560" y="505" width="190" height="30" rx="3"/>
+<text class="t" x="572" y="525">74AHCT245 &#183; 3.3 &#8594; 5 V</text>
 
-<rect class="blk" x="510" y="560" width="200" height="120" rx="3"/>
-<text class="t" x="522" y="584">AX1201728SG</text>
-<text class="s" x="522" y="602">quad gauge driver, step/dir</text>
-<text class="p" x="522" y="630">STEP A &#183; DIR A &#8594; year</text>
-<text class="p" x="522" y="648">STEP B &#183; DIR B &#8594; moon</text>
-<g transform="translate(658,668)"><rect class="flag5" x="0" y="-9" width="44" height="16" rx="3"/><text class="flagtxt" x="7" y="3">+5V</text></g>
+<!-- off-board parts -->
+<rect class="blk" x="20" y="580" width="250" height="104" rx="3"/>
+<text class="t" x="32" y="604">28BYJ-48 × 6</text>
+<text class="s" x="32" y="624">plug into the top-edge sockets</text>
+<text class="s" x="32" y="642">(JST-XH 5, the motor's own plug)</text>
+<text class="s" x="32" y="660">kit ULN2003 boards not used</text>
 
-<rect class="blk" x="770" y="560" width="220" height="120" rx="3"/>
-<text class="t" x="782" y="584">BKA30D-R5</text>
-<text class="s" x="782" y="602">dual concentric gauge stepper</text>
-<text class="p" x="782" y="630">motor A (1&#8211;4) &#8594; outer: year</text>
-<text class="p" x="782" y="648">motor B (1&#8211;4) &#8594; inner: moon</text>
-<text class="s" x="782" y="668">confirm A/B on the bench</text>
+<rect class="blk" x="300" y="580" width="250" height="104" rx="3"/>
+<text class="t" x="312" y="604">DRV5013 × 7 (TO-92)</text>
+<text class="s" x="312" y="624">on perfboard carriers behind</text>
+<text class="s" x="312" y="642">the plate windows; 100 nF each</text>
+<text class="s" x="312" y="660">3-core lead to a JST-XH 3</text>
+
+<rect class="blk" x="770" y="580" width="330" height="104" rx="3"/>
+<text class="t" x="782" y="604">BKA30D-R5 on its carrier</text>
+<text class="s" x="782" y="624">motor A (J5 1&#8211;4) &#8594; outer: year</text>
+<text class="s" x="782" y="642">motor B (J5 5&#8211;8) &#8594; inner: moon</text>
+<text class="s" x="782" y="660">confirm A/B on the bench</text>
 
 <!-- wires: I2C -->
 <path class="w i2c" d="M470 168 H515 V62 H560 M515 168 V302 H560"/>
@@ -230,34 +245,33 @@ code{font-family:'IBM Plex Mono',monospace; color:var(--ink2)}
 <!-- wires: INTB -->
 <path class="w int" d="M560 442 H498 V230 H470"/>
 <!-- wires: MCP -> ULN (4-wire bundles) -->
-<path class="w sig" d="M750 62 H800 V43 H840"/>
-<path class="w sig" d="M750 107 H800 V103 H840"/>
-<path class="w sig" d="M750 152 H800 V163 H840"/>
-<path class="w sig" d="M750 197 H800 V223 H840"/>
-<path class="w sig" d="M750 302 H800 V303 H840"/>
-<path class="w sig" d="M750 347 H800 V363 H840"/>
+<path class="w sig" d="M750 62 H800 V58 H840"/>
+<path class="w sig" d="M750 107 H800 V76 H840"/>
+<path class="w sig" d="M750 152 H800 V178 H840"/>
+<path class="w sig" d="M750 197 H800 V196 H840"/>
+<path class="w sig" d="M750 302 H800 V318 H840"/>
+<path class="w sig" d="M750 347 H800 V336 H840"/>
 <g class="p"><text x="772" y="56">/4</text><text x="772" y="101">/4</text><text x="772" y="146">/4</text><text x="772" y="191">/4</text><text x="772" y="296">/4</text><text x="772" y="341">/4</text></g>
-<!-- wires: station Halls -> MCP #2 -->
+<!-- wires: station Halls -> MCP 0x21 -->
 <path class="w int" d="M840 458 H800 V432 H750"/>
 <text class="p" x="806" y="450">/5</text>
 <!-- wires: PWM -->
-<path class="w pwm" d="M270 258 H212 V232 H200"/>
+<path class="w pwm" d="M270 258 H212 V248 H200"/>
 <!-- wires: calendar Halls -> ESP32 -->
 <path class="w int" d="M200 403 H270"/>
 <path class="w int" d="M200 463 H240 V424 H270"/>
-<!-- wires: ESP32 -> 74AHCT245 -->
-<path class="w cal" d="M300 490 V560 M330 490 V560 M360 490 V560 M390 490 V560 M420 490 V560"/>
-<!-- wires: 74AHCT245 -> AX -> BKA -->
-<path class="w cal" d="M450 620 H510"/><text class="p" x="470" y="612">/5</text>
-<path class="w cal" d="M710 626 H770"/><text class="p" x="728" y="618">/4</text>
-<path class="w cal" d="M710 646 H770"/><text class="p" x="728" y="660">/4</text>
+<!-- wires: ESP32 -> 74AHCT245 -> BKA30D-R5 -->
+<path class="w cal" d="M470 470 H500 V520 H560"/><text class="p" x="508" y="512">/8</text>
+<path class="w cal" d="M750 520 H1000 V580"/><text class="p" x="872" y="512">/8 · 5 V coil drive</text>
+<!-- wires: off-board -->
+<path class="w sig" d="M145 580 V540"/><path class="w int" d="M425 580 V540"/>
 </svg>
     </div>
     <div class="legend">
       <span><i class="sw" style="background:var(--wi2c)"></i>I&#178;C</span>
       <span><i class="sw" style="background:var(--wsig)"></i>stepper phases (4 per motor)</span>
       <span><i class="sw" style="background:var(--wint)"></i>Hall outputs and interrupt</span>
-      <span><i class="sw" style="background:var(--wcal)"></i>calendar step, direction, reset, coils</span>
+      <span><i class="sw" style="background:var(--wcal)"></i>calendar coils</span>
       <span><i class="sw" style="background:var(--whold)"></i>PWM / HOLD rail</span>
       <span><i class="sw" style="background:var(--w5v)"></i>+5V</span>
       <span><i class="sw" style="background:var(--w3v3)"></i>3V3</span>
@@ -265,12 +279,12 @@ code{font-family:'IBM Plex Mono',monospace; color:var(--ink2)}
   </div>
 
   <div class="notes">
-    <div class="note-card"><h3>Power budget</h3><p>Six 28BYJ-48 draw about <b>200 mA each</b> with two coils on: 1.2 A at 100% duty, about 0.7 A at the 60% hold. Add the ESP32 (0.25 A), BKA30D-R5 (0.04 A) and Hall latches (0.02 A): <b>about 1.5 A peak</b>. The 5 V 3 A supply leaves headroom.</p></div>
-    <div class="note-card"><h3>Hold switch</h3><p>The P-channel switch sits on the motors' 5 V, not their ground, so the ULN2003 logic ground stays solid. The datasheet's 59&#8211;118 mN&#183;m friction torque hints the motors may hold unpowered; <b>run the holding-torque test first</b> and leave this out if they do.</p></div>
-    <div class="note-card"><h3>Hall timing</h3><p>MCP23017 #2 raises <b>INTB</b> on any station latch edge; the ESP32 timestamps the interrupt and reads INTCAP to see which station passed. The year and moon latches go straight to ESP32 interrupts. The machine turns one way, so each station always reports the same edge.</p></div>
-    <div class="note-card"><h3>Logic levels</h3><p>MCP23017s and Hall latches run at 3.3 V; ULN2003 inputs switch fine from 3.3 V. The gauge driver runs at 5 V, so its five inputs go through the <b>74AHCT245</b>, whose TTL-level inputs accept 3.3 V.</p></div>
+    <div class="note-card"><h3>Power budget</h3><p>Six 28BYJ-48 draw about <b>200 mA each</b> with two coils on: 1.2 A at 100% duty, about 0.7 A at the 60% hold. Add the ESP32 (0.25 A), one BKA30D-R5 motor at a time (0.04 A) and Hall latches (0.02 A): <b>about 1.5 A peak</b>. The 5 V 3 A supply leaves headroom.</p></div>
+    <div class="note-card"><h3>Hold switch</h3><p>The P-channel switch sits on the motors' 5 V, not their ground, so the ULN2803A logic ground stays solid. When it opens, the 1N5819 carries the coil current, so the rail can't swing below ground. The datasheet's 59&#8211;118 mN&#183;m friction torque hints the motors may hold unpowered; <b>run the holding-torque test first</b> and leave this out if they do.</p></div>
+    <div class="note-card"><h3>Hall timing</h3><p>The 0x21 MCP23017 raises <b>INTB</b> on any station latch edge; the ESP32 timestamps the interrupt and reads INTCAP to see which station passed. The year and moon latches go straight to ESP32 interrupts. The machine turns one way, so each station always reports the same edge.</p></div>
+    <div class="note-card"><h3>Logic levels</h3><p>MCP23017s and Hall latches run at 3.3 V; ULN2803A inputs switch fine from 3.3 V. The calendar's coils are driven at 5 V by the <b>74AHCT245</b>, whose TTL-level inputs accept 3.3 V. Step <b>one gauge motor at a time</b> and leave the coils off between moves: that keeps the chip inside its 75 mA supply limit, and the gauge motors hold position unpowered.</p></div>
     <div class="note-card"><h3>USB and the supply</h3><p>The <b>1N5819</b> between the 5 V bus and the ESP32's 5V pin keeps a plugged-in USB cable from back-feeding the motor supply, and the supply from back-feeding your computer.</p></div>
-    <div class="note-card"><h3>Faceplate</h3><p>Must be <b>aluminium, never steel</b>: the latches look through it at the magnets. Each station gets a 3.4 mm square window at 12 o'clock, r 20.5, with two M2 holes for the sensor board.</p></div>
+    <div class="note-card"><h3>Faceplate</h3><p>Must be <b>aluminium, never steel</b>: the latches look through it at the magnets. Each station gets a window at 12 o'clock, r 20.5, with two M2 holes for the sensor carrier. The window grows from 3.4 mm square to fit the TO-92 latch (to be re-cut in the Rev M plate).</p></div>
   </div>
 
   <h2>Pin map</h2>
@@ -285,6 +299,6 @@ code{font-family:'IBM Plex Mono',monospace; color:var(--ink2)}
 
   <footer>
     <p>Generated by <code>buildpack.py</code> from the Rev M design in <code>RESUME.md</code> and <code>station_study.py</code>; the same data writes <code>bom.csv</code>. Part numbers are what to look up, not endorsements of a seller.</p>
-    <p>The AX1201728SG's package pin numbers are not shown; take them from its datasheet. Which BKA30D-R5 coil set turns which shaft is confirmed on the bench.</p>
+    <p>The main board's parts, placement and netlist live in <code>pcb/design.py</code>; it is routed in KiCad next. Which BKA30D-R5 coil set turns which shaft is confirmed on the bench.</p>
   </footer>
 </div>

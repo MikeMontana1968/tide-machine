@@ -98,11 +98,11 @@ code{font-family:'IBM Plex Mono',monospace; color:var(--ink2)}
 <div class="wrap">
   <p class="kicker">Tide machine &middot; Rev M</p>
   <h1>Build Pack</h1>
-  <p class="lede">Everything to order and how it wires together, for the Rev M design: five arm stations and the drum on 28BYJ-48 steppers, a BKA30D-R5 turning the calendar dial, seven Hall latches reading magnet pairs through the aluminium faceplate, and 22 V623ZZ bearings carrying the line. Quantities to order include spares.</p>
+  <p class="lede">Everything to order and how it wires together, for the Rev M design: five arm stations and the drum on 28BYJ-48 steppers, a BKA30D-R5 turning the calendar dial, seven Hall latches reading magnet pairs through the aluminium faceplate, and 22 V623ZZ bearings carrying the line. One through-hole main board behind the faceplate carries all the electronics; everything else plugs into it. Quantities to order include spares.</p>
   <div class="chips">
-    <span class="chip"><b>45</b> order lines</span>
-    <span class="chip"><b>4</b> to verify before building around them</span>
-    <span class="chip"><b>1</b> not yet: the faceplate waits for the Ruby port</span>
+    <span class="chip"><b>54</b> order lines</span>
+    <span class="chip"><b>3</b> to verify before building around them</span>
+    <span class="chip"><b>2</b> not yet: the faceplate and the main board's Gerbers</span>
     <span class="chip">also in <b>bom.csv</b></span>
   </div>
 
@@ -113,7 +113,7 @@ code{font-family:'IBM Plex Mono',monospace; color:var(--ink2)}
       <thead><tr><th scope="col">Item</th><th scope="col">Need</th><th scope="col">Order</th><th scope="col">Notes</th></tr></thead>
       <tbody>
 <tr class="sec"><th colspan="4" scope="colgroup">Motion</th></tr>
-<tr><td class="item">Stepper + driver board<div class="spec">28BYJ-48 5 V (64:1) with ULN2003 board, sold as a kit</div></td><td class="num">6</td><td class="num">7</td><td class="note">Five stations + the drum. A 10-pack is usually cheaper per unit.</td></tr>
+<tr><td class="item">Stepper motor<div class="spec">28BYJ-48 5 V (64:1), usually sold as a kit with a ULN2003 board</div></td><td class="num">6</td><td class="num">7</td><td class="note">Five stations + the drum. The motors plug straight into the main board; the kit's driver boards aren't needed. A 10-pack is usually cheaper per unit.</td></tr>
 <tr><td class="item">Dual-shaft gauge stepper<span class="pill verify">verify first</span><div class="spec">BKA30D-R5 (continuous 360° version)</div></td><td class="num">1</td><td class="num">2</td><td class="note">Calendar: outer shaft = year dial, inner shaft = moon disc. Confirm both shafts spin all the way round, and measure shaft diameters and lengths, before building around it.</td></tr>
 <tr><td class="item">V-groove bearing<span class="pill verify">verify first</span><div class="spec">V623ZZ, 3 × 12 × 4 mm</div></td><td class="num">22</td><td class="num">25</td><td class="note">12 rail pulleys, 5 arms, 1 pen pulley, 4 pen carriage. Measure the groove root radius (4.8 assumed) and V angle (90° assumed) on arrival.</td></tr>
 <tr><td class="item">Steel rod<div class="spec">3 mm ground stainless (h6), or 1/8″ (3.175 mm) O-1 drill rod</div></td><td class="num">2 × 170 mm</td><td class="num">2 × 300 mm</td><td class="note">Pen guide rods, cut to 170 socket bottom to socket bottom. 4 mm and up won't seat in the V623's groove.</td></tr>
@@ -121,25 +121,34 @@ code{font-family:'IBM Plex Mono',monospace; color:var(--ink2)}
 <tr><td class="item">Monofilament line<div class="spec">0.30 mm fluorocarbon (about 12 lb)</div></td><td class="num">about 2 m</td><td class="num">1 spool</td><td class="note">Not nylon: nylon absorbs moisture and wanders with humidity.</td></tr>
 <tr><td class="item">Crimp sleeves<div class="spec">Aluminium or copper, 0.6–0.8 mm ID, for 0.3 mm line</div></td><td class="num">4</td><td class="num">20</td><td class="note">Crimp, don't knot.</td></tr>
 <tr class="sec"><th colspan="4" scope="colgroup">Sensing</th></tr>
-<tr><td class="item">Hall-effect latch<span class="pill verify">verify first</span><div class="spec">TI DRV5013, SOT-23 (DBZ) package</div></td><td class="num">7</td><td class="num">10</td><td class="note">Five stations + year + moon. Choose a variant that switches at a few mT, so a nearby motor's stray field can't trip it; bench-test one beside a running 28BYJ-48.</td></tr>
+<tr><td class="item">Hall-effect latch<span class="pill verify">verify first</span><div class="spec">TI DRV5013AGQLPG (±6 mT, through-hole TO-92); a few DRV5013BCQLPG (±12 mT) to compare</div></td><td class="num">7</td><td class="num">10</td><td class="note">Five stations + year + moon. Choose a variant that switches at a few mT, so a nearby motor's stray field can't trip it; bench-test one beside a running 28BYJ-48. The TO-92 needs a slightly larger plate window than the old SOT-23 plan.</td></tr>
 <tr><td class="item">Magnets<div class="spec">N52 neodymium disc, 5 × 2 mm, axially magnetised</div></td><td class="num">14 (7 pairs)</td><td class="num">20</td><td class="note">Glued into the pockets in the back of each dial, opposite poles facing the sensor.</td></tr>
-<tr><td class="item">Sensor boards<div class="spec">SOT-23-to-DIP breakout boards (or a small custom PCB, 10 × 16 mm)</div></td><td class="num">7</td><td class="num">10</td><td class="note">Each carries the latch, a 10 kΩ pull-up and a 100 nF capacitor. The chip nests in a window in the faceplate.</td></tr>
-<tr class="sec"><th colspan="4" scope="colgroup">Electronics</th></tr>
-<tr><td class="item">Microcontroller<div class="spec">ESP32-DevKitC-32E (ESP32-WROOM-32E)</div></td><td class="num">1</td><td class="num">2</td><td class="note"></td></tr>
-<tr><td class="item">I/O expander<div class="spec">MCP23017-E/SP, DIP-28</div></td><td class="num">2</td><td class="num">3</td><td class="note">#1 at 0x20 drives four stations; #2 at 0x21 drives M2, the drum, and reads the five station Hall latches.</td></tr>
-<tr><td class="item">Gauge-motor driver<span class="pill verify">verify first</span><div class="spec">AX1201728SG quad micro-step driver, step/dir (VID6606 is equivalent) + SOIC-28 breakout</div></td><td class="num">1</td><td class="num">2</td><td class="note">Drives the BKA30D-R5's two motors. Confirm pinout and input thresholds from its datasheet.</td></tr>
-<tr><td class="item">Level shifter<div class="spec">SN74AHCT245N, DIP-20</div></td><td class="num">1</td><td class="num">2</td><td class="note">3.3 V to 5 V for the gauge driver's step, direction and reset lines.</td></tr>
-<tr><td class="item">P-channel MOSFET<div class="spec">AO3401A, SOT-23 (on a breakout)</div></td><td class="num">1</td><td class="num">3</td><td class="note">PWM hold: switches the motors' 5 V. Fit it if the holding-torque test says you need it.</td></tr>
-<tr><td class="item">N-channel MOSFET<div class="spec">2N7000, TO-92</div></td><td class="num">1</td><td class="num">5</td><td class="note">Gate driver for the P-channel switch.</td></tr>
-<tr><td class="item">Power supply<div class="spec">5 V 3 A regulated, 5.5 × 2.1 mm barrel plug</div></td><td class="num">1</td><td class="num">1</td><td class="note">Peak draw about 1.5 A with every motor energised.</td></tr>
-<tr><td class="item">Barrel jack<div class="spec">5.5 × 2.1 mm, panel or PCB mount</div></td><td class="num">1</td><td class="num">2</td><td class="note"></td></tr>
-<tr><td class="item">Schottky diode<div class="spec">1N5819</div></td><td class="num">1</td><td class="num">5</td><td class="note">Between the 5 V bus and the ESP32's 5 V pin, so USB and the supply never fight.</td></tr>
-<tr><td class="item">Electrolytic capacitor<div class="spec">1000 µF 10 V</div></td><td class="num">1</td><td class="num">2</td><td class="note">Across 5 V and GND near the ULN2003 boards.</td></tr>
-<tr><td class="item">Ceramic capacitors<div class="spec">100 nF</div></td><td class="num">12</td><td class="num">25</td><td class="note">One at every IC and sensor board.</td></tr>
-<tr><td class="item">Resistors<div class="spec">1/4 W: 10 kΩ (×12), 4.7 kΩ (×2), 100 Ω (×1), 100 kΩ (×1)</div></td><td class="num">16</td><td class="num">an assortment</td><td class="note">Hall pull-ups, MCP23017 resets, I²C pull-ups, MOSFET gate.</td></tr>
-<tr><td class="item">Prototype board<div class="spec">Double-sided perfboard, about 70 × 90 mm</div></td><td class="num">2</td><td class="num">3</td><td class="note">Main board; calendar board (carries the BKA30D-R5 and its two Hall latches behind the faceplate).</td></tr>
-<tr><td class="item">Sockets and headers<div class="spec">DIP-28 (×2), DIP-20 (×1) sockets; 2.54 mm headers</div></td><td class="num"></td><td class="num">an assortment</td><td class="note"></td></tr>
-<tr><td class="item">Wire and connectors<div class="spec">3-core 26 AWG + JST-XH 3-pin (Hall runs); hookup wire</div></td><td class="num">7 Hall runs</td><td class="num">JST-XH kit + 5 m wire</td><td class="note"></td></tr>
+<tr><td class="item">Sensor carriers<div class="spec">Cut from the perfboard below, about 10 × 16 mm each</div></td><td class="num">7</td><td class="num"></td><td class="note">Each holds a latch flat in its plate window, with a 100 nF capacitor across its supply and a 3-core lead to the main board.</td></tr>
+<tr class="sec"><th colspan="4" scope="colgroup">Main board</th></tr>
+<tr><td class="item">Printed circuit board<span class="pill later">not yet</span><div class="spec">2-layer, 1.6 mm, 127 × 81.3 mm (5 × 3.2 in), from the Gerbers in pcb/</div></td><td class="num">1</td><td class="num">5 (the usual minimum)</td><td class="note">Routed in KiCad next; order once its design-rule check is clean. Mounts behind the faceplate on four standoffs.</td></tr>
+<tr><td class="item">Microcontroller<div class="spec">ESP32-DevKitC-32E (ESP32-WROOM-32E)</div></td><td class="num">1</td><td class="num">2</td><td class="note">Plugs into the socket below.</td></tr>
+<tr><td class="item">ESP32 socket<div class="spec">1 × 19 female header, 2.54 mm pitch, about 8.5 mm tall (Samtec SSW-119-01-T-S)</div></td><td class="num">2</td><td class="num">3</td><td class="note">The DevKit plugs in, so it can be swapped or flashed off the board. Rows are 25.4 mm apart.</td></tr>
+<tr><td class="item">I/O expander<div class="spec">MCP23017-E/SP, DIP-28</div></td><td class="num">2</td><td class="num">3</td><td class="note">0x20 drives O1, K1, N2, S2; 0x21 drives M2 and the drum and reads the five station Hall latches.</td></tr>
+<tr><td class="item">Motor driver<div class="spec">ULN2803A, DIP-18 (8 Darlingtons with clamp diodes)</div></td><td class="num">3</td><td class="num">4</td><td class="note">Two motors each. The clamp common goes to the switched HOLD rail.</td></tr>
+<tr><td class="item">Calendar driver<div class="spec">SN74AHCT245N, DIP-20</div></td><td class="num">1</td><td class="num">2</td><td class="note">Its eight 5 V outputs drive the BKA30D-R5's coils directly, one motor at a time. The calendar creeps about 1°/day, so microstepping buys nothing.</td></tr>
+<tr><td class="item">IC sockets<div class="spec">DIP-28 (×2), DIP-18 (×3), DIP-20 (×1)</div></td><td class="num">6</td><td class="num">6</td><td class="note"></td></tr>
+<tr><td class="item">P-channel MOSFET<div class="spec">IRLIB9343PBF, TO-220 (logic level: rated at −4.5 V gate)</div></td><td class="num">1</td><td class="num">2</td><td class="note">PWM hold: switches the motors' 5 V. Stands upright; no heatsink at 1.2 A.</td></tr>
+<tr><td class="item">NPN transistor<div class="spec">2N3904, TO-92</div></td><td class="num">1</td><td class="num">5</td><td class="note">Drives the P-FET's gate from the ESP32's 3.3 V.</td></tr>
+<tr><td class="item">Schottky diode<div class="spec">1N5819, DO-41</div></td><td class="num">2</td><td class="num">5</td><td class="note">One feeds the ESP32's 5 V pin (so USB and the supply never fight); one gives the motor current a path when the PWM switch opens.</td></tr>
+<tr><td class="item">Resettable fuse<div class="spec">Bourns MF-R250 (2.5 A hold), radial</div></td><td class="num">1</td><td class="num">2</td><td class="note">Between the jack and the 5 V bus.</td></tr>
+<tr><td class="item">Electrolytic capacitor<div class="spec">1000 µF 10 V radial, 10 mm dia, 5 mm lead pitch</div></td><td class="num">1</td><td class="num">2</td><td class="note"></td></tr>
+<tr><td class="item">Ceramic capacitors<div class="spec">100 nF, 2.5 mm lead pitch</div></td><td class="num">10</td><td class="num">25</td><td class="note">Three on the main board, one on each Hall carrier.</td></tr>
+<tr><td class="item">Resistors<div class="spec">1/4 W, mounted upright: 1 kΩ (×3), 10 kΩ (×3), 4.7 kΩ (×2)</div></td><td class="num">8</td><td class="num">an assortment</td><td class="note">P-FET gate pull-up, transistor base, LED; base pull-down, interrupt and reset pull-ups; I²C pull-ups.</td></tr>
+<tr><td class="item">Resistor networks<div class="spec">Bussed 10 kΩ SIP: Bourns 4608X-101-103LF (8-pin) and 4609X-101-103LF (9-pin)</div></td><td class="num">1 each</td><td class="num">2 each</td><td class="note">Hall pull-ups; pull-downs that hold the calendar coils off while the ESP32 boots.</td></tr>
+<tr><td class="item">LED<div class="spec">3 mm, green</div></td><td class="num">1</td><td class="num">5</td><td class="note">Power indicator.</td></tr>
+<tr><td class="item">Barrel jack<div class="spec">Same Sky PJ-102AH, 5.5 mm, 2.0 mm pin, PCB mount</div></td><td class="num">1</td><td class="num">2</td><td class="note">The 2.0 mm pin is the standard mate for a 5.5 × 2.1 plug.</td></tr>
+<tr><td class="item">Board connectors<div class="spec">JST-XH headers: B5B-XH-A (×6, motors), B3B-XH-A (×7, Halls), B8B-XH-A (×1, calendar)</div></td><td class="num">14</td><td class="num">16</td><td class="note">The 28BYJ-48's own plug fits B5B-XH-A.</td></tr>
+<tr><td class="item">Cable connectors<div class="spec">JST XHP-3 (×7) and XHP-8 (×1) housings, SXH-001T-P0.6 crimps</div></td><td class="num">8 housings</td><td class="num">a JST-XH kit</td><td class="note">For the Hall and calendar leads. A kit with a crimp tool is easiest.</td></tr>
+<tr><td class="item">Expansion header<div class="spec">1 × 6 male, 2.54 mm</div></td><td class="num">1</td><td class="num">1</td><td class="note">3V3, GND, SDA, SCL, GPIO14, GPIO34: room for an RTC later.</td></tr>
+<tr><td class="item">Power supply<div class="spec">5 V 3 A regulated, 5.5 × 2.1 mm plug, centre positive (MEAN WELL GST18U05-P1J)</div></td><td class="num">1</td><td class="num">1</td><td class="note">Peak draw about 1.5 A with every motor energised.</td></tr>
+<tr class="sec"><th colspan="4" scope="colgroup">Off-board wiring</th></tr>
+<tr><td class="item">Prototype board<div class="spec">Double-sided perfboard, about 70 × 90 mm</div></td><td class="num">1</td><td class="num">2</td><td class="note">Calendar carrier (holds the BKA30D-R5 behind the plate) and the seven Hall carriers.</td></tr>
+<tr><td class="item">Wire<div class="spec">3-core 26 AWG for the Hall runs; 8-core (or ribbon) for the calendar</div></td><td class="num">7 Hall runs + 1</td><td class="num">5 m of each</td><td class="note"></td></tr>
 <tr class="sec"><th colspan="4" scope="colgroup">Fasteners</th></tr>
 <tr><td class="item">M3 × 20 + nyloc<div class="spec">Button or socket head</div></td><td class="num">6</td><td class="num">10</td><td class="note">Pulley-bracket axles.</td></tr>
 <tr><td class="item">M3 × 8 button head<div class="spec"></div></td><td class="num">5</td><td class="num">10</td><td class="note">Arm bearing axles.</td></tr>
@@ -151,6 +160,7 @@ code{font-family:'IBM Plex Mono',monospace; color:var(--ink2)}
 <tr><td class="item">M2 × 6 + nut<div class="spec"></div></td><td class="num">30</td><td class="num">50</td><td class="note">Arm to hub, Hall boards, calendar board, index tabs, index hand.</td></tr>
 <tr><td class="item">#4 × 3/4″ flat-head wood screws<div class="spec"></div></td><td class="num">12</td><td class="num">20</td><td class="note">Pulley brackets.</td></tr>
 <tr><td class="item">#6 × 3/4″ wood screws<div class="spec"></div></td><td class="num">14</td><td class="num">25</td><td class="note">Faceplate to rails; end posts.</td></tr>
+<tr><td class="item">M3 × 30 standoffs + M3 × 6 screws<div class="spec">Female-female hex, brass or nylon</div></td><td class="num">4 + 8</td><td class="num">4 + 10</td><td class="note">Main board to the back of the faceplate, clear of the motors (20.5 deep).</td></tr>
 <tr class="sec"><th colspan="4" scope="colgroup">Frame and materials</th></tr>
 <tr><td class="item">Pine 1 × 2<div class="spec">19 × 38 mm actual, 8 ft length</div></td><td class="num">1288 mm</td><td class="num">1 (+1 for mistakes)</td><td class="note">Two rails about 492 mm, two posts 152 mm.</td></tr>
 <tr><td class="item">Faceplate<span class="pill later">not yet</span><div class="spec">1.5 mm (0.063″) 5052 aluminium, laser cut, about 283 × 176 mm</div></td><td class="num">1</td><td class="num">not yet</td><td class="note">The DXF comes from the Ruby port. Never steel: the Hall sensors look through it.</td></tr>
@@ -166,34 +176,80 @@ code{font-family:'IBM Plex Mono',monospace; color:var(--ink2)}
     </table>
   </div>
 
+  <h2>Mouser order</h2>
+  <p class="sub">The electronics as 31 lines of manufacturer part numbers, in <b>mouser_bom.csv</b>: upload it to Mouser's BOM Tool (mouser.com/bom), which matches each part and prices the cart. Quantities include spares. Motors, the calendar motor, the PCB, bearings, magnets and hardware come from elsewhere.</p>
+  <div class="card scroll">
+    <table>
+      <thead><tr><th scope="col">Part</th><th scope="col">Qty</th><th scope="col">What it is</th></tr></thead>
+      <tbody>
+<tr><td class="item">ESP32-DevKitC-32E<div class="spec">Espressif Systems · 356-ESP32-DEVKITC32E</div></td><td class="num">2</td><td class="note">ESP32 dev board, WROOM-32E<br><i>Must be a WROOM board (32E or 32D), never WROVER: WROVER reserves GPIO16/17. Backorder? ESP32-DevKitC-32D works too.</i></td></tr>
+<tr><td class="item">SSW-119-01-T-S<div class="spec">Samtec</div></td><td class="num">3</td><td class="note">Socket strip 1x19, 2.54 mm, through hole: the ESP32 socket<br><i>Any 1x19 (or 1x20 cut down) 2.54 mm female header about 8.5 mm tall will do.</i></td></tr>
+<tr><td class="item">MCP23017-E/SP<div class="spec">Microchip</div></td><td class="num">3</td><td class="note">I/O expander, I2C, DIP-28 (0.3 in)</td></tr>
+<tr><td class="item">ULN2803A<div class="spec">STMicroelectronics · 511-ULN2803A</div></td><td class="num">4</td><td class="note">8x Darlington array, DIP-18</td></tr>
+<tr><td class="item">SN74AHCT245N<div class="spec">Texas Instruments</div></td><td class="num">2</td><td class="note">Octal buffer, TTL inputs, DIP-20</td></tr>
+<tr><td class="item">110-43-328-41-001000<div class="spec">Mill-Max</div></td><td class="num">2</td><td class="note">DIP socket 28-pin, 0.300 in rows<br><i>0.3 in (skinny) -- not the 0.6 in 28-pin.</i></td></tr>
+<tr><td class="item">110-43-318-41-001000<div class="spec">Mill-Max</div></td><td class="num">3</td><td class="note">DIP socket 18-pin, 0.300 in</td></tr>
+<tr><td class="item">110-43-320-41-001000<div class="spec">Mill-Max</div></td><td class="num">1</td><td class="note">DIP socket 20-pin, 0.300 in</td></tr>
+<tr><td class="item">IRLIB9343PBF<div class="spec">Infineon</div></td><td class="num">2</td><td class="note">P-channel MOSFET, logic level, -55 V, TO-220 FullPAK</td></tr>
+<tr><td class="item">2N3904BU<div class="spec">onsemi</div></td><td class="num">5</td><td class="note">NPN transistor, TO-92</td></tr>
+<tr><td class="item">1N5819G<div class="spec">onsemi</div></td><td class="num">5</td><td class="note">Schottky diode 1 A 40 V, DO-41</td></tr>
+<tr><td class="item">MF-R250<div class="spec">Bourns</div></td><td class="num">2</td><td class="note">PTC resettable fuse 2.5 A hold, radial, 5.1 mm leads</td></tr>
+<tr><td class="item">EEU-FR1C102<div class="spec">Panasonic</div></td><td class="num">2</td><td class="note">Electrolytic 1000 uF 16 V, 10 x 16 mm, 5 mm pitch</td></tr>
+<tr><td class="item">C320C104K5R5TA<div class="spec">KEMET</div></td><td class="num">25</td><td class="note">Ceramic 100 nF 50 V X7R, radial, 2.54 mm leads</td></tr>
+<tr><td class="item">MFR-25FBF52-1K<div class="spec">YAGEO</div></td><td class="num">10</td><td class="note">Resistor 1 k 1/4 W 1% metal film</td></tr>
+<tr><td class="item">MFR-25FBF52-10K<div class="spec">YAGEO</div></td><td class="num">10</td><td class="note">Resistor 10 k 1/4 W 1% metal film</td></tr>
+<tr><td class="item">MFR-25FBF52-4K7<div class="spec">YAGEO</div></td><td class="num">10</td><td class="note">Resistor 4.7 k 1/4 W 1% metal film</td></tr>
+<tr><td class="item">4608X-101-103LF<div class="spec">Bourns</div></td><td class="num">2</td><td class="note">Resistor network 7x 10 k bussed, SIP-8</td></tr>
+<tr><td class="item">4609X-101-103LF<div class="spec">Bourns</div></td><td class="num">2</td><td class="note">Resistor network 8x 10 k bussed, SIP-9</td></tr>
+<tr><td class="item">WP710A10GD<div class="spec">Kingbright · 604-WP710A10GD</div></td><td class="num">2</td><td class="note">LED 3 mm green</td></tr>
+<tr><td class="item">PJ-102AH<div class="spec">Same Sky · 490-PJ-102AH</div></td><td class="num">2</td><td class="note">DC jack 5.5 mm, 2.0 mm pin, through hole<br><i>2.0 mm pin is the standard mate for a '5.5 x 2.1' plug. Don't use a 2.5 mm plug.</i></td></tr>
+<tr><td class="item">B5B-XH-A(LF)(SN)<div class="spec">JST</div></td><td class="num">7</td><td class="note">XH header 5-pin, top entry<br><i>The 28BYJ-48's own plug fits.</i></td></tr>
+<tr><td class="item">B3B-XH-A(LF)(SN)<div class="spec">JST</div></td><td class="num">8</td><td class="note">XH header 3-pin, top entry</td></tr>
+<tr><td class="item">B8B-XH-A(LF)(SN)<div class="spec">JST</div></td><td class="num">2</td><td class="note">XH header 8-pin, top entry</td></tr>
+<tr><td class="item">XHP-3<div class="spec">JST</div></td><td class="num">10</td><td class="note">XH housing 3-pin</td></tr>
+<tr><td class="item">XHP-8<div class="spec">JST</div></td><td class="num">2</td><td class="note">XH housing 8-pin</td></tr>
+<tr><td class="item">SXH-001T-P0.6<div class="spec">JST</div></td><td class="num">50</td><td class="note">XH crimp contact, 22-28 AWG<br><i>Crimp with a generic JST-XH crimper.</i></td></tr>
+<tr><td class="item">61300611121<div class="spec">Wurth Elektronik</div></td><td class="num">2</td><td class="note">Pin header 1x6, 2.54 mm</td></tr>
+<tr><td class="item">DRV5013AGQLPG<div class="spec">Texas Instruments</div></td><td class="num">8</td><td class="note">Hall latch +/-6 mT, TO-92 (LPG)<br><i>Bench-test beside a running 28BYJ-48 before building seven carriers.</i></td></tr>
+<tr><td class="item">DRV5013BCQLPG<div class="spec">Texas Instruments</div></td><td class="num">3</td><td class="note">Hall latch +/-12 mT, TO-92 (LPG)<br><i>The less sensitive variant, in case motor stray fields trip the AG.</i></td></tr>
+<tr><td class="item">GST18U05-P1J<div class="spec">MEAN WELL</div></td><td class="num">1</td><td class="note">5 V 3 A wall adapter, 5.5 x 2.1 mm plug, centre positive<br><i>The SGA18U05-P1J is being discontinued. Any 5 V 3 A centre-positive 5.5 x 2.1 adapter will do.</i></td></tr>
+      </tbody>
+    </table>
+  </div>
+
   <h2>Wiring</h2>
-  <p class="sub">Signals are drawn; power is shown as labelled nets. Every GND is common. Numbers in brackets are package pins.</p>
+  <p class="sub">Everything inside the dashed outline is on the main board; the rest plugs into its edge sockets. Power is shown as labelled nets, and every GND is common.</p>
   <div class="card">
     <div class="scroll diagram">
 <svg viewBox="0 0 1120 720" role="img" aria-labelledby="wd-t wd-d">
 <title id="wd-t">Tide machine wiring diagram</title>
-<desc id="wd-d">An ESP32 talks over I2C to two MCP23017 expanders that drive six ULN2003 stepper boards and read five station Hall latches. The ESP32 also drives a 74AHCT245 level shifter feeding an AX1201728SG gauge driver for the BKA30D-R5 calendar motor, reads the year and moon Hall latches directly, and PWMs a P-channel MOSFET that switches the motors' 5 V.</desc>
+<desc id="wd-d">A through-hole main board carries an ESP32 in a socket, two MCP23017 expanders driving three ULN2803A motor drivers for six 28BYJ-48 sockets, a 74AHCT245 driving the BKA30D-R5 calendar motor's coils directly, and a P-channel MOSFET that PWMs the motors' 5 V. Seven Hall latches plug into the board's bottom edge.</desc>
+
+<rect x="8" y="8" width="1104" height="530" rx="8" fill="none" stroke="currentColor" stroke-opacity=".35" stroke-dasharray="6 5"/>
+<text class="s" x="20" y="530">main board · 127 × 81.3 mm · all through-hole</text>
 
 <!-- supply and hold switch -->
 <rect class="blk" x="20" y="20" width="180" height="62" rx="3"/>
-<text class="t" x="32" y="44">5 V 3 A supply</text>
-<text class="s" x="32" y="64">1000 &#181;F across 5 V / GND</text>
+<text class="t" x="32" y="44">5 V jack → fuse</text>
+<text class="s" x="32" y="64">MF-R250, 1000 &#181;F</text>
 <g transform="translate(150,70)"><rect class="flag5" x="0" y="-9" width="44" height="16" rx="3"/><text class="flagtxt" x="7" y="3">+5V</text></g>
 
-<rect class="blk" x="20" y="150" width="180" height="104" rx="3"/>
+<rect class="blk" x="20" y="150" width="180" height="120" rx="3"/>
 <text class="t" x="32" y="174">HOLD switch</text>
-<text class="s" x="32" y="194">AO3401A P-FET</text>
-<text class="s" x="32" y="210">2N7000 gate driver</text>
-<text class="s" x="32" y="226">20 kHz PWM: 100% stepping,</text>
-<text class="s" x="32" y="242">~60% hold</text>
+<text class="s" x="32" y="194">IRLIB9343 P-FET (TO-220)</text>
+<text class="s" x="32" y="210">2N3904 gate driver</text>
+<text class="s" x="32" y="226">1N5819 freewheel</text>
+<text class="s" x="32" y="242">20 kHz PWM: 100% stepping,</text>
+<text class="s" x="32" y="258">~60% hold</text>
 <g transform="translate(150,164)"><rect class="flag5" x="0" y="-9" width="44" height="16" rx="3"/><text class="flagtxt" x="7" y="3">+5V</text></g>
-<g transform="translate(140,262)"><rect class="flagh" x="0" y="-9" width="54" height="16" rx="3"/><text class="flagtxt" x="7" y="3">HOLD</text></g>
+<g transform="translate(140,278)"><rect class="flagh" x="0" y="-9" width="54" height="16" rx="3"/><text class="flagtxt" x="7" y="3">HOLD</text></g>
 
 <!-- ESP32 -->
 <rect class="blk" x="270" y="120" width="200" height="370" rx="3"/>
 <text class="t" x="282" y="144">ESP32-DevKitC-32E</text>
-<text class="p" x="282" y="172">5V</text><g transform="translate(222,168)"><rect class="flag5" x="0" y="-9" width="44" height="16" rx="3"/><text class="flagtxt" x="7" y="3">+5V</text></g>
-<text class="s" x="282" y="186">via 1N5819</text>
+<text class="s" x="282" y="160">in 2 × 1×19 sockets</text>
+<text class="p" x="282" y="186">5V</text><g transform="translate(222,182)"><rect class="flag5" x="0" y="-9" width="44" height="16" rx="3"/><text class="flagtxt" x="7" y="3">+5V</text></g>
+<text class="s" x="306" y="186">via 1N5819</text>
 <text class="p" x="282" y="212">3V3 out</text><g transform="translate(222,208)"><rect class="flag3" x="0" y="-9" width="44" height="16" rx="3"/><text class="flagtxt" x="7" y="3">3V3</text></g>
 <text class="p" x="282" y="262">GPIO25 PWM</text>
 <text class="p" x="282" y="402">GPIO32 year</text>
@@ -201,77 +257,76 @@ code{font-family:'IBM Plex Mono',monospace; color:var(--ink2)}
 <text class="p" x="458" y="172" text-anchor="end">GPIO21 SDA</text>
 <text class="p" x="458" y="198" text-anchor="end">GPIO22 SCL</text>
 <text class="p" x="458" y="234" text-anchor="end">GPIO27 INT</text>
-<text class="p" x="296" y="482">16</text><text class="p" x="326" y="482">17</text><text class="p" x="356" y="482">18</text><text class="p" x="386" y="482">19</text><text class="p" x="416" y="482">23</text>
-<text class="s" x="298" y="466">calendar step / dir / reset</text>
+<text class="s" x="282" y="458">calendar coils:</text>
+<text class="p" x="282" y="478">16 17 18 19 · 23 4 13 26</text>
 
-<!-- MCP23017 #1 -->
+<!-- MCP23017 0x20 -->
 <rect class="blk" x="560" y="20" width="190" height="210" rx="3"/>
-<text class="t" x="572" y="44">MCP23017 #1 &#183; 0x20</text>
+<text class="t" x="572" y="44">MCP23017 &#183; 0x20</text>
 <text class="p" x="572" y="66">SDA (13)</text>
 <text class="p" x="572" y="86">SCL (12)</text>
 <text class="p" x="572" y="106">VDD (9)</text><g transform="translate(628,102)"><rect class="flag3" x="0" y="-9" width="40" height="16" rx="3"/><text class="flagtxt" x="6" y="3">3V3</text></g>
 <text class="s" x="572" y="126">A0&#8211;A2 &#8594; GND</text>
-<text class="p" x="738" y="66" text-anchor="end">GPA0&#8211;3</text>
-<text class="p" x="738" y="111" text-anchor="end">GPA4&#8211;7</text>
-<text class="p" x="738" y="156" text-anchor="end">GPB0&#8211;3</text>
-<text class="p" x="738" y="201" text-anchor="end">GPB4&#8211;7</text>
+<text class="p" x="738" y="66" text-anchor="end">GPA7&#8211;4</text>
+<text class="p" x="738" y="111" text-anchor="end">GPA3&#8211;0</text>
+<text class="p" x="738" y="156" text-anchor="end">GPB7&#8211;4</text>
+<text class="p" x="738" y="201" text-anchor="end">GPB3&#8211;0</text>
 
-<!-- MCP23017 #2 -->
+<!-- MCP23017 0x21 -->
 <rect class="blk" x="560" y="260" width="190" height="240" rx="3"/>
-<text class="t" x="572" y="284">MCP23017 #2 &#183; 0x21</text>
+<text class="t" x="572" y="284">MCP23017 &#183; 0x21</text>
 <text class="p" x="572" y="306">SDA (13)</text>
 <text class="p" x="572" y="326">SCL (12)</text>
 <text class="p" x="572" y="346">VDD (9)</text><g transform="translate(628,342)"><rect class="flag3" x="0" y="-9" width="40" height="16" rx="3"/><text class="flagtxt" x="6" y="3">3V3</text></g>
 <text class="s" x="572" y="366">A0 &#8594; 3V3</text>
 <text class="p" x="572" y="446">INTB (19)</text>
-<text class="p" x="738" y="306" text-anchor="end">GPA0&#8211;3</text>
-<text class="p" x="738" y="351" text-anchor="end">GPA4&#8211;7</text>
+<text class="p" x="738" y="306" text-anchor="end">GPA7&#8211;4</text>
+<text class="p" x="738" y="351" text-anchor="end">GPA3&#8211;0</text>
 <text class="p" x="738" y="436" text-anchor="end">GPB0&#8211;4</text>
 
-<!-- ULN2003 boards -->
-<g>
-<rect class="blk" x="840" y="20" width="260" height="46" rx="3"/><text class="t" x="852" y="40">ULN2003 #1 &#8594; S2</text><text class="s" x="852" y="57">28BYJ-48, IN1&#8211;4</text>
-<rect class="blk" x="840" y="80" width="260" height="46" rx="3"/><text class="t" x="852" y="100">ULN2003 #2 &#8594; N2</text><text class="s" x="852" y="117">28BYJ-48, IN1&#8211;4</text>
-<rect class="blk" x="840" y="140" width="260" height="46" rx="3"/><text class="t" x="852" y="160">ULN2003 #3 &#8594; K1</text><text class="s" x="852" y="177">28BYJ-48, IN1&#8211;4</text>
-<rect class="blk" x="840" y="200" width="260" height="46" rx="3"/><text class="t" x="852" y="220">ULN2003 #4 &#8594; O1</text><text class="s" x="852" y="237">28BYJ-48, IN1&#8211;4</text>
-<rect class="blk" x="840" y="280" width="260" height="46" rx="3"/><text class="t" x="852" y="300">ULN2003 #5 &#8594; M2</text><text class="s" x="852" y="317">28BYJ-48, IN1&#8211;4</text>
-<rect class="blk" x="840" y="340" width="260" height="46" rx="3"/><text class="t" x="852" y="360">ULN2003 #6 &#8594; drum</text><text class="s" x="852" y="377">28BYJ-48, IN1&#8211;4</text>
-</g>
+<!-- ULN2803A drivers, each feeding two motor sockets -->
+<rect class="blk" x="840" y="20" width="260" height="106" rx="3"/><text class="t" x="852" y="42">ULN2803A</text>
+<text class="s" x="852" y="62">1&#8211;4 &#8594; O1 socket</text><text class="s" x="852" y="80">5&#8211;8 &#8594; K1 socket</text><text class="s" x="852" y="112">COM &#8592; HOLD</text>
+<rect class="blk" x="840" y="140" width="260" height="106" rx="3"/><text class="t" x="852" y="162">ULN2803A</text>
+<text class="s" x="852" y="182">1&#8211;4 &#8594; N2 socket</text><text class="s" x="852" y="200">5&#8211;8 &#8594; S2 socket</text><text class="s" x="852" y="232">COM &#8592; HOLD</text>
+<rect class="blk" x="840" y="280" width="260" height="106" rx="3"/><text class="t" x="852" y="302">ULN2803A</text>
+<text class="s" x="852" y="322">1&#8211;4 &#8594; drum socket</text><text class="s" x="852" y="340">5&#8211;8 &#8594; M2 socket</text><text class="s" x="852" y="372">COM &#8592; HOLD</text>
 <g transform="translate(1040,28)"><rect class="flagh" x="0" y="-9" width="54" height="16" rx="3"/><text class="flagtxt" x="7" y="3">HOLD</text></g>
-<text class="bus" x="1094" y="400" text-anchor="end">all six boards: + &#8592; HOLD</text>
+<text class="bus" x="1094" y="404" text-anchor="end">socket pin 5 (red) &#8592; HOLD</text>
 
-<!-- station Hall latches -->
+<!-- station Hall pull-ups -->
 <rect class="blk" x="840" y="418" width="260" height="82" rx="3"/>
-<text class="t" x="852" y="440">5 &#215; Hall latch &#183; DRV5013</text>
-<text class="s" x="852" y="458">S2, N2, K1, O1, M2 &#8594; GPB0&#8211;4</text>
-<text class="s" x="852" y="474">open drain, 10 k&#937; pull-up each</text>
+<text class="t" x="852" y="440">5 &#215; Hall socket</text>
+<text class="s" x="852" y="458">M2, O1, K1, N2, S2 &#8594; GPB0&#8211;4</text>
+<text class="s" x="852" y="474">10 k&#937; bussed pull-ups</text>
 <g transform="translate(1040,490)"><rect class="flag3" x="0" y="-9" width="40" height="16" rx="3"/><text class="flagtxt" x="6" y="3">3V3</text></g>
 
-<!-- calendar Hall latches -->
-<rect class="blk" x="20" y="380" width="180" height="46" rx="3"/><text class="t" x="32" y="400">Year Hall &#183; DRV5013</text><text class="s" x="32" y="416">on the calendar board</text>
-<rect class="blk" x="20" y="440" width="180" height="46" rx="3"/><text class="t" x="32" y="460">Moon Hall &#183; DRV5013</text><text class="s" x="32" y="476">on the calendar board</text>
+<!-- calendar Hall sockets -->
+<rect class="blk" x="20" y="380" width="180" height="46" rx="3"/><text class="t" x="32" y="400">Year Hall socket</text><text class="s" x="32" y="416">10 k&#937; pull-up</text>
+<rect class="blk" x="20" y="440" width="180" height="46" rx="3"/><text class="t" x="32" y="460">Moon Hall socket</text><text class="s" x="32" y="476">10 k&#937; pull-up</text>
 
 <!-- calendar drive -->
-<rect class="blk" x="270" y="560" width="180" height="120" rx="3"/>
-<text class="t" x="282" y="584">74AHCT245</text>
-<text class="s" x="282" y="602">3.3 V &#8594; 5 V buffer</text>
-<text class="s" x="282" y="618">DIR (1) &#8594; 5 V, OE (19) &#8594; GND</text>
-<text class="p" x="282" y="646">A1&#8211;A5 in &#183; B1&#8211;B5 out</text>
-<g transform="translate(398,668)"><rect class="flag5" x="0" y="-9" width="44" height="16" rx="3"/><text class="flagtxt" x="7" y="3">+5V</text></g>
+<rect class="blk" x="560" y="505" width="190" height="30" rx="3"/>
+<text class="t" x="572" y="525">74AHCT245 &#183; 3.3 &#8594; 5 V</text>
 
-<rect class="blk" x="510" y="560" width="200" height="120" rx="3"/>
-<text class="t" x="522" y="584">AX1201728SG</text>
-<text class="s" x="522" y="602">quad gauge driver, step/dir</text>
-<text class="p" x="522" y="630">STEP A &#183; DIR A &#8594; year</text>
-<text class="p" x="522" y="648">STEP B &#183; DIR B &#8594; moon</text>
-<g transform="translate(658,668)"><rect class="flag5" x="0" y="-9" width="44" height="16" rx="3"/><text class="flagtxt" x="7" y="3">+5V</text></g>
+<!-- off-board parts -->
+<rect class="blk" x="20" y="580" width="250" height="104" rx="3"/>
+<text class="t" x="32" y="604">28BYJ-48 × 6</text>
+<text class="s" x="32" y="624">plug into the top-edge sockets</text>
+<text class="s" x="32" y="642">(JST-XH 5, the motor's own plug)</text>
+<text class="s" x="32" y="660">kit ULN2003 boards not used</text>
 
-<rect class="blk" x="770" y="560" width="220" height="120" rx="3"/>
-<text class="t" x="782" y="584">BKA30D-R5</text>
-<text class="s" x="782" y="602">dual concentric gauge stepper</text>
-<text class="p" x="782" y="630">motor A (1&#8211;4) &#8594; outer: year</text>
-<text class="p" x="782" y="648">motor B (1&#8211;4) &#8594; inner: moon</text>
-<text class="s" x="782" y="668">confirm A/B on the bench</text>
+<rect class="blk" x="300" y="580" width="250" height="104" rx="3"/>
+<text class="t" x="312" y="604">DRV5013 × 7 (TO-92)</text>
+<text class="s" x="312" y="624">on perfboard carriers behind</text>
+<text class="s" x="312" y="642">the plate windows; 100 nF each</text>
+<text class="s" x="312" y="660">3-core lead to a JST-XH 3</text>
+
+<rect class="blk" x="770" y="580" width="330" height="104" rx="3"/>
+<text class="t" x="782" y="604">BKA30D-R5 on its carrier</text>
+<text class="s" x="782" y="624">motor A (J5 1&#8211;4) &#8594; outer: year</text>
+<text class="s" x="782" y="642">motor B (J5 5&#8211;8) &#8594; inner: moon</text>
+<text class="s" x="782" y="660">confirm A/B on the bench</text>
 
 <!-- wires: I2C -->
 <path class="w i2c" d="M470 168 H515 V62 H560 M515 168 V302 H560"/>
@@ -279,34 +334,33 @@ code{font-family:'IBM Plex Mono',monospace; color:var(--ink2)}
 <!-- wires: INTB -->
 <path class="w int" d="M560 442 H498 V230 H470"/>
 <!-- wires: MCP -> ULN (4-wire bundles) -->
-<path class="w sig" d="M750 62 H800 V43 H840"/>
-<path class="w sig" d="M750 107 H800 V103 H840"/>
-<path class="w sig" d="M750 152 H800 V163 H840"/>
-<path class="w sig" d="M750 197 H800 V223 H840"/>
-<path class="w sig" d="M750 302 H800 V303 H840"/>
-<path class="w sig" d="M750 347 H800 V363 H840"/>
+<path class="w sig" d="M750 62 H800 V58 H840"/>
+<path class="w sig" d="M750 107 H800 V76 H840"/>
+<path class="w sig" d="M750 152 H800 V178 H840"/>
+<path class="w sig" d="M750 197 H800 V196 H840"/>
+<path class="w sig" d="M750 302 H800 V318 H840"/>
+<path class="w sig" d="M750 347 H800 V336 H840"/>
 <g class="p"><text x="772" y="56">/4</text><text x="772" y="101">/4</text><text x="772" y="146">/4</text><text x="772" y="191">/4</text><text x="772" y="296">/4</text><text x="772" y="341">/4</text></g>
-<!-- wires: station Halls -> MCP #2 -->
+<!-- wires: station Halls -> MCP 0x21 -->
 <path class="w int" d="M840 458 H800 V432 H750"/>
 <text class="p" x="806" y="450">/5</text>
 <!-- wires: PWM -->
-<path class="w pwm" d="M270 258 H212 V232 H200"/>
+<path class="w pwm" d="M270 258 H212 V248 H200"/>
 <!-- wires: calendar Halls -> ESP32 -->
 <path class="w int" d="M200 403 H270"/>
 <path class="w int" d="M200 463 H240 V424 H270"/>
-<!-- wires: ESP32 -> 74AHCT245 -->
-<path class="w cal" d="M300 490 V560 M330 490 V560 M360 490 V560 M390 490 V560 M420 490 V560"/>
-<!-- wires: 74AHCT245 -> AX -> BKA -->
-<path class="w cal" d="M450 620 H510"/><text class="p" x="470" y="612">/5</text>
-<path class="w cal" d="M710 626 H770"/><text class="p" x="728" y="618">/4</text>
-<path class="w cal" d="M710 646 H770"/><text class="p" x="728" y="660">/4</text>
+<!-- wires: ESP32 -> 74AHCT245 -> BKA30D-R5 -->
+<path class="w cal" d="M470 470 H500 V520 H560"/><text class="p" x="508" y="512">/8</text>
+<path class="w cal" d="M750 520 H1000 V580"/><text class="p" x="872" y="512">/8 · 5 V coil drive</text>
+<!-- wires: off-board -->
+<path class="w sig" d="M145 580 V540"/><path class="w int" d="M425 580 V540"/>
 </svg>
     </div>
     <div class="legend">
       <span><i class="sw" style="background:var(--wi2c)"></i>I&#178;C</span>
       <span><i class="sw" style="background:var(--wsig)"></i>stepper phases (4 per motor)</span>
       <span><i class="sw" style="background:var(--wint)"></i>Hall outputs and interrupt</span>
-      <span><i class="sw" style="background:var(--wcal)"></i>calendar step, direction, reset, coils</span>
+      <span><i class="sw" style="background:var(--wcal)"></i>calendar coils</span>
       <span><i class="sw" style="background:var(--whold)"></i>PWM / HOLD rail</span>
       <span><i class="sw" style="background:var(--w5v)"></i>+5V</span>
       <span><i class="sw" style="background:var(--w3v3)"></i>3V3</span>
@@ -314,12 +368,12 @@ code{font-family:'IBM Plex Mono',monospace; color:var(--ink2)}
   </div>
 
   <div class="notes">
-    <div class="note-card"><h3>Power budget</h3><p>Six 28BYJ-48 draw about <b>200 mA each</b> with two coils on: 1.2 A at 100% duty, about 0.7 A at the 60% hold. Add the ESP32 (0.25 A), BKA30D-R5 (0.04 A) and Hall latches (0.02 A): <b>about 1.5 A peak</b>. The 5 V 3 A supply leaves headroom.</p></div>
-    <div class="note-card"><h3>Hold switch</h3><p>The P-channel switch sits on the motors' 5 V, not their ground, so the ULN2003 logic ground stays solid. The datasheet's 59&#8211;118 mN&#183;m friction torque hints the motors may hold unpowered; <b>run the holding-torque test first</b> and leave this out if they do.</p></div>
-    <div class="note-card"><h3>Hall timing</h3><p>MCP23017 #2 raises <b>INTB</b> on any station latch edge; the ESP32 timestamps the interrupt and reads INTCAP to see which station passed. The year and moon latches go straight to ESP32 interrupts. The machine turns one way, so each station always reports the same edge.</p></div>
-    <div class="note-card"><h3>Logic levels</h3><p>MCP23017s and Hall latches run at 3.3 V; ULN2003 inputs switch fine from 3.3 V. The gauge driver runs at 5 V, so its five inputs go through the <b>74AHCT245</b>, whose TTL-level inputs accept 3.3 V.</p></div>
+    <div class="note-card"><h3>Power budget</h3><p>Six 28BYJ-48 draw about <b>200 mA each</b> with two coils on: 1.2 A at 100% duty, about 0.7 A at the 60% hold. Add the ESP32 (0.25 A), one BKA30D-R5 motor at a time (0.04 A) and Hall latches (0.02 A): <b>about 1.5 A peak</b>. The 5 V 3 A supply leaves headroom.</p></div>
+    <div class="note-card"><h3>Hold switch</h3><p>The P-channel switch sits on the motors' 5 V, not their ground, so the ULN2803A logic ground stays solid. When it opens, the 1N5819 carries the coil current, so the rail can't swing below ground. The datasheet's 59&#8211;118 mN&#183;m friction torque hints the motors may hold unpowered; <b>run the holding-torque test first</b> and leave this out if they do.</p></div>
+    <div class="note-card"><h3>Hall timing</h3><p>The 0x21 MCP23017 raises <b>INTB</b> on any station latch edge; the ESP32 timestamps the interrupt and reads INTCAP to see which station passed. The year and moon latches go straight to ESP32 interrupts. The machine turns one way, so each station always reports the same edge.</p></div>
+    <div class="note-card"><h3>Logic levels</h3><p>MCP23017s and Hall latches run at 3.3 V; ULN2803A inputs switch fine from 3.3 V. The calendar's coils are driven at 5 V by the <b>74AHCT245</b>, whose TTL-level inputs accept 3.3 V. Step <b>one gauge motor at a time</b> and leave the coils off between moves: that keeps the chip inside its 75 mA supply limit, and the gauge motors hold position unpowered.</p></div>
     <div class="note-card"><h3>USB and the supply</h3><p>The <b>1N5819</b> between the 5 V bus and the ESP32's 5V pin keeps a plugged-in USB cable from back-feeding the motor supply, and the supply from back-feeding your computer.</p></div>
-    <div class="note-card"><h3>Faceplate</h3><p>Must be <b>aluminium, never steel</b>: the latches look through it at the magnets. Each station gets a 3.4 mm square window at 12 o'clock, r 20.5, with two M2 holes for the sensor board.</p></div>
+    <div class="note-card"><h3>Faceplate</h3><p>Must be <b>aluminium, never steel</b>: the latches look through it at the magnets. Each station gets a window at 12 o'clock, r 20.5, with two M2 holes for the sensor carrier. The window grows from 3.4 mm square to fit the TO-92 latch (to be re-cut in the Rev M plate).</p></div>
   </div>
 
   <h2>Pin map</h2>
@@ -327,53 +381,50 @@ code{font-family:'IBM Plex Mono',monospace; color:var(--ink2)}
     <table>
       <thead><tr><th scope="col">From</th><th scope="col">To</th><th scope="col">Net</th></tr></thead>
       <tbody>
-<tr class="sec"><th colspan="3" scope="colgroup">Power</th></tr>
-<tr><td class="pin">5 V supply +</td><td>5 V bus</td><td><span class="net n-p5v">+5V</span></td></tr>
-<tr><td class="pin">5 V bus</td><td>ESP32 5V pin, through 1N5819</td><td><span class="net n-p5v">+5V</span></td></tr>
-<tr><td class="pin">5 V bus</td><td>AO3401A source; 10 kΩ to its gate</td><td><span class="net n-p5v">+5V</span></td></tr>
-<tr><td class="pin">AO3401A drain</td><td>HOLD rail → all six ULN2003 boards (+)</td><td><span class="net n-hold">HOLD</span></td></tr>
-<tr><td class="pin">2N7000 drain / source</td><td>AO3401A gate / GND</td><td><span class="net n-hold">HOLD</span></td></tr>
-<tr><td class="pin">5 V bus</td><td>74AHCT245 VCC (20), AX1201728SG VDD</td><td><span class="net n-p5v">+5V</span></td></tr>
-<tr><td class="pin">ESP32 3V3</td><td>MCP23017 VDD (9) ×2, all seven Hall boards, pull-ups</td><td><span class="net n-3v3">3V3</span></td></tr>
-<tr><td class="pin">GND</td><td>Every board, sensor and the supply −</td><td><span class="net n-gnd">GND</span></td></tr>
-<tr><td class="pin">1000 µF</td><td>Across 5 V / GND at the ULN2003 boards</td><td><span class="net n-p5v">+5V</span></td></tr>
-<tr class="sec"><th colspan="3" scope="colgroup">ESP32</th></tr>
-<tr><td class="pin">GPIO21 (SDA)</td><td>MCP23017 #1 &amp; #2 SDA (13); 4.7 kΩ to 3V3</td><td><span class="net n-i2c">I²C</span></td></tr>
-<tr><td class="pin">GPIO22 (SCL)</td><td>MCP23017 #1 &amp; #2 SCL (12); 4.7 kΩ to 3V3</td><td><span class="net n-i2c">I²C</span></td></tr>
-<tr><td class="pin">GPIO27</td><td>← MCP23017 #2 INTB (19): station Hall edge interrupt</td><td><span class="net n-int">INT</span></td></tr>
-<tr><td class="pin">GPIO25</td><td>→ 100 Ω → 2N7000 gate (100 kΩ to GND): PWM hold, 20 kHz</td><td><span class="net n-pwm">PWM</span></td></tr>
-<tr><td class="pin">GPIO16</td><td>→ 74AHCT245 A1 (2) → B1 (18) → AX STEP, motor A (year)</td><td><span class="net n-cal">CAL</span></td></tr>
-<tr><td class="pin">GPIO17</td><td>→ A2 (3) → B2 (17) → AX CW/CCW, motor A</td><td><span class="net n-cal">CAL</span></td></tr>
-<tr><td class="pin">GPIO18</td><td>→ A3 (4) → B3 (16) → AX STEP, motor B (moon)</td><td><span class="net n-cal">CAL</span></td></tr>
-<tr><td class="pin">GPIO19</td><td>→ A4 (5) → B4 (15) → AX CW/CCW, motor B</td><td><span class="net n-cal">CAL</span></td></tr>
-<tr><td class="pin">GPIO23</td><td>→ A5 (6) → B5 (14) → AX RESET</td><td><span class="net n-cal">CAL</span></td></tr>
-<tr><td class="pin">GPIO32</td><td>← Year Hall OUT</td><td><span class="net n-hall">HALL</span></td></tr>
-<tr><td class="pin">GPIO33</td><td>← Moon Hall OUT</td><td><span class="net n-hall">HALL</span></td></tr>
-<tr class="sec"><th colspan="3" scope="colgroup">MCP23017 #1 (0x20: A0, A1, A2 to GND; RESET 18 to 3V3 via 10 kΩ)</th></tr>
-<tr><td class="pin">GPA0–3 (21–24)</td><td>ULN2003 #1 IN1–4 → S2</td><td><span class="net n-motor">MOTOR</span></td></tr>
-<tr><td class="pin">GPA4–7 (25–28)</td><td>ULN2003 #2 IN1–4 → N2</td><td><span class="net n-motor">MOTOR</span></td></tr>
-<tr><td class="pin">GPB0–3 (1–4)</td><td>ULN2003 #3 IN1–4 → K1</td><td><span class="net n-motor">MOTOR</span></td></tr>
-<tr><td class="pin">GPB4–7 (5–8)</td><td>ULN2003 #4 IN1–4 → O1</td><td><span class="net n-motor">MOTOR</span></td></tr>
-<tr class="sec"><th colspan="3" scope="colgroup">MCP23017 #2 (0x21: A0 to 3V3, A1 and A2 to GND; RESET to 3V3 via 10 kΩ)</th></tr>
-<tr><td class="pin">GPA0–3 (21–24)</td><td>ULN2003 #5 IN1–4 → M2</td><td><span class="net n-motor">MOTOR</span></td></tr>
-<tr><td class="pin">GPA4–7 (25–28)</td><td>ULN2003 #6 IN1–4 → drum</td><td><span class="net n-motor">MOTOR</span></td></tr>
-<tr><td class="pin">GPB0–4 (1–5)</td><td>← Hall OUT: S2, N2, K1, O1, M2</td><td><span class="net n-hall">HALL</span></td></tr>
+<tr class="sec"><th colspan="3" scope="colgroup">Power (main board)</th></tr>
+<tr><td class="pin">5 V jack J3, centre pin</td><td>MF-R250 fuse F1 → +5V bus</td><td><span class="net n-p5v">+5V</span></td></tr>
+<tr><td class="pin">+5V bus</td><td>1000 µF C1; ESP32 5V pin through 1N5819 D1</td><td><span class="net n-p5v">+5V</span></td></tr>
+<tr><td class="pin">+5V bus</td><td>IRLIB9343 Q1 source (3); 1 kΩ to its gate (1)</td><td><span class="net n-p5v">+5V</span></td></tr>
+<tr><td class="pin">Q1 drain (2)</td><td>HOLD rail → pin 5 (red) of all six motor sockets, and COM (10) of all three ULN2803A</td><td><span class="net n-hold">HOLD</span></td></tr>
+<tr><td class="pin">2N3904 Q2 collector / emitter</td><td>Q1 gate / GND</td><td><span class="net n-hold">HOLD</span></td></tr>
+<tr><td class="pin">1N5819 D2</td><td>anode GND, cathode HOLD: the freewheel path</td><td><span class="net n-hold">HOLD</span></td></tr>
+<tr><td class="pin">+5V bus</td><td>74AHCT245 VCC (20) and DIR (1)</td><td><span class="net n-p5v">+5V</span></td></tr>
+<tr><td class="pin">ESP32 3V3</td><td>MCP23017 VDD (9) ×2, Hall sockets pin 1, pull-ups, expansion header</td><td><span class="net n-3v3">3V3</span></td></tr>
+<tr><td class="pin">GND</td><td>Every chip, socket and the supply −</td><td><span class="net n-gnd">GND</span></td></tr>
+<tr class="sec"><th colspan="3" scope="colgroup">ESP32 (in its socket)</th></tr>
+<tr><td class="pin">GPIO21 (SDA)</td><td>MCP23017 ×2 SDA (13); 4.7 kΩ to 3V3; expansion pin 3</td><td><span class="net n-i2c">I²C</span></td></tr>
+<tr><td class="pin">GPIO22 (SCL)</td><td>MCP23017 ×2 SCL (12); 4.7 kΩ to 3V3; expansion pin 4</td><td><span class="net n-i2c">I²C</span></td></tr>
+<tr><td class="pin">GPIO27</td><td>← MCP23017 0x21 INTB (19), 10 kΩ pull-up: station Hall edge interrupt</td><td><span class="net n-int">INT</span></td></tr>
+<tr><td class="pin">GPIO25</td><td>→ 1 kΩ → 2N3904 base (10 kΩ to GND): PWM hold, 20 kHz</td><td><span class="net n-pwm">PWM</span></td></tr>
+<tr><td class="pin">GPIO16, 17, 18, 19</td><td>→ 74AHCT245 A8, A7, A6, A5 → year motor coil ends 1–4</td><td><span class="net n-cal">CAL</span></td></tr>
+<tr><td class="pin">GPIO23, 4, 13, 26</td><td>→ 74AHCT245 A4, A3, A2, A1 → moon motor coil ends 1–4</td><td><span class="net n-cal">CAL</span></td></tr>
+<tr><td class="pin">GPIO32 / GPIO33</td><td>← year / moon Hall latch</td><td><span class="net n-hall">HALL</span></td></tr>
+<tr><td class="pin">GPIO14, GPIO34</td><td>expansion pins 5, 6 (spare; GPIO34 is input-only)</td><td></td></tr>
+<tr class="sec"><th colspan="3" scope="colgroup">MCP23017 0x20 (A0–A2 to GND; RESET 18 to 3V3 via 10 kΩ, shared)</th></tr>
+<tr><td class="pin">GPA7–4 (28–25)</td><td>ULN2803A 1B–4B → O1 socket A–D</td><td><span class="net n-motor">MOTOR</span></td></tr>
+<tr><td class="pin">GPA3–0 (24–21)</td><td>ULN2803A 5B–8B → K1 socket A–D</td><td><span class="net n-motor">MOTOR</span></td></tr>
+<tr><td class="pin">GPB7–4 (8–5)</td><td>ULN2803A 1B–4B → N2 socket A–D</td><td><span class="net n-motor">MOTOR</span></td></tr>
+<tr><td class="pin">GPB3–0 (4–1)</td><td>ULN2803A 5B–8B → S2 socket A–D</td><td><span class="net n-motor">MOTOR</span></td></tr>
+<tr class="sec"><th colspan="3" scope="colgroup">MCP23017 0x21 (A0 to 3V3, A1 and A2 to GND)</th></tr>
+<tr><td class="pin">GPA7–4 (28–25)</td><td>ULN2803A 1B–4B → drum socket A–D</td><td><span class="net n-motor">MOTOR</span></td></tr>
+<tr><td class="pin">GPA3–0 (24–21)</td><td>ULN2803A 5B–8B → M2 socket A–D</td><td><span class="net n-motor">MOTOR</span></td></tr>
+<tr><td class="pin">GPB0–4 (1–5)</td><td>← Hall sockets M2, O1, K1, N2, S2 (10 kΩ bussed pull-ups)</td><td><span class="net n-hall">HALL</span></td></tr>
 <tr><td class="pin">GPB5–7 (6–8)</td><td>spare</td><td></td></tr>
-<tr><td class="pin">INTB (19)</td><td>→ ESP32 GPIO27 (open-drain, pulled up)</td><td><span class="net n-int">INT</span></td></tr>
-<tr class="sec"><th colspan="3" scope="colgroup">Calendar board (behind the faceplate)</th></tr>
-<tr><td class="pin">74AHCT245 DIR (1) / OE (19)</td><td>5 V (A → B) / GND; unused A6–A8 to GND</td><td><span class="net n-cal">CAL</span></td></tr>
-<tr><td class="pin">AX1201728SG motor A outputs</td><td>BKA30D-R5 motor A, pins 1–4</td><td><span class="net n-cal">CAL</span></td></tr>
-<tr><td class="pin">AX1201728SG motor B outputs</td><td>BKA30D-R5 motor B, pins 1–4</td><td><span class="net n-cal">CAL</span></td></tr>
-<tr><td class="pin">Year / Moon Hall latches</td><td>On the same board, chips nested in faceplate windows</td><td><span class="net n-hall">HALL</span></td></tr>
-<tr class="sec"><th colspan="3" scope="colgroup">Each Hall board (DRV5013)</th></tr>
+<tr><td class="pin">INTB (19)</td><td>→ ESP32 GPIO27</td><td><span class="net n-int">INT</span></td></tr>
+<tr class="sec"><th colspan="3" scope="colgroup">Sockets on the board edge</th></tr>
+<tr><td class="pin">Motor ×6 (JST-XH 5)</td><td>1 A blue, 2 B pink, 3 C yellow, 4 D orange (ULN outputs); 5 red (HOLD)</td><td><span class="net n-motor">MOTOR</span></td></tr>
+<tr><td class="pin">Hall ×7 (JST-XH 3)</td><td>1 3V3, 2 OUT, 3 GND</td><td><span class="net n-hall">HALL</span></td></tr>
+<tr><td class="pin">Calendar (JST-XH 8)</td><td>1–4 year coil ends (74AHCT245 B8–B5), 5–8 moon (B4–B1); coils are 1–2 and 3–4 of each</td><td><span class="net n-cal">CAL</span></td></tr>
+<tr><td class="pin">Expansion (1 × 6)</td><td>3V3, GND, SDA, SCL, GPIO14, GPIO34</td><td><span class="net n-i2c">I²C</span></td></tr>
+<tr class="sec"><th colspan="3" scope="colgroup">Each Hall carrier (DRV5013, TO-92)</th></tr>
 <tr><td class="pin">VCC / GND</td><td>3V3 / GND, 100 nF across them</td><td><span class="net n-3v3">3V3</span></td></tr>
-<tr><td class="pin">OUT (open drain)</td><td>10 kΩ to 3V3, to its MCP23017 or ESP32 input</td><td><span class="net n-hall">HALL</span></td></tr>
+<tr><td class="pin">OUT (open drain)</td><td>to its socket pin 2; the pull-up is on the main board</td><td><span class="net n-hall">HALL</span></td></tr>
       </tbody>
     </table>
   </div>
 
   <footer>
     <p>Generated by <code>buildpack.py</code> from the Rev M design in <code>RESUME.md</code> and <code>station_study.py</code>; the same data writes <code>bom.csv</code>. Part numbers are what to look up, not endorsements of a seller.</p>
-    <p>The AX1201728SG's package pin numbers are not shown; take them from its datasheet. Which BKA30D-R5 coil set turns which shaft is confirmed on the bench.</p>
+    <p>The main board's parts, placement and netlist live in <code>pcb/design.py</code>; it is routed in KiCad next. Which BKA30D-R5 coil set turns which shaft is confirmed on the bench.</p>
   </footer>
 </div>

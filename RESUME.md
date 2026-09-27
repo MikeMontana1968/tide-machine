@@ -99,13 +99,13 @@ Rev M hole schedule, per station at shaft (x, 0):
 |---|---|---|---|
 | 5 | Ø9.2 | (x, 0) | locates the Ø9 boss |
 | 10 | Ø3.2 | (x ± 17.5, −8) | motor ears, M3 pan head |
-| 5 | 3.4 × 3.4 window | centred (x, 20.5) | the Hall latch's SOT-23 chip nests in it |
+| 5 | window, **to re-size** | centred (x, 20.5) | the Hall latch nests in it. Was 3.4 × 3.4 for a SOT-23; the latch is now the through-hole TO-92 (about 4 × 3 × 1.5), so about 4.4 × 3.4 |
 | 10 | Ø2.2 | (x, 15) and (x, 26) | Hall board, M2 |
 | 5 | Ø2.2 | (x, 31) | index tab, M2 |
 | — | Ø4.0 | y = ±82, spacing to be set | #6 frame screws into the rails' rear faces |
 
 Calendar, centred (−140, −48): Ø12 for the BKA30D-R5's shafts and hub adapters; 3.4 windows at (0, +20.5) (year
-latch) and (0, −9) (moon latch); 4 × Ø2.2 at (±14, ±30) for the calendar board; Ø2.2 at (0, +32) for the index hand.
+latch) and (0, −9) (moon latch); 4 × Ø2.2 at (±14, ±30) for the calendar carrier; Ø2.2 at (0, +32) for the index hand.
 **The plate must be aluminium, never steel**: the latches look through it.
 
 Still true from Rev L: the plate is **not symmetric** (a mirrored plate is scrap). Keep labels
@@ -157,8 +157,10 @@ Nothing slides at S2's IN pulley, so the far dead end can tie off right there.
 **Home sensing: Hall latches** (decided 2026-09-26). One per station, one each for the year dial and the moon disc;
 the drum doesn't need one. The reason is **silent-skip detection**, not homing: each pass gives a predicted step count
 at a known angle, 116 times over 60 days on M2 and 466 across all five stations.
-- **TI DRV5013**-class digital latch, SOT-23, on a thumbnail board (10 × 16 mm) **behind the plate**, its chip nested in
-  a 3.4 mm window so its sensing element sits 4.4 mm from the magnets. Aluminium is transparent to the field.
+- **TI DRV5013**-class digital latch, **through-hole TO-92 (LPG)** since 2026-09-26 (no SMD soldering), lying flat on a
+  small perfboard carrier (10 × 16 mm) **behind the plate**, nested in its plate window. With the SOT-23 the element sat
+  4.4 mm from the magnets; the TO-92's element sits a few tenths deeper, so **re-run the field check** when the window is
+  re-sized. Aluminium is transparent to the field.
 - **The flag is a magnet pair**: two 5 × 2 N52 discs side by side, opposite poles toward the sensor. The field flips
   sign sharply between them and the latch switches at that zero crossing, so the edge barely moves with gap or
   temperature: **0.15° per mT** of threshold drift at r 20.5 (19 mT/mm), against the **0.7°** a 28BYJ-48 loses per skip.
@@ -167,7 +169,7 @@ at a known angle, 116 times over 60 days on M2 and 466 across all five stations.
 - Choose a latch variant that switches at a few mT, so a nearby motor's stray field can't trip it; bench-test one
   beside a running 28BYJ-48. The machine turns one way, so each station always reports the same edge.
 - Electrical: 3.3 V, open drain, 10 kΩ pull-up and 100 nF on each board, about 3 mA each. Station latches go to
-  MCP23017 #2 (interrupt on change → ESP32); the calendar pair go straight to ESP32 pins. See the build pack.
+  the 0x21 MCP23017 (interrupt on change → ESP32); the calendar pair go straight to ESP32 pins. See the build pack.
 
 **Dials and decals** (`decals.py` → `decals_1to1.pdf`, decided 2026-09-26). Each dial carries a printed
 decal read against a small printed **index tab** at 12 o'clock just outside its rim. The Hall latch is on the same
@@ -196,11 +198,11 @@ year dial and stops at the moon disc's rim. **Scales read astronomical time**:
 - **Verify before printing:** the ±90° convention in K1 and O1's equilibrium arguments (Schureman, as NOAA uses) moves
   those two zeros by 12 h if it's wrong.
 
-**Calendar dial** (decided 2026-09-26). A **BKA30D-R5** dual-concentric gauge stepper (180:1, 1/12° microsteps) at
+**Calendar dial** (decided 2026-09-26). A **BKA30D-R5** dual-concentric gauge stepper (180:1, driven in 1/3° partial steps) at
 **(−140, −48)**, below and between N2 and K1, turns two discs: the **Ø52 year dial on its outer shaft** (same outline,
 magnet pair and index scheme as a station) and a **Ø32 moon disc on its inner shaft**, 1 mm in front. The motor and
-both Hall latches sit on one calendar board (36 × 68) behind the plate. Year: one microstep every 2.0 h; home Jan 1.
-Moon: one every 9.8 min; home at new moon; drive it to the **true** phase (low-precision ephemeris), not the mean,
+both Hall latches sit on one perfboard calendar carrier (36 × 68) behind the plate, wired to the main board. Year: one
+partial step every 8.1 h; home Jan 1. Moon: one every 39 min; home at new moon; drive it to the **true** phase (low-precision ephemeris), not the mean,
 which drifts ±0.5 day. Uniform rates, so no inverse tables. Clearances: 3.6 mm to the N2/K1 dials, 2.0 mm to the
 bottom rail, 2.7 mm to the neighbouring wire covers. **Placeholders until a motor is in hand:** the family datasheet
 lists stops (outer 320°, inner 270°) while the -R5 is sold as 360°, so confirm continuous rotation on both shafts;
@@ -229,12 +231,27 @@ All 13 clearances in the fit study and all 26 in the full model are at least 1 m
 **Homing can't crash the pen.** Pen position is Σdᵢ, bounded by Σr = 57.05 mm, against
 62 mm of available travel. No combination of arm angles can reach a stop.
 
-**Drive and electronics** (full detail in the build pack). 28BYJ-48 direct, no reduction, on ULN2003 boards. ESP32 +
-2 × MCP23017: #1 (0x20) drives S2, N2, K1, O1; #2 (0x21) drives M2 and the drum and reads the five station latches,
-raising INTB on each edge. The BKA30D-R5 runs from an AX1201728SG step/dir gauge driver through a 74AHCT245 (3.3 → 5 V);
-the calendar latches go straight to ESP32 pins. **PWM hold** through a high-side **P-channel** switch (AO3401A driven by a
-2N7000) on the motors' 5 V, so the ULN2003 logic ground stays solid: 60% idle, 100% while stepping. Fit it only if the
-holding-torque test says the motors need it. 5 V 3 A supply; about 1.5 A peak. NTP daily.
+**Drive and electronics** (full detail in the build pack). 28BYJ-48 direct, no reduction, plugged into the main board.
+ESP32 + 2 × MCP23017: 0x20 drives O1, K1, N2, S2; 0x21 drives M2 and the drum and reads the five station latches,
+raising INTB on each edge. Three **ULN2803A** drive the six motors. The BKA30D-R5's coils are driven **directly by a
+74AHCT245** (3.3 V in, 5 V out) from eight ESP32 pins, one gauge motor at a time with the coils off between moves; the
+AX1201728SG microstep driver was dropped (SMD-only, and the calendar creeps ~1°/day, so microsteps bought nothing).
+The calendar latches go straight to ESP32 pins. **PWM hold** through a high-side **P-channel** switch (IRLIB9343,
+TO-220, logic level, driven by a 2N3904) on the motors' 5 V, with a 1N5819 freewheel diode, so the ULN2803A logic ground
+stays solid: 60% idle, 100% while stepping. Fit it only if the holding-torque test says the motors need it. 5 V 3 A
+supply through a 2.5 A resettable fuse; about 1.5 A peak. NTP daily. The MCP bit ↔ motor-wire table and the calendar
+GPIO table are in `pcb/design.py` (`MOTOR_BITS`, `CAL_GPIO`); firmware reads them from there.
+
+**Main board** (in progress, 2026-09-26). One **127 × 81.3 mm (5 × 3.2 in)** two-layer board, **all through-hole** (user
+decision: no SMD), on **4 × M3 × 30 standoffs** at the corners, behind the faceplate, clear of the motors (20.5 deep).
+ESP32-DevKitC in two 1 × 19 female headers (socketed, per the user) with **nothing underneath it** (user request; the
+layout check enforces the DevKit's 54.4 × 27.9 outline) and its **USB at the left edge**; DIP chips in sockets; 1/4 W
+resistors standing up; bussed SIP networks for the pull-ups. Grown from 4 × 3 in so it isn't compressed. Edges: six motor sockets across the top (JST-XH 5: the 28BYJ-48's own plug, so the kit's
+ULN2003 boards go unused), seven Hall sockets along the bottom (JST-XH 3), the calendar (JST-XH 8) and the barrel jack on
+the right, a 1 × 6 expansion header (3V3, GND, SDA, SCL, GPIO14, GPIO34: room for an RTC) on the left. Parts, placement and
+netlist are data in `pcb/design.py`; `python pcb/layout.py` checks courtyards, edges and the DevKit keep-out
+(clean). **`python pcb/silk.py`** draws the silkscreen-only layout: `pcb/silk_layout.png`, and
+`pcb/silk_layout_1to1.pdf` to print at 100% and test-fit real parts (check its 50 mm bar). **Not routed yet**: that happens in KiCad with Freerouting (see Open items).
 
 **Line.** ~0.3 mm **fluorocarbon** monofilament. At 0.20 N it's ~1% of breaking strength:
 sub-millimetre creep over sixty days, and elastic stretch is a constant absorbed in the pen
@@ -316,6 +333,9 @@ Everything lives in `C:\Users\mikem\Desktop\tide-machine\` (a git repo).
 | `station_study.py` → `station_study.html` | **M** | two-station fit study (O1 + M2): every Rev M part, clearances, depth stack. Published (link above). Writes no STLs |
 | `buildpack.py` → `bom.csv` + `build_pack.html` | **M** | bill of materials with order quantities, wiring diagram and pin map, from one data source. Published (link above) |
 | `build_pack.tmpl.html` | **M** | the build-pack page template, including the wiring diagram |
+| `pcb/design.py` | **M** | main board as data: parts, KiCad footprints, placement, netlist, net classes, firmware bit tables |
+| `pcb/layout.py`, `pcb/fplib.py`, `pcb/render.py` | **M** | placement checker (courtyards, edges, DevKit keep-out) and preview (`pcb/placement.png`), reading the real KiCad footprints in `pcb/footprints/` |
+| `pcb/silk.py` → `pcb/silk_layout.png` + `_1to1.pdf` | **M** | silkscreen-only layout: outlines, refs and values, connector names and pinouts; the PDF is true scale |
 | `station_study.py --full` → `revm_model.html` | **M** | the whole machine from the same part code: five stations, calendar, six brackets, pen carriage, drum, frame |
 | `station_study.tmpl.html` | **M** | the viewer template it fills |
 | `kinematics.py` | **M** | line geometry + the firmware inverse (`Station(r).theta(phi)`); the decals use it, and the firmware tables should too |
@@ -372,6 +392,10 @@ Everything lives in `C:\Users\mikem\Desktop\tide-machine\` (a git repo).
 15. **Every printed part prints without support** (printability review, 2026-09-26). This removed the hub collar
     and grub screw, split the pen carriage into two flat parts, and made the calendar hand flush with its base
     and 1.5 thick. Keep new parts to the same rule: one flat face, everything else growing up from it.
+16. **One through-hole main board** (2026-09-26): 4 × 3 in behind the plate, everything else wired to it; DIP chips in
+    sockets, the ESP32 socketed, **no SMD anywhere** (the user can't hand-solder it). That dropped the AX1201728SG for
+    direct 74AHCT245 coil drive, moved the Hall latch to the TO-92 package, and replaced the SOT-23 MOSFETs with an
+    IRLIB9343 (TO-220) and a 2N3904.
 
 ---
 
@@ -380,9 +404,17 @@ Everything lives in `C:\Users\mikem\Desktop\tide-machine\` (a git repo).
 - [ ] **Port Rev M into `tide_machine.rb`** (CFG + builders), then regenerate
       `faceplate.py` / `rails.py` outputs and the 3D viewer from it. **Don't order or drill
       Rev L files meanwhile.**
-- [ ] **Order parts:** `bom.csv` / the build pack. On arrival, verify the four flagged items (BKA30D-R5 continuous
-      rotation and shaft sizes; V623ZZ groove radius and V angle; DRV5013 variant beside a running motor;
-      AX1201728SG pinout and input levels) before designing further around them.
+- [ ] **Route the main board in KiCad** (next session; KiCad wasn't installable on in-flight Wi-Fi). Install KiCad 10
+      (`winget install --id KiCad.KiCad --source winget`) and Freerouting (needs Java 21). Then write
+      `pcb/build_board.py` for KiCad's Python: load `design.py`, place the footprints, assign nets and net classes,
+      draw the outline and holes, export Specctra DSN → Freerouting → import SES, pour GND on both layers, run DRC,
+      plot Gerbers + drill, zip for the fab. Keep copper pour out from under the DevKit's antenna end (x 47–54).
+- [ ] **Order parts:** `bom.csv` / the build pack. On arrival, verify the three flagged items (BKA30D-R5 continuous
+      rotation and shaft sizes; V623ZZ groove radius and V angle; DRV5013 variant beside a running motor) before
+      designing further around them. Order the PCB only after its DRC is clean.
+- [ ] **Faceplate updates for the main board:** re-size the five station Hall windows and the two calendar windows for
+      the TO-92 latch (re-run the field check), and add 4 × Ø3.2 for the board's standoffs (position to choose: behind
+      the station row, screw heads clear of the dials).
 - [ ] **Decal inputs:** NOAA G values, longitude and deployment epoch into `decals.py`; check the K1/O1
       ±90° argument convention against NOAA before printing.
 - [ ] **Measure a V623ZZ's groove root radius** when they arrive (4.8 assumed). It sets the
@@ -408,14 +440,15 @@ Everything lives in `C:\Users\mikem\Desktop\tide-machine\` (a git repo).
 - [ ] Commissioning order: mechanical → verify each arm's r by go-to-phase → direction-check
       every motor at 1000× → home → pen zero → 90-minute soak at 1000× against the sandbox →
       NTP, re-home, start.
-- [ ] Main board placement behind the plate (wire covers point down; Hall boards sit at 12 o'clock above each
-      motor; the calendar board fills the gap between N2 and K1).
+- [ ] Main board position behind the plate (wire covers point down; Hall carriers sit at 12 o'clock above each
+      motor; the calendar carrier fills the gap between N2 and K1). 28BYJ-48 leads are ~24 cm: check the drum motor's
+      reach, or add an XH extension.
 
 ---
 
-## If the ULN2003 drop bites
+## If the Darlington drop bites
 
-The Darlington eats ~1 V of the 5 V rail, 20% of driving torque. If steps look marginal
+The ULN2803A's Darlingtons eat ~1 V of the 5 V rail, 20% of driving torque. If steps look marginal
 at M2, swap to logic-level MOSFETs for a free ~22% before touching anything else.
 Beyond that: bipolar conversion (cut the centre-tap trace) for ~1.4×, then a chopper
 driver to set current against a thermal budget you choose.
