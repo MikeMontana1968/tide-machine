@@ -58,7 +58,7 @@ That last 2:1 is what makes it fit between the rails, which are now **152 mm apa
 
 | | |
 |---|---|
-| Frame | **1×2 pine** (19.05 × 38.1 actual), two rails **152 apart** (inner faces) + two 152 end posts; rails ~492 long |
+| Frame | **1×2 pine** (19.05 × 38.1 actual), two rails **152 apart** (inner faces) + two 152 end posts; rails **499** long (x −274 to +224.9) |
 | Faceplate | **1.5 mm aluminium, ~283 × 176** (12 mm landing on each rail; exact outline set in the port) |
 | Depth | motors 20.5 behind the plate; in front: dials at −3.5, arm-bearing groove **−15.0**, pen carriage to −30.3, rail front −38.1 |
 | Stations | 5 × two-part printed rotor (hub + Ø52 dial, bolt-on arm) + a V623ZZ on an M3 axle |
@@ -105,7 +105,12 @@ Rev M hole schedule, per station at shaft (x, 0):
 | — | Ø4.0 | y = ±82, spacing to be set | #6 frame screws into the rails' rear faces |
 
 Calendar, centred (−140, −48): Ø12 for the BKA30D-R5's shafts and hub adapters; 3.4 windows at (0, +20.5) (year
-latch) and (0, −9) (moon latch); 4 × Ø2.2 at (±14, ±30) for the calendar carrier; Ø2.2 at (0, +32) for the index hand.
+latch) and (0, −9) (moon latch); 4 × Ø2.2 at (±14, ±30) for the calendar carrier; Ø2.2 at (+1.9, +30.5) for the index hand.
+The calendar carrier has **4 × 6 chamfers on its top corners** (as a plain 36 × 68 rectangle it clipped the N2 and K1 motor
+bodies; now 0.98 clear). Still open: its two bottom holes at y −78 sit under the bottom rail's landing (inner face y −76),
+so their front-side heads have nowhere to go; move them once the BKA30D-R5 is measured (its placeholder body also covers
+all four nuts). **Proposed main-board standoff holes** (not yet cut, checked clear of every part by ≥ 3 mm): 4 × Ø3.2 at
+(25, 39), (−108, 39), (25, −35.28), (−108, −35.28), for the board upright as seen from behind.
 **The plate must be aluminium, never steel**: the latches look through it.
 
 Still true from Rev L: the plate is **not symmetric** (a mirrored plate is scrap). Keep labels
@@ -365,6 +370,10 @@ Everything lives in `C:\Users\mikem\Desktop\tide-machine\` (a git repo).
 | `tide_machine.rb` | L | SketchUp builder, **stale**: discs, yokes, carriages, screw eyes, motor without its offset |
 | `faceplate.py` + `faceplate_*.dxf/pdf` | L | **stale; do not order `faceplate_CUT.dxf`** |
 | `rails.py` + `rails_*.pdf/dxf` | L | **stale**: 7 rod sockets, 12 screw-eye pilots |
+| `check_interference.py` | **M** | pairwise manifold intersection of every solid in the full model; prints real overlaps |
+| `export_stl.py` → `stl/` | **M** | every printed part as an STL in its print orientation, plus `stl/README.txt` (quantities, orientation) |
+| `pcb/gen_schematic.py` → `pcb/tide_main.kicad_sch` | **M** | KiCad schematic generated from `design.py` (label-connected, KiCad 10 symbols); ERC clean |
+| `docs/assembly_guide/` | **M** | flat-pack assembly guide: `guide.html` + `figs_project.js` (drawings from `tide_geom.js`, written by `gen_geom.py` from the model), `gen_fritzing.py` → `tide_wiring.fzz`; build with the flatpack-guide kit's `build.py` → `tide_machine_guide.html` + `.pdf`. Published: https://claude.ai/artifact/5CP9dd6rZ4TwPKpYb4KxG1 |
 | `tide-machine-3d.html` | L | **stale** viewer |
 
 ---
@@ -446,7 +455,12 @@ Everything lives in `C:\Users\mikem\Desktop\tide-machine\` (a git repo).
 - [x] ~~Pen travel didn't fit~~: the window was 107.2 against 114.1 with 140 mm rails. **Fixed by rails 152 apart**
       (window 119.2, +5.1; decided 2026-09-26). A one-bearing-per-side carriage would not have helped: both
       ends of the window are set by the pen pulley itself, and two bearings would let the carriage rock.
-- [ ] Pen carriage details: ballast pocket, leaf spring and retract lever, pen holder.
+- [ ] Pen carriage details: ballast pocket, leaf spring and retract lever, pen holder. The pen arm now runs at z −26.25 to
+      −30.25, 1 mm in front of the guide rods (it ran through the +x rod at the drum's mid-plane).
+- [ ] **Assembly-guide known issues** (docs/assembly_guide, KI 1–12): drum drive (motor mount, coupling, end-cap grip),
+      far dead-end tie-off at S2, calendar carrier holes under the bottom rail, Hall/calendar carriers as designed parts.
+      Fixed while writing it (in the model, re-checked): calendar x −140, rails +12 mm, index-hand base, pilot holes in the
+      index tab and hand STLs, arm-bearing and pen-pulley axle shims (not M3 washers), pen arm vs rod, calendar-carrier chamfers.
 - [ ] Drum position and rail length for the shorter row; frame-screw spacing on the new
       plate outline.
 - [ ] **Measure the 28BYJ-48's holding torque** at the output shaft, powered and unpowered.

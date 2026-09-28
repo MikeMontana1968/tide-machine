@@ -1,0 +1,19 @@
+{
+  "page": "guide.html",
+  "out": "tide_machine_guide.html",
+  "pre": ["gen_geom.py"],
+  "scripts": ["engine.js", "figs_common.js", "tide_geom.js", "figs_project.js", "figs_pcb.js"],
+  "kicad_pcb": "../../pcb/tide_main.kicad_pcb",
+  "kicad_sch": "../../pcb/tide_main.kicad_sch",
+  "fritzing": {
+    "generator": "gen_fritzing.py",
+    "fzz": "tide_wiring.fzz",
+    "board_first": true,
+    "crops": {
+      "motors":   [-60, -86, 262, 132],
+      "halls":    [-6, 58, 166, 66],
+      "calendar": [108, -16, 110, 100],
+      "power":    [108, 48, 112, 92]
+    }
+  }
+}

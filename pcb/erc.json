@@ -1,0 +1,61 @@
+{
+    "$schema": "https://schemas.kicad.org/erc.v1.json",
+    "coordinate_units": "mm",
+    "date": "2026-09-27T21:31:00",
+    "ignored_checks": [
+        {
+            "description": "Global label only appears once in the schematic",
+            "key": "single_global_label"
+        },
+        {
+            "description": "Four connection points are joined together",
+            "key": "four_way_junction"
+        },
+        {
+            "description": "SPICE model issue",
+            "key": "simulation_model_issue"
+        },
+        {
+            "description": "Assigned footprint doesn't match footprint filters",
+            "key": "footprint_filter"
+        }
+    ],
+    "included_severities": [
+        "error",
+        "warning",
+        "exclusion"
+    ],
+    "kicad_version": "10.0.6",
+    "sheets": [
+        {
+            "path": "/",
+            "uuid_path": "/58d3050e-0327-4989-b6fb-0bff4989e1f9",
+            "violations": [
+                {
+                    "description": "Pins of type Tri-state and Output are connected",
+                    "items": [
+                        {
+                            "description": "Symbol U7 Pin 2 [A0, Tri-state, Line]",
+                            "pos": {
+                                "x": 2.3622,
+                                "y": 3.7846
+                            },
+                            "uuid": "a337b3cc-3173-4dc2-9445-4512bc6619fe"
+                        },
+                        {
+                            "description": "Symbol U8 Pin 28 [GPA7, Output, Line]",
+                            "pos": {
+                                "x": 4.6228,
+                                "y": 1.3716
+                            },
+                            "uuid": "35c7e657-fb67-4f2b-851b-4c77bc0aaed2"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "pin_to_pin"
+                }
+            ]
+        }
+    ],
+    "source": "tide_main.kicad_sch"
+}

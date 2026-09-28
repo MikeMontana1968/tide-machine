@@ -89,16 +89,17 @@ DRUM_R, DRUM_BORE, DRUM_L, DRUM_Z = 44.45, 38.95, 130.0, -24.0   # drum axis on 
 DRUM_X     = PEN_X + PEN_BODY_X + PEN_ARM + DRUM_R
 
 # calendar: BKA30D-R5 dual-concentric gauge stepper; year dial (outer shaft) + moon disc (inner shaft)
-CAL_X, CAL_Y = -3.5 * PITCH, -48.0   # below and between N2 and K1
+CAL_X, CAL_Y = -2.5 * PITCH, -48.0   # below and between N2 and K1 (x -140, as RESUME's hole schedule)
 BKA_L, BKA_W, BKA_T = 59.5, 31.5, 8.9                 # housing, long axis vertical -- PLACEHOLDER shaft at centre
 CAL_PCB    = (36.0, 68.0, 1.6)
+CAL_CHAMFER = (4.0, 6.0)                              # top corners: 4 along the top edge, 6 down the side (clears N2/K1 bodies)
 MOON_R, MOON_T, MOON_GAP = 16.0, 2.5, 1.0             # Ø32 moon disc, 1 mm in front of the year dial
 MOON_HALL_R = 9.0                                     # moon magnets and its sensor at 6 o'clock, r 9
 YEAR_H     = 365.2422 * 24.0
 SYNODIC_H  = 29.530589 * 24.0
 
 PLATE_X    = (-4 * PITCH - 29.0, 30.0)
-RAIL_X     = (-4 * PITCH - 38.0, DRUM_X + DRUM_R + 25.0)
+RAIL_X     = (-4 * PITCH - 50.0, DRUM_X + DRUM_R + 25.0)   # left post clears the S2 dial by 5 mm
 
 # -------------------------------------------------------------- derived z --
 z_disc_back   = -(EAR_HEAD + DISC_GAP)
@@ -119,6 +120,8 @@ PLANE_REAR, PLANE_FRONT = rollers.planes(z_line)[1], rollers.planes(z_line)[0]
 PEN_ZR     = PLANE_FRONT - 1.5                            # carriage body clears the front-plane leg
 PEN_BZ     = PEN_ZR - 2.5 - PEN_POCKET                    # bearings/rods: 2.5 rear plate, then the pocket
 PEN_ZF     = PEN_BZ - PEN_POCKET - 4.0
+PEN_ARM_Z  = (PEN_BZ - PEN_ROD_D / 2 - 1.0, PEN_ZF)             # pen arm runs 1 mm in front of the guide rods
+PEN_ARM_ZC = sum(PEN_ARM_Z) / 2
 
 assert abs(z_line - rollers.LINE_Z) < 1e-6, f"rollers.py LINE_Z should be {z_line:.2f}"
 
@@ -141,6 +144,13 @@ def circ(x, y, r, n=48):
 def revolve_z(profile, x, y, n=64):
     cs = CrossSection([[(r, z) for r, z in profile]])
     return cs.revolve(n).rotate([90, 0, 0]).translate([x, y, 0])
+
+def seg_dist(c, a, b, oy=0.0):
+    """distance from point c to segment ab (a, b given relative to (0, oy))"""
+    ax, ay, bx, by = a[0], a[1] + oy, b[0], b[1] + oy
+    dx, dy = bx - ax, by - ay
+    t = max(0.0, min(1.0, ((c[0] - ax) * dx + (c[1] - ay) * dy) / (dx * dx + dy * dy)))
+    return math.hypot(c[0] - ax - t * dx, c[1] - ay - t * dy)
 
 def polar(r, deg):
     return r * math.cos(math.radians(deg)), r * math.sin(math.radians(deg))
@@ -206,7 +216,7 @@ if FULL:
     for sx in (-1, 1):
         for sy in (-1, 1):
             plate -= zcyl(CAL_X + sx * 14.0, CAL_Y + sy * 30.0, 1.1, -1, 3, 16)     # calendar PCB, M2
-    plate -= zcyl(CAL_X + 2.8, CAL_Y + 32.0, 1.1, -1, 3, 16)                          # index hand, M2
+    plate -= zcyl(CAL_X + 1.9, CAL_Y + 30.5, 1.1, -1, 3, 16)                          # index hand, M2
 add("Faceplate, 1.5 aluminium (never steel)", plate, "#B9C3CB", "plate", opacity=0.92)
 
 for sy in (1, -1):
@@ -238,7 +248,8 @@ for si, (nm, xs, r) in enumerate(STATIONS):
 
     hall_board(xs, HALL_R, nm)
     tab = box(xs - 3.0, xs + 3.0, TAB_R0, TAB_R1, 0, -TAB_T) - \
-          zprism(CrossSection([[(xs - 3.1, TAB_R0 - 0.1), (xs + 3.1, TAB_R0 - 0.1), (xs, TAB_R0 + 3.0)]]), 1, -TAB_T - 1)
+          zprism(CrossSection([[(xs - 3.1, TAB_R0 - 0.1), (xs + 3.1, TAB_R0 - 0.1), (xs, TAB_R0 + 3.0)]]), 1, -TAB_T - 1) - \
+          zcyl(xs, TAB_R1 - 2.0, 0.8, 1, -TAB_T - 1, 16)                       # M2 x 6 pilot, from behind the plate
     add(f"{nm} index tab (PLA)", tab, "#3B4650", "sensor")
 
     # rotor part 1: hub + Ø52 dial, magnet pair in the back at 180 deg from the pin (prints flat, dial down)
@@ -267,8 +278,8 @@ for si, (nm, xs, r) in enumerate(STATIONS):
     arm -= zcyl(xs + r, 0, 1.6, z_arm_back - INSERT_L + 0.01, z_brg_back - 1, 24)
     add(f"{nm} arm (r {r:.2f})", arm, "#C98B3B" if nm == "M2" else "#8D6BBF", "rotor", rotor=si)
     add(f"{nm} arm V623ZZ", v623(xs + r, 0, z_line), "#AEB7BE", "rotor", rotor=si)
-    add(f"{nm} M3x8 axle + washer", zcyl(xs + r, 0, 1.5, z_axle_tip, z_brg_front - 0.5, 16) +
-        zcyl(xs + r, 0, 3.5, z_brg_front, z_brg_front - 0.5, 24) +
+    add(f"{nm} M3x8 axle + 3x5x0.5 shim", zcyl(xs + r, 0, 1.5, z_axle_tip, z_brg_front - 0.5, 16) +
+        zcyl(xs + r, 0, rollers.BRG_RACE_D / 2, z_brg_front, z_brg_front - 0.5, 24) +
         zcyl(xs + r, 0, 2.85, z_brg_front - 0.5, z_brg_front - 2.15, 24), "#6F7880", "rotor", rotor=si)
 
     # pulley bracket: two V623ZZ on one axle, directly above the shaft
@@ -335,11 +346,14 @@ if FULL:
     add("Carriage V623ZZ x4 on M3x16 axles + nuts (+x pair slotted for preload)", brgs, "#AEB7BE", "pen", rotor=100)
     add("Carriage 3x5x0.5 shims x4 (rear side)", shims, "#C9A34E", "pen", rotor=100)
     add("Pen pulley V623ZZ (behind the carriage)", v623(PEN_X, 0, z_line) +
-        zcyl(PEN_X, 0, 1.5, z_brg_back, PEN_ZF + 1.0, 16) + zcyl(PEN_X, 0, 2.85, z_brg_back, z_brg_back + 1.65, 24),
+        zcyl(PEN_X, 0, 1.5, z_brg_back + 0.5, z_brg_back + 0.5 - 16.0, 16) +
+        zcyl(PEN_X, 0, rollers.BRG_RACE_D / 2, z_brg_back, z_brg_back + 0.5, 24) +          # 3x5x0.5 shim
+        zcyl(PEN_X, 0, 2.85, z_brg_back + 0.5, z_brg_back + 2.15, 24),
         "#AEB7BE", "pen", rotor=100)
     arm_y = PEN_S / 2
-    add("Pen arm + nib", box(PEN_X + PEN_BODY_X - 3.0, DRUM_X - DRUM_R - 1.5, arm_y - 2, arm_y + 2, DRUM_Z + 2, DRUM_Z - 2) +
-        Manifold.cylinder(1.5, 0.6, 0.3, 12).rotate([0, 90, 0]).translate([DRUM_X - DRUM_R - 1.5, arm_y, DRUM_Z]), "#3B4650", "pen", rotor=100)
+    nib_x = DRUM_X - math.sqrt(DRUM_R ** 2 - (PEN_ARM_ZC - DRUM_Z) ** 2)         # where the nib meets the drum
+    add("Pen arm + nib", box(PEN_X + PEN_BODY_X - 3.0, nib_x - 1.5, arm_y - 2, arm_y + 2, PEN_ARM_Z[0], PEN_ARM_Z[1]) +
+        Manifold.cylinder(1.5, 0.6, 0.3, 12).rotate([0, 90, 0]).translate([nib_x - 1.5, arm_y, PEN_ARM_ZC]), "#3B4650", "pen", rotor=100)
     add("Drum, 3in Sch 40 PVC", ycyl(DRUM_X, DRUM_Z, DRUM_BORE, DRUM_R, -DRUM_L / 2, DRUM_L / 2), "#E9E6DF", "pen", rotor=200)
     add("Chart paper", ycyl(DRUM_X, DRUM_Z, DRUM_R + 0.05, DRUM_R + 0.25, -60, 60), "#FBFAF6", "pen", rotor=200, opacity=0.95)
     for sy in (-1, 1):
@@ -351,7 +365,10 @@ if FULL:
     # ---- calendar: BKA30D-R5 (PLACEHOLDER body, shafts assumed at its centre) -------------
     cx, cy = CAL_X, CAL_Y
     w, h, t = CAL_PCB
-    add("Calendar PCB: BKA30D-R5 + 2 Hall latches (behind the plate)", box(cx - w / 2, cx + w / 2, cy - h / 2, cy + h / 2, PLATE_T, PLATE_T + t), "#2E6B3F", "motors")
+    cw, ch = CAL_CHAMFER
+    carrier = CrossSection([[(cx - w / 2, cy - h / 2), (cx + w / 2, cy - h / 2), (cx + w / 2, cy + h / 2 - ch), (cx + w / 2 - cw, cy + h / 2),
+                             (cx - w / 2 + cw, cy + h / 2), (cx - w / 2, cy + h / 2 - ch)]])
+    add("Calendar PCB: BKA30D-R5 + 2 Hall latches (behind the plate)", zprism(carrier, PLATE_T, PLATE_T + t), "#2E6B3F", "motors")
     add("BKA30D-R5 dual-shaft gauge stepper (placeholder)", box(cx - BKA_W / 2, cx + BKA_W / 2, cy - BKA_L / 2, cy + BKA_L / 2,
         PLATE_T + t, PLATE_T + t + BKA_T), "#23272B", "motors")
     for (hx, hy, lab) in ((cx, cy + HALL_R, "Year"), (cx, cy - MOON_HALL_R, "Moon")):
@@ -372,9 +389,11 @@ if FULL:
     magnets(cx, cy, MOON_HALL_R, 180.0, z_moon_back, "Moon", 300)
     # one index hand at 12 o'clock reads both: crosses the year ring and stops at the moon's rim
     # hand centred on 12 o'clock; base flush with the hand's -x side, so the part prints lying on that side
-    base = box(cx - 1.2, cx + 6.8, cy + 28.0, cy + 36.0, 0, z_hand[1])
-    hand = box(cx - 1.2, cx + 1.2, cy + MOON_R + 1.0, cy + 36.0, z_hand[0], z_hand[1])
-    add("Calendar index hand (PLA)", base + hand, "#3B4650", "sensor")
+    # base 6.2 x 7, low enough to clear the neighbouring station dials (they narrow toward the calendar)
+    base = box(cx - 1.2, cx + 5.0, cy + 27.0, cy + 34.0, 0, z_hand[1])
+    hand = box(cx - 1.2, cx + 1.2, cy + MOON_R + 1.0, cy + 34.0, z_hand[0], z_hand[1])
+    hand_m = base + hand - zcyl(cx + 1.9, cy + 30.5, 0.8, 1, -6.0, 16)          # M2 x 6 pilot, from behind the plate
+    add("Calendar index hand (PLA)", hand_m, "#3B4650", "sensor")
 
 # ------------------------------------------------------------- clearances --
 o1, m2 = STATIONS[-2], STATIONS[-1]
@@ -409,8 +428,12 @@ if FULL:
         ("Index hand in front of the moon disc",    z_moon_front - z_hand[0]),
         ("Calendar PCB to N2/K1 wire covers",       PITCH / 2 - CAL_PCB[0] / 2 - COVER_W / 2),
         ("Calendar PCB to N2/K1 motor ears",        (CAL_Y + CAL_PCB[1] / 2) * -1 - (MOT_OFF + EAR_R)),
-        ("Index-hand base to the year dial rim",    28.0 - R_DISC),
+        ("Index-hand base to the year dial rim",    27.0 - R_DISC),
+        ("Index-hand base to the neighbouring dial", (PITCH / 2 - 5.0) - math.sqrt(R_DISC ** 2 - (CAL_Y + 34.0) ** 2) + PITCH / 2 - PITCH / 2),
         ("Carriage axle nuts to the pen pulley and bracket bearings", PEN_BX - 3.2 - rollers.BRG_OD / 2),
+        ("Pen arm in front of the guide rods",       (PEN_BZ - PEN_ROD_D / 2) - PEN_ARM_Z[0]),
+        ("Calendar carrier chamfer to the N2/K1 motor bodies", seg_dist((PITCH / 2, -MOT_OFF),
+            (CAL_PCB[0] / 2, CAL_PCB[1] / 2 - CAL_CHAMFER[1]), (CAL_PCB[0] / 2 - CAL_CHAMFER[0], CAL_PCB[1] / 2), CAL_Y) - MOT_D / 2),
     ]
 stack = [
     ("Hall element (chip nested in a plate window)", z_hall), ("Faceplate front face", 0.0),

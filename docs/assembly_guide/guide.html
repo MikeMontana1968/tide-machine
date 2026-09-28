@@ -1,0 +1,1022 @@
+<title>Tide Machine Assembly Manual</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700;800&family=Noto+Sans+Mono:wght@500&display=swap">
+<style>
+:root{
+  --desk:#d8dcdf; --paper:#ffffff; --ink:#131416; --ink2:#5a6066; --rule:#cfd3d6;
+  --shade:rgba(19,20,22,.14); --metal:#e6e8ea; --warn:#ffd21f; --warnink:#131416;
+  --board:#eef2ec; --padc:#d5d8da; --clash:#ffd21f; --hl:#fff1a8;
+  --sans:'Noto Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'Noto Sans Mono',ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --desk:#0a0202; --paper:#160505; --ink:#ff5b47; --ink2:#bf4a3b; --rule:#46140f;
+    --shade:rgba(255,91,71,.17); --metal:#2a0a07; --warn:#ff5b47; --warnink:#160505;
+    --board:#1e0706; --padc:#3a0e0a; --clash:rgba(255,91,71,.42); --hl:rgba(255,91,71,.2);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --desk:#0a0202; --paper:#160505; --ink:#ff5b47; --ink2:#bf4a3b; --rule:#46140f;
+  --shade:rgba(255,91,71,.17); --metal:#2a0a07; --warn:#ff5b47; --warnink:#160505;
+  --board:#1e0706; --padc:#3a0e0a; --clash:rgba(255,91,71,.42); --hl:rgba(255,91,71,.2);
+}
+:root.night{
+  color-scheme:dark;
+  --desk:#0a0202; --paper:#160505; --ink:#ff5b47; --ink2:#bf4a3b; --rule:#46140f;
+  --shade:rgba(255,91,71,.17); --metal:#2a0a07; --warn:#ff5b47; --warnink:#160505;
+  --board:#1e0706; --padc:#3a0e0a; --clash:rgba(255,91,71,.42); --hl:rgba(255,91,71,.2);
+}
+:root.day{
+  color-scheme:light;
+  --desk:#d8dcdf; --paper:#ffffff; --ink:#131416; --ink2:#5a6066; --rule:#cfd3d6;
+  --shade:rgba(19,20,22,.14); --metal:#e6e8ea; --warn:#ffd21f; --warnink:#131416;
+  --board:#eef2ec; --padc:#d5d8da; --clash:#ffd21f; --hl:#fff1a8;
+}
+*{box-sizing:border-box}
+body{background:var(--desk);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.5;padding-inline:16px;padding-block:0 56px;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);border-bottom:1.5px solid var(--ink);margin-inline:-16px;padding:8px 16px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.bar .code{font-family:var(--mono);font-size:12px;color:var(--ink2)}
+.bar nav{display:flex;gap:4px;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none}
+.bar nav::-webkit-scrollbar{display:none}
+.bar nav a{text-decoration:none;font-weight:700;font-size:13px;padding:3px 9px;border:1.5px solid var(--ink);border-radius:999px;white-space:nowrap;flex:none}
+.bar{flex-wrap:nowrap}
+.bar button{flex:none}
+@media (max-width:700px){ .bar .code{display:none} }
+.bar nav a:hover,.bar nav a:focus-visible{background:var(--ink);color:var(--paper);outline:none}
+.bar button{font:700 13px var(--sans);color:var(--paper);background:var(--ink);border:0;border-radius:999px;padding:6px 14px;cursor:pointer}
+.bar button:focus-visible{outline:3px solid var(--warn);outline-offset:2px}
+.wrap{max-width:1140px;margin:24px auto 0;display:flex;flex-direction:column;gap:18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,500px),1fr));gap:18px;align-items:start}
+.sheet{background:var(--paper);border:1px solid var(--rule);padding:22px 24px 42px;position:relative;display:flex;flex-direction:column;gap:14px;min-width:0}
+.sheet.wide{grid-column:1/-1}
+.sheet>footer{position:absolute;bottom:12px;left:24px;right:24px;display:flex;justify-content:space-between;font-size:10.5px;color:var(--ink2);font-family:var(--mono)}
+.head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.no-{font-weight:800;font-size:52px;line-height:.9;letter-spacing:-1.5px;font-variant-numeric:tabular-nums}
+.head h3{margin:0;font-size:16px;font-weight:700;text-wrap:balance}
+.head .tag{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.fig{margin:0;display:flex;justify-content:center;min-width:0}
+.fig svg{max-width:100%;height:auto;display:block;overflow:visible}
+.fig svg *{vector-effect:non-scaling-stroke}
+.do{margin:0;padding-left:1.15em;display:flex;flex-direction:column;gap:3px}
+.do li::marker{font-weight:800}
+.hw{font-family:var(--mono);font-size:13px;background:var(--shade);padding:0 5px;border-radius:3px;white-space:nowrap}
+.note{display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:start;font-size:14px;border-top:1px solid var(--rule);padding-top:10px}
+.note p{margin:0}
+.note p+p{margin-top:6px}
+.ico{width:28px;height:28px;display:block}
+.ki{display:inline-block;font:800 11.5px var(--sans);background:var(--warn);color:var(--warnink);padding:1px 7px;border-radius:3px;text-decoration:none;letter-spacing:.02em;white-space:nowrap}
+.pill{display:inline-block;font:700 11.5px var(--sans);border:1.5px solid var(--ink);padding:0 8px;border-radius:999px;white-space:nowrap}
+.pill.now{background:var(--ink);color:var(--paper)}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cmp>div{border:1.5px solid var(--ink);border-radius:12px;padding:10px 8px 8px;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:110px;font-size:12.5px;text-align:center}
+.cmp .ok::before{content:'';position:absolute;top:6px;left:8px;width:18px;height:10px;border-left:3.5px solid var(--ink);border-bottom:3.5px solid var(--ink);transform:rotate(-45deg)}
+.cmp svg.x{position:absolute;inset:6px;width:calc(100% - 12px);height:calc(100% - 12px);pointer-events:none}
+.cmp svg.x path{fill:none;stroke:var(--ink);stroke-width:5;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.bag{border:1.5px solid var(--ink);border-radius:4px 18px 4px 18px;outline:1px dashed var(--ink);outline-offset:-10px;padding:24px 24px 20px}
+.bag .n{font-weight:800;font-size:44px;line-height:1}
+.parts{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:16px 14px;align-items:end;margin-top:8px}
+.part{display:grid;grid-template-columns:1fr auto;align-items:end;gap:2px 4px}
+.part .code{writing-mode:vertical-rl;transform:rotate(180deg);font:500 10px var(--mono);color:var(--ink2);max-height:120px}
+.part .q{grid-column:1/-1;font-size:21px;font-weight:600;line-height:1.1}
+.part .d{grid-column:1/-1;font-size:12px;color:var(--ink2);line-height:1.3}
+.tbl{width:100%;border-collapse:collapse;font-size:13.5px;font-variant-numeric:tabular-nums}
+.tbl th{text-align:left;font-weight:700;border-bottom:1.5px solid var(--ink);padding:4px 8px 4px 0}
+.tbl td{border-bottom:1px solid var(--rule);padding:5px 8px 5px 0;vertical-align:top}
+.tblwrap{overflow-x:auto}
+.divider{background:var(--ink);color:var(--paper);padding:18px 24px;display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.divider .L{font-size:60px;font-weight:800;line-height:.9}
+.divider h2{margin:0;font-size:24px;font-weight:800;letter-spacing:-.3px}
+.divider p{margin:2px 0 0;font-size:14px;opacity:.85;max-width:62ch}
+.cover{padding:30px 32px 48px;gap:8px}
+.cover h1{margin:0;font-size:clamp(46px,11vw,128px);font-weight:800;letter-spacing:-.04em;line-height:.95}
+.cover .sub{font-size:17px;font-weight:600;max-width:52ch}
+.badge{align-self:flex-end;display:flex;align-items:center;gap:10px;border:2.5px solid var(--ink);border-radius:999px;padding:8px 18px 8px 12px;font-weight:800;font-size:14px;line-height:1.15}
+.badge small{display:block;font-weight:600;font-size:11.5px}
+.row{display:flex;gap:18px;flex-wrap:wrap;align-items:center;justify-content:center}
+.toc{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr));gap:10px}
+.toc a{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;text-decoration:none;border:1.5px solid var(--ink);border-radius:10px;padding:10px 12px}
+.toc a:hover,.toc a:focus-visible{background:var(--shade);outline:none}
+.toc b{font-size:28px;line-height:1;grid-row:span 2}
+.toc span{font-weight:700}
+.toc small{color:var(--ink2);font-size:12px}
+.issues{counter-reset:ki;display:flex;flex-direction:column;gap:12px;margin:0;padding:0;list-style:none}
+.issues li{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;font-size:14px}
+.issues li p{margin:0}
+.lead-in{font-size:14px;margin:0;max-width:70ch}
+p{margin:0}
+@media (max-width:560px){
+  .sheet{padding:18px 16px 40px}
+  .sheet>footer{left:16px;right:16px}
+  .no-{font-size:42px}
+  .cmp{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:no-preference){ html{scroll-behavior:smooth} }
+
+/* print / PDF: one sheet per page, paper palette, no chrome */
+@page{size:letter;margin:11mm}
+@page wide{size:letter landscape;margin:9mm}
+.print-only{display:none}
+@media print{
+  :root,:root.night,:root.day,:root[data-theme]{color-scheme:light;
+    --desk:#fff;--paper:#fff;--ink:#131416;--ink2:#5a6066;--rule:#cfd3d6;--shade:rgba(19,20,22,.14);--metal:#e6e8ea;
+    --warn:#ffd21f;--warnink:#131416;--board:#eef2ec;--padc:#d5d8da;--clash:#ffd21f;--hl:#fff1a8;--artfilter:none;--schfilter:none}
+  html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body{background:#fff;padding-inline:0}
+  .bar,.zb{display:none!important}
+  .wrap{max-width:none;margin:0;gap:0;display:block}
+  .grid{display:block}
+  .sheet{border:0;padding:0 0 30px;break-before:page;break-inside:auto}
+  .sheet>footer{position:static;margin-top:10px;left:auto;right:auto}
+  .wrap>.sheet:first-child{break-before:auto}
+  .divider{break-before:page;margin-bottom:14px}
+  .divider+.grid>.sheet:first-child{break-before:avoid}
+  .fig svg,.fzimg,.row,.cmp,.note,table,.part{break-inside:avoid}
+  .zoomer{height:auto;border:0;overflow:visible}
+  .zoomer svg{height:auto}
+  a{text-decoration:none}
+  .print-only{display:inline}.screen-only{display:none}
+  #g3{page:wide}
+  #g3 .zoomer svg{max-height:148mm}
+  .fig svg{max-height:185mm;width:auto}
+  .cover .fig svg{max-height:150mm}
+  .parts .fig svg{max-height:none}
+  .parts .fig{zoom:.8}
+  .bag .parts.eparts{grid-template-columns:repeat(3,1fr);gap:10px 14px}
+  .eparts .fig{zoom:.72}
+}
+
+/* figure line work */
+.fig .f{fill:var(--paper);stroke:var(--ink);stroke-width:1.3;stroke-linejoin:round}
+.fig .l{fill:none;stroke:var(--ink);stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round}
+.fig .lt{fill:none;stroke:var(--ink);stroke-width:.7}
+.fig .t{fill:none;stroke:var(--ink);stroke-width:.8}
+.fig .ft{fill:var(--paper);stroke:var(--ink);stroke-width:.7}
+.fig .gs{fill:var(--paper);stroke:var(--ink);stroke-width:.45;stroke-opacity:.75}
+.fig .m{fill:var(--metal);stroke:var(--ink);stroke-width:1.1;stroke-linejoin:round}
+.fig .k,.fig .silkk,.fig .kd{fill:var(--ink)}
+.fig .kd2{fill:var(--ink2);stroke:var(--ink);stroke-width:1}
+.bag .bagt{display:inline-block;margin:0 0 0 14px;font-size:20px;font-weight:800;vertical-align:10px}
+.eparts{grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr));gap:18px}
+.eparts .part{grid-template-columns:1fr auto;align-items:start}
+.fig .sh{fill:var(--shade)}
+.fig .ax{fill:none;stroke:var(--ink);stroke-width:.8;stroke-dasharray:10 3 2 3}
+.fig .dl{fill:none;stroke:var(--ink);stroke-width:.9;stroke-dasharray:4 3}
+.fig .ar{fill:var(--ink);stroke:var(--paper);stroke-width:1.5;stroke-linejoin:round}
+.fig .ra{fill:none;stroke:var(--ink);stroke-width:2.3;stroke-linecap:round}
+.fig .cut{fill:none;stroke:var(--ink);stroke-width:2.2;stroke-dasharray:3 2}
+.fig .pcbf,.fig .pcb{fill:var(--board);stroke:var(--ink);stroke-width:1}
+.fig .pad{fill:var(--padc);stroke:var(--ink);stroke-width:1}
+.fig .drill{fill:var(--paper);stroke:var(--ink);stroke-width:.6}
+.fig .silk{fill:none;stroke:var(--ink);stroke-width:1.5}
+.fig .lead{fill:none;stroke:var(--ink);stroke-width:2.2;stroke-linecap:round}
+.fig .stripe{fill:var(--paper)}
+.fig .stripe2{fill:var(--shade);stroke:var(--ink);stroke-width:1}
+.fig .lp{stroke:var(--ink);stroke-width:2.5}
+.fig .clash{fill:var(--clash);stroke:var(--ink);stroke-width:1}
+.fig .hl,.fig .disp{fill:var(--hl);stroke:var(--ink);stroke-width:1}
+.fig .wire{fill:none;stroke:var(--ink);stroke-width:2;stroke-linejoin:round}
+.fig .dlw{fill:none;stroke:var(--ink);stroke-width:1.4;stroke-dasharray:5 4}
+.fig .probe{fill:none;stroke:var(--ink);stroke-width:2.4}
+.fig .grid{fill:none;stroke:var(--rule);stroke-width:1}
+.fig .warnln{fill:none;stroke:var(--ink);stroke-width:1.6;stroke-dasharray:6 4}
+.fig .sp{fill:var(--ink2)}
+.fig .arc{fill:none;stroke:var(--ink);stroke-width:7;opacity:.85}
+.fig text{fill:var(--ink);font-family:var(--sans);font-weight:600}
+.fig .cnt,.fig .silkt{font-weight:800}
+.fig .mono{font-family:var(--mono);font-weight:500}
+.fig .rail{fill:none;stroke:var(--ink);stroke-width:3.2;stroke-linecap:round}
+:root{--artfilter:none;--schfilter:none}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--artfilter:grayscale(1) sepia(1) saturate(5) hue-rotate(-50deg) brightness(.55);--schfilter:invert(1) grayscale(1) sepia(1) saturate(6) hue-rotate(-50deg) brightness(.8)}}
+:root[data-theme="dark"],:root.night{--artfilter:grayscale(1) sepia(1) saturate(5) hue-rotate(-50deg) brightness(.55);--schfilter:invert(1) grayscale(1) sepia(1) saturate(6) hue-rotate(-50deg) brightness(.8)}
+:root.day{--artfilter:none;--schfilter:none}
+.fzimg{display:block;width:100%;height:auto;background:#fff;border:1px solid var(--rule);border-radius:6px;filter:var(--artfilter)}
+.fzimg.sch{padding:6px}
+.fzimg.crop{height:clamp(220px,34vw,340px)}
+.fzcap{font-size:12px;color:var(--ink2);margin-top:-6px}
+.zoomer{position:relative;border:1px solid var(--rule);border-radius:6px;overflow:hidden;height:min(72vh,720px);background:var(--paper);touch-action:none;cursor:grab}
+.zoomer.drag{cursor:grabbing}
+.zoomer svg{width:100%;height:100%;display:block;filter:var(--schfilter)}
+.zoomer .zb{position:absolute;right:10px;top:10px;display:flex;gap:6px;z-index:1}
+.zoomer .zb button{font:700 15px var(--sans);width:34px;height:34px;border-radius:8px;border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);cursor:pointer}
+.zoomer .zb button:focus-visible{outline:3px solid var(--warn)}
+/* this guide */
+.fixed{display:flex;flex-direction:column;gap:6px;margin:0;padding-left:1.15em;font-size:13.5px}
+.meters{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.meters figure{flex:1 1 300px}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:14px;align-items:end}
+.two .fig{flex-direction:column;align-items:center}
+.two figcaption{font-size:12px;color:var(--ink2);text-align:center}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-info" viewBox="0 0 28 28"><circle cx="14" cy="14" r="12" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="14" cy="8.5" r="1.8" fill="currentColor"/><path d="M14 12.5v9" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></symbol>
+  <symbol id="i-warn" viewBox="0 0 28 28"><path d="M14 2.5 26.5 25H1.5Z" fill="var(--warn)" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/><path d="M14 10v7" stroke="var(--warnink)" stroke-width="3" stroke-linecap="round"/><circle cx="14" cy="21" r="1.7" fill="var(--warnink)"/></symbol>
+  <symbol id="i-tip" viewBox="0 0 28 28"><path d="M14 3a8 8 0 0 0-5 14.2V21h10v-3.8A8 8 0 0 0 14 3Z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M10 24.5h8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+  <symbol id="i-star" viewBox="0 0 28 28"><path d="M14 2.5l3.3 7.4 8 .8-6 5.4 1.8 7.9L14 20l-7.1 4 1.8-7.9-6-5.4 8-.8Z" fill="currentColor"/></symbol>
+</svg>
+<!--ASSETS-->
+
+<div class="bar">
+  <span class="code">TIDE-AG · mechanics rev M · board rev B · 2026-09-27</span>
+  <nav aria-label="Sections">
+    <a href="#before">Before</a><a href="#A">A Mechanics</a><a href="#B">B Board</a><a href="#C">C Smoke</a><a href="#D">D Wiring</a><a href="#E">E First power</a><a href="#F">F Use</a><a href="#G">G Appendix</a>
+  </nav>
+  <button id="mode" type="button">Red light</button>
+</div>
+
+<main class="wrap">
+
+<!-- ===================== COVER ===================== -->
+<section class="sheet wide cover" id="cover">
+  <h1>Tide Machine</h1>
+  <p class="sub">A five-constituent harmonic tide predictor: five stepper-driven arms sum on one line and draw the tide on a drum. Assembly, board, smoke test, wiring, first power.</p>
+  <figure class="fig" data-fig="cover" data-w="680" data-alt="The finished machine, standing: five dials and arms in a row under a rail of pulleys, the calendar below, the pen carriage and the drum on the right"></figure>
+  <div class="badge"><svg class="ico" style="width:26px;height:26px"><use href="#i-star"/></svg><span>Design and Quality<small>the bench of Mike</small></span></div>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+
+<div class="grid" id="before">
+<section class="sheet">
+  <div class="row"><figure class="fig" data-fig="man_ok"></figure><figure class="fig" data-fig="tide_tools" data-alt="Tools: PH1 screwdriver, 2 and 2.5 mm hex keys, drill with a 3.1 mm bit, soldering iron with an insert tip, JST-XH crimper, multimeter, calipers"></figure></div>
+  <div class="cmp">
+    <div class="ok"><figure class="fig" data-fig="al_ok"></figure>aluminium faceplate</div>
+    <div class="no"><figure class="fig" data-fig="steel_no"></figure>never steel</div>
+  </div>
+  <div class="cmp">
+    <div class="ok"><figure class="fig" data-fig="crimp_ok"></figure>crimp the line</div>
+    <div class="no"><figure class="fig" data-fig="knot_no"></figure>no knots</div>
+  </div>
+  <div class="note"><svg class="ico"><use href="#i-info"/></svg><p><b>Datum.</b> Every number is in the machine frame: <b>x</b> along the row (S2 at −224 … M2 at 0, pen +70, drum +155.5), <b>y</b> up, <b>z</b> negative toward you. The faceplate’s front face is z = 0. The figures are drawn from <span class="hw">station_study.py</span>, the same model the fit checks run on.</p></div>
+  <div class="note"><svg class="ico"><use href="#i-warn"/></svg><p><b>Never turn an arm at constant speed</b>, not even to test it by hand with a drill: the firmware drives each arm at an uneven rate so the line length is exactly sinusoidal.</p></div>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+
+<section class="sheet">
+  <div class="head"><h3>Contents</h3></div>
+  <nav class="toc" aria-label="Contents">
+    <a href="#A"><b>A</b><span>Mechanics</span><small>steps 1 to 16</small></a>
+    <a href="#B"><b>B</b><span>Main board</span><small>steps 17 to 22</small></a>
+    <a href="#C"><b>C</b><span>Smoke test</span><small>steps 23 to 29</small></a>
+    <a href="#D"><b>D</b><span>Wiring</span><small>steps 30 to 36</small></a>
+    <a href="#E"><b>E</b><span>First power-up, calibration</span><small>steps 37 to 45</small></a>
+    <a href="#F"><b>F</b><span>How to use</span><small>steps 46 to 49</small></a>
+    <a href="#G"><b>G</b><span>Appendix: schematics</span><small>system, logical, full board</small></a>
+    <a href="#issues"><b>!</b><span>Known issues</span><small>read before you order or cut</small></a>
+  </nav>
+  <p class="lead-in">Give feedback by <b>step number</b>; they won’t change. Status: the mechanics are Rev M (fit-checked, not yet built), the board is rev B (routed, DRC clean, not yet ordered), and the firmware isn’t written, so section E is mostly <span class="pill">planned</span>.</p>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+
+<!-- bag 1: fasteners -->
+<section class="sheet">
+  <div class="bag">
+    <div class="n">1</div><h3 class="bagt">Fasteners</h3>
+    <div class="parts">
+      <div class="part"><figure class="fig" data-fig="hw_m3x20"></figure><span class="code">M3×20 + nyloc</span><span class="q">6x</span><span class="d">pulley-bracket axles</span></div>
+      <div class="part"><figure class="fig" data-fig="hw_m3x8b"></figure><span class="code">ISO 7380 M3×8</span><span class="q">5x</span><span class="d">arm-bearing axles</span></div>
+      <div class="part"><figure class="fig" data-fig="hw_m3x16b"></figure><span class="code">ISO 7380 M3×16</span><span class="q">5x</span><span class="d">pen pulley + 4 carriage axles</span></div>
+      <div class="part"><figure class="fig" data-fig="hw_m3nut"></figure><span class="code">ISO 4032 M3</span><span class="q">4x</span><span class="d">carriage axles, rear face</span></div>
+      <div class="part"><figure class="fig" data-fig="hw_m3x8pan"></figure><span class="code">M3×8 pan + nut</span><span class="q">12x</span><span class="d">motor ears; head 2.4 tall or less</span></div>
+      <div class="part"><figure class="fig" data-fig="hw_washer"></figure><span class="code">M3 washer</span><span class="q">12x</span><span class="d">under the ear nuts only</span></div>
+      <div class="part"><figure class="fig" data-fig="hw_shim"></figure><span class="code">3×5×0.5 shim</span><span class="q">16x</span><span class="d">brackets 6, carriage 4, arm axles 5, pen pulley 1</span></div>
+      <div class="part"><figure class="fig" data-fig="hw_insert"></figure><span class="code">M3×4 heat-set</span><span class="q">6x</span><span class="d">5 arms + carriage front</span></div>
+      <div class="part"><figure class="fig" data-fig="hw_m2x6"></figure><span class="code">M2×6 + nut</span><span class="q">30x</span><span class="d">arms, Hall and calendar carriers, tabs, hand</span></div>
+      <div class="part"><figure class="fig" data-fig="hw_wood4"></figure><span class="code">#4 × 3/4″ flat</span><span class="q">12x</span><span class="d">pulley brackets</span></div>
+      <div class="part"><figure class="fig" data-fig="hw_wood6"></figure><span class="code">#6 × 3/4″</span><span class="q">10x</span><span class="d">faceplate to the rails</span></div>
+      <div class="part"><figure class="fig" data-fig="hw_wood6l"></figure><span class="code">#6 × 1-1/2″</span><span class="q">4x</span><span class="d">end posts (<a class="ki" href="#k9">KI 9</a>)</span></div>
+      <div class="part"><figure class="fig" data-fig="hw_standoff"></figure><span class="code">M3×30 F-F + M3×6</span><span class="q">4x</span><span class="d">main board standoffs, 8 screws</span></div>
+      <div class="part"><figure class="fig" data-fig="hw_crimp"></figure><span class="code">crimp 0.6–0.8 ID</span><span class="q">4x</span><span class="d">line ends</span></div>
+    </div>
+  </div>
+  <div class="note"><svg class="ico"><use href="#i-warn"/></svg><p><b>Shims, not washers, against a bearing.</b> An M3 washer is Ø7 and presses on the V623ZZ’s shield; the inner race is only Ø5. Every bearing face that gets clamped gets a 3 × 5 × 0.5 shim. That’s 16, one more than the 15 the BOM lists (<a class="ki" href="#k6">KI 6</a>).</p></div>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+
+<!-- bag 2: bought parts -->
+<section class="sheet">
+  <div class="bag">
+    <div class="n">2</div><h3 class="bagt">Motion, sensing, frame</h3>
+    <div class="parts">
+      <div class="part"><figure class="fig" data-fig="hw_v623"></figure><span class="code">V623ZZ 3×12×4</span><span class="q">22x</span><span class="d">12 rail, 5 arms, pen pulley, 4 carriage</span></div>
+      <div class="part"><figure class="fig" data-fig="hw_motor"></figure><span class="code">28BYJ-48 5 V</span><span class="q">6x</span><span class="d">five stations + the drum</span></div>
+      <div class="part"><figure class="fig" data-fig="hw_bka"></figure><span class="code">BKA30D-R5</span><span class="q">1x</span><span class="d">calendar, dual concentric shafts (<a class="ki" href="#k5">KI 5</a>)</span></div>
+      <div class="part"><figure class="fig" data-fig="hw_hall"></figure><span class="code">DRV5013 TO-92</span><span class="q">7x</span><span class="d">Hall latches: 5 stations, year, moon</span></div>
+      <div class="part"><figure class="fig" data-fig="hw_magnet"></figure><span class="code">N52 5×2 axial</span><span class="q">14x</span><span class="d">seven opposed pairs</span></div>
+      <div class="part"><figure class="fig" data-fig="hw_rod"></figure><span class="code">3 mm h6 × 170</span><span class="q">2x</span><span class="d">pen guide rods</span></div>
+      <div class="part"><figure class="fig" data-fig="hw_line"></figure><span class="code">0.30 fluorocarbon</span><span class="q">2 m</span><span class="d">the line; not nylon</span></div>
+      <div class="part"><figure class="fig" data-fig="hw_pvc"></figure><span class="code">3″ Sch 40 PVC</span><span class="q">130</span><span class="d">the drum, cut square; 7 mm shaft</span></div>
+      <div class="part"><figure class="fig" data-fig="hw_pine"></figure><span class="code">1×2 pine</span><span class="q">1302</span><span class="d">rails 2 × 499, posts 2 × 152</span></div>
+      <div class="part"><figure class="fig" data-fig="hw_plate"></figure><span class="code">5052 Al 1.5</span><span class="q">1x</span><span class="d">faceplate 283 × 176, laser cut (<a class="ki" href="#k1">KI 1</a>)</span></div>
+    </div>
+  </div>
+  <p class="lead-in">Also: perfboard (70 × 90, double-sided) for the carriers, 3-core 26 AWG and 8-core lead, JST XHP housings and crimps, PLA, clear silicone (fallback only), decal vinyl, a 0.3–0.5 mm fibre-tip pen.</p>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+
+<!-- bag 3: printed parts -->
+<section class="sheet wide">
+  <div class="bag">
+    <div class="n">3</div><h3 class="bagt">Printed parts, as they sit on the bed</h3>
+    <div class="parts">
+      <div class="part"><figure class="fig" data-fig="pp_hub_dial"></figure><span class="code">hub_dial.stl</span><span class="q">5x</span><span class="d">dial back down, boss up</span></div>
+      <div class="part"><figure class="fig" data-fig="pp_arm_M2"></figure><span class="code">arm_M2.stl</span><span class="q">1x</span><span class="d">r 35.00; back down</span></div>
+      <div class="part"><figure class="fig" data-fig="pp_arm_S2"></figure><span class="code">arm_S2 / N2 / K1 / O1.stl</span><span class="q">4x</span><span class="d">r 8.75, 7.35, 3.50, 2.45</span></div>
+      <div class="part"><figure class="fig" data-fig="pp_tab"></figure><span class="code">index_tab.stl</span><span class="q">5x</span><span class="d">flat</span></div>
+      <div class="part"><figure class="fig" data-fig="pp_bracket"></figure><span class="code">pulley_bracket.stl</span><span class="q">6x</span><span class="d">rail face down</span></div>
+      <div class="part"><figure class="fig" data-fig="pp_carriage_rear"></figure><span class="code">pen_carriage_rear.stl</span><span class="q">1x</span><span class="d">pulley stub up</span></div>
+      <div class="part"><figure class="fig" data-fig="pp_carriage_front"></figure><span class="code">pen_carriage_front.stl</span><span class="q">1x</span><span class="d">pockets open upward</span></div>
+      <div class="part"><figure class="fig" data-fig="pp_year"></figure><span class="code">year_dial.stl</span><span class="q">1x</span><span class="d">decal face down (<a class="ki" href="#k5">KI 5</a>)</span></div>
+      <div class="part"><figure class="fig" data-fig="pp_moon"></figure><span class="code">moon_disc.stl</span><span class="q">1x</span><span class="d">decal face down (<a class="ki" href="#k5">KI 5</a>)</span></div>
+      <div class="part"><figure class="fig" data-fig="pp_hand"></figure><span class="code">calendar_hand.stl</span><span class="q">1x</span><span class="d">front face down</span></div>
+      <div class="part"><figure class="fig" data-fig="pp_cap"></figure><span class="code">drum_end_cap.stl</span><span class="q">2x</span><span class="d">flat (<a class="ki" href="#k8">KI 8</a>)</span></div>
+    </div>
+  </div>
+  <div class="note"><svg class="ico"><use href="#i-tip"/></svg><p><b>Print the coupons first</b>: the D-bore (tune it to a light press on a motor’s flats), a magnet pocket at 5.1 and 5.2, the 4.0 insert hole, and a PVC-bore ring for the drum cap. PLA, 3 perimeters, no supports anywhere. The files are in <span class="hw">stl/</span>, regenerated by <span class="hw">export_stl.py</span> from the same model as these drawings.</p></div>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+
+<!-- known issues -->
+<section class="sheet wide" id="issues">
+  <div class="row"><figure class="fig" data-fig="man_hmm"></figure><figure class="fig" data-fig="man_call"></figure></div>
+  <div class="head"><h3>Known issues found while writing this guide</h3><span class="tag"><span class="ki">check before you order or cut</span></span></div>
+  <ol class="issues">
+    <li id="k1"><span class="ki">KI 1</span><p><b>No Rev M cut files yet.</b> <span class="hw">tide_machine.rb</span>, <span class="hw">faceplate.py</span> and <span class="hw">rails.py</span> still describe Rev L. The hole schedule in step 1 comes from <span class="hw">station_study.py</span>. Port it to the Ruby before ordering the plate or drilling the rails. The #6 frame-screw holes (Ø4.0 at y ±82) have no spacing yet. <a href="#s1">Step 1</a>, <a href="#s14">step 14</a>.</p></li>
+    <li id="k2"><span class="ki">KI 2</span><p><b>Hall windows are still sized for the SOT-23.</b> They’re 3.4 × 3.4; the TO-92 latch needs about 4.4 × 3.4, and its sensing element sits a few tenths deeper. Re-run the field check (the magnet gap was 4.40 mm) when you resize them. <a href="#s1">Step 1</a>, <a href="#s5">step 5</a>.</p></li>
+    <li id="k3"><span class="ki">KI 3</span><p><b>No holes for the main board yet.</b> Proposed: 4 × Ø3.2 at (25, 39), (−108, 39), (25, −35.28), (−108, −35.28), for the board upright as seen from behind. Checked against the whole model (the standoffs, the board and the lead ends under it): nothing within 3 mm. Screw heads under a dial are fine at 2.4 mm tall or less (the same 1.1 mm as the motor-ear screws). <a href="#s30">Step 30</a>.</p></li>
+    <li id="k4"><span class="ki">KI 4</span><p><b>The Hall carriers and the calendar carrier are hand-cut perfboard</b>, not designed parts. As a plain 36 × 68 rectangle, the calendar carrier’s top corners clipped the N2 and K1 motor bodies (8.9 mm³ each; each corner is 11.7 mm from a motor’s axis, against its 14 mm radius). <b>Fixed in the model:</b> cut 4 × 6 off both top corners; it now clears by 0.98 mm. <b>Still open:</b> the two bottom holes at y −78 are under the bottom rail (its inner face is at y −76), so their M2 heads have nowhere to go on the front; and all four nuts sit inside the BKA placeholder’s outline. Move the holes once the motor is measured. <a href="#s5">Step 5</a>, <a href="#s6">step 6</a>.</p></li>
+    <li id="k5"><span class="ki">KI 5</span><p><b>BKA30D-R5 is a placeholder.</b> The body, the shaft diameters, lengths and positions, and whether both shafts turn continuously (the family datasheet shows stops) are all unconfirmed. The year dial’s and moon disc’s hub bores are placeholders, and so is the coil-to-pin map in step 34. <a href="#s6">Step 6</a>, <a href="#s10">step 10</a>, <a href="#s34">step 34</a>.</p></li>
+    <li id="k6"><span class="ki">KI 6</span><p><b>Arm-bearing axles clamped a washer on the shield.</b> The M3 × 8 went through an M3 washer (Ø7) against the V623ZZ’s face; the inner race is Ø5, so 1 mm of the washer bore on the shield. The pen pulley’s M3 × 16 head (Ø5.7) did the same by 0.35 mm. <b>Fixed in the model:</b> a 3 × 5 × 0.5 shim under each (16 shims in all). The pen pulley’s screw now engages its insert by 2.25 mm. <a href="#s9">Step 9</a>, <a href="#s12">step 12</a>.</p></li>
+    <li id="k7"><span class="ki">KI 7</span><p><b>The pen arm ran through the +x guide rod</b> (27.9 mm³) at the drum’s mid-plane (z −22 to −26, rod at −23.75). <b>Fixed in the model:</b> the arm runs 1 mm in front of the rods, at z −26.25 to −30.25; the nib meets the drum at x 111.2. The pen holder, leaf spring, retract lever and ballast pocket still aren’t designed. <a href="#s12">Step 12</a>.</p></li>
+    <li id="k8"><span class="ki">KI 8</span><p><b>Drum drive not designed.</b> Nothing is drawn yet for the motor mount, the coupling to the 7 mm shaft, or how the end caps grip the shaft (the cap STL only has a Ø7.1 bore). The drum motor sits outside the top rail, about 18 cm in a straight line from J10; its lead is about 24 cm. Route it tight or make a 5-way XH extension. <a href="#s15">Step 15</a>, <a href="#s32">step 32</a>.</p></li>
+    <li id="k9"><span class="ki">KI 9</span><p><b>End-post screws are too short.</b> The BOM’s #6 × 3/4″ can’t reach through a 19 mm rail into the post’s end grain. Use #6 × 1-1/2″ (4) with glue; the faceplate still takes #6 × 3/4″ (10). <a href="#s13">Step 13</a>.</p></li>
+    <li id="k10"><span class="ki">KI 10</span><p><b>The far dead end has no fixing.</b> Nothing slides at S2’s IN pulley, so the line can end there, but no tie-off point is designed. The pen bracket’s screw-adjustable anchor, copied onto S2’s bracket, would do. <a href="#s16">Step 16</a>.</p></li>
+    <li id="k11"><span class="ki">KI 11</span><p><b>Decals use placeholder constituents.</b> Put NOAA G values, the longitude and the epoch into <span class="hw">decals.py</span>, and check the K1/O1 ±90° convention (it moves those zeros by 12 h), before printing. <a href="#s8">Step 8</a>.</p></li>
+    <li id="k12"><span class="ki">KI 12</span><p><b>No firmware yet.</b> Everything in section E and F tagged <span class="pill">planned</span> needs it: the inverse tables, the Hall edge timing, homing, NTP, the PWM hold. <a href="#E">Section E</a>.</p></li>
+  </ol>
+  <div class="head"><h3>Fixed in the model while writing this guide</h3></div>
+  <ul class="fixed">
+    <li>The calendar sat at x −196 in the fit study but −140 in the spec; now −140 everywhere.</li>
+    <li>The left end post ran into S2’s dial, magnets and ear screws; the rails grew 12 mm (now 499; left post 5 mm clear of the dial).</li>
+    <li>The calendar index hand’s base overlapped N2’s dial; it was narrowed and moved down (1.09 mm clear).</li>
+    <li>The index tab and the calendar hand had no pilot holes for their M2 screws; both STLs now have a Ø1.6 pilot.</li>
+    <li>KI 4, KI 6 and KI 7 above. Each fix was confirmed with a real interference check (manifold intersections of every pair of parts, <span class="hw">check_interference.py</span>) and the fit study’s 31 clearances, all ≥ 0.98 mm.</li>
+  </ul>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+</div>
+
+<!-- ===================== A: mechanics ===================== -->
+<div class="divider" id="A"><span class="L">A</span><div><h2>Mechanics</h2><p>Plate work first: behind it (motors, carriers), then in front (dials, arms). Then the frame, with the pen carriage inside it, and the plate onto the frame. The line goes on last.</p></div></div>
+<div class="grid">
+
+<section class="sheet wide" id="s1">
+  <div class="head"><span class="no-">1</span><h3>Check the faceplate</h3><span class="tag"><a class="ki" href="#k1">KI 1</a><a class="ki" href="#k2">KI 2</a><a class="ki" href="#k3">KI 3</a></span></div>
+  <figure class="fig" data-fig="a_plate" data-alt="The faceplate seen from the front with every hole and window, the 56 mm pitch chain and the outline dimensions"></figure>
+  <div class="tblwrap"><table class="tbl">
+    <thead><tr><th>Count</th><th>Size</th><th>Where (per station at shaft x, 0)</th><th>For</th></tr></thead>
+    <tbody>
+      <tr><td>5</td><td>Ø9.2</td><td>(x, 0)</td><td>locates each motor’s Ø9 boss</td></tr>
+      <tr><td>10</td><td>Ø3.2</td><td>(x ± 17.5, −8)</td><td>motor ears, M3</td></tr>
+      <tr><td>5</td><td>window 3.4 (<a class="ki" href="#k2">KI 2</a>)</td><td>centred (x, 20.5)</td><td>the Hall latch nests in it</td></tr>
+      <tr><td>10</td><td>Ø2.2</td><td>(x, 15) and (x, 26)</td><td>Hall carrier, M2</td></tr>
+      <tr><td>5</td><td>Ø2.2</td><td>(x, 31)</td><td>index tab, M2</td></tr>
+      <tr><td>1</td><td>Ø12</td><td>(−140, −48)</td><td>calendar shafts and hub adapters</td></tr>
+      <tr><td>2</td><td>window 3.4</td><td>(−140, −27.5), (−140, −57)</td><td>year and moon latches</td></tr>
+      <tr><td>4</td><td>Ø2.2</td><td>(−140 ± 14, −48 ± 30)</td><td>calendar carrier</td></tr>
+      <tr><td>1</td><td>Ø2.2</td><td>(−138.1, −17.5)</td><td>calendar index hand</td></tr>
+      <tr><td>4</td><td>Ø3.2, proposed</td><td>(25, 39), (−108, 39), (25, −35.28), (−108, −35.28)</td><td>main board standoffs (<a class="ki" href="#k3">KI 3</a>)</td></tr>
+    </tbody>
+  </table></div>
+  <ul class="do">
+    <li>Measure the <b>1.5 mm aluminium</b> plate against this schedule before anything else goes on it: the pitch is <b>56.0</b> between every pair of shafts.</li>
+    <li>With the row reading S2 → M2 left to right from the front, the calendar cluster sits <b>below, between N2 and K1</b>. A mirrored plate is scrap.</li>
+  </ul>
+  <div class="note"><svg class="ico"><use href="#i-warn"/></svg><p><b>Never steel.</b> The Hall latches read the magnets through the plate; steel would short the field away.</p></div>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+
+<section class="sheet" id="s2">
+  <div class="head"><span class="no-">2</span><h3>Glue the magnets into the dials</h3></div>
+  <figure class="fig" data-fig="a_magnets" data-alt="A hub and dial turned over, two magnets above their pockets, one with N up and one with S up"></figure>
+  <ul class="do">
+    <li>Turn each <span class="hw">hub_dial.stl</span> over, back face up. The two 5 × 2 pockets sit at r 20.5, opposite the rim notch.</li>
+    <li>Seen from the back with the notch at 12 o’clock: <b>N face up in the right-hand pocket, S face up in the left</b>. A drop of CA in each pocket.</li>
+    <li>Same on the year dial (pockets at r 20.5) and the moon disc (r 9): seven pairs in all.</li>
+  </ul>
+  <div class="note"><svg class="ico"><use href="#i-info"/></svg><p>The latch switches where the field flips sign between the two magnets, so the edge hardly moves with gap or temperature (0.15° per mT of drift). The same order on every dial makes every station report the same edge.</p></div>
+  <div class="note"><svg class="ico"><use href="#i-tip"/></svg><p>Check each face with a spare magnet before gluing: one face pulls it, the other pushes it away.</p></div>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+
+<section class="sheet" id="s3">
+  <div class="head"><span class="no-">3</span><h3>Press in the heat-set inserts</h3></div>
+  <figure class="fig" data-fig="a_inserts" data-alt="An arm back face up with an insert above its bearing boss; the pen carriage front body front face up with an insert above its centre"></figure>
+  <ul class="do">
+    <li>Each of the five arms: <b>from the back face</b>, into the Ø4.0 hole under the bearing boss, flush.</li>
+    <li>The pen carriage front body: <b>from the front face</b>, into the Ø4.0 hole at its centre. That’s the pen pulley’s screw thread (step 12).</li>
+  </ul>
+  <div class="note"><svg class="ico"><use href="#i-warn"/></svg><p>Keep the insert square and stop at flush. An insert standing proud on an arm’s back face tilts the arm against the dial boss.</p></div>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+
+<section class="sheet wide" id="s4">
+  <div class="head"><span class="no-">4</span><h3>Bolt the motors to the back of the plate</h3></div>
+  <figure class="fig" data-fig="a_motors" data-alt="The plate face down; four motors bolted on, the fifth above its place with its boss over the Ø9.2 hole"></figure>
+  <ul class="do">
+    <li>Plate face down. Each 28BYJ-48: <b>boss into the Ø9.2 hole</b>, wire cover toward the plate’s <b>bottom edge</b>.</li>
+    <li><span class="hw">M3 × 8 pan head</span> from the front through each ear, then a washer and a nut behind. Snug only.</li>
+  </ul>
+  <div class="note"><svg class="ico"><use href="#i-info"/></svg><p>The plate locates each shaft by its boss; the ear bolts only clamp. An M3 in the Ø4.2 ear hole would let the motor wander ±0.6 mm. The pan heads stand 2.4 proud of the front face and the dials clear them by 1.1: longer heads won’t fit.</p></div>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+
+<section class="sheet" id="s5">
+  <div class="head"><span class="no-">5</span><h3>Fit the Hall carriers</h3><span class="tag"><a class="ki" href="#k2">KI 2</a><a class="ki" href="#k4">KI 4</a></span></div>
+  <figure class="fig" data-fig="a_hall" data-alt="Two stations from behind: one Hall carrier fitted with its lead, the other above its place on two M2 screws"></figure>
+  <ul class="do">
+    <li>Cut five carriers, 10 × 16, from perfboard. On each: the DRV5013 lying flat on the front face, branded face toward the plate, a 100 nF across + and −, and a 3-core lead. Label each lead with its station.</li>
+    <li>The latch nests in its window at (x, 20.5). Two <span class="hw">M2 × 6</span> from the front through (x, 15) and (x, 26), nuts behind.</li>
+  </ul>
+  <div class="note"><svg class="ico"><use href="#i-warn"/></svg><p>The DRV5013 in TO-92 has pin 1 VCC, 2 GND, 3 OUT: the carrier crosses 2 and 3 onto the lead’s <b>+ S −</b> order. Check against the datasheet for your variant.</p></div>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+
+<section class="sheet" id="s6">
+  <div class="head"><span class="no-">6</span><h3>Fit the calendar carrier</h3><span class="tag"><a class="ki" href="#k4">KI 4</a><a class="ki" href="#k5">KI 5</a></span></div>
+  <figure class="fig" data-fig="a_calcarrier" data-alt="The calendar carrier with the BKA30D-R5 above its place between the N2 and K1 motors"></figure>
+  <ul class="do">
+    <li>Cut the carrier 36 × 68 from perfboard, then <b>cut 4 × 6 off both top corners</b>. Without the cut it hits the N2 and K1 motor bodies.</li>
+    <li>On it: the BKA30D-R5, shafts forward through the plate’s Ø12, and the year and moon latches at (0, +20.5) and (0, −9) from its centre, nested in their windows.</li>
+    <li>Four <span class="hw">M2 × 6</span> from the front, nuts behind. Then an 8-core lead for the coils (step 34), and a 3-core lead from each latch.</li>
+  </ul>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+
+<section class="sheet wide" id="s7">
+  <div class="head"><span class="no-">7</span><h3>Press the dials onto the shafts; fit the index tabs</h3></div>
+  <figure class="fig" data-fig="a_dials" data-alt="The plate face up: four dials on their shafts, the fifth above M2's shaft, index tabs at twelve o'clock"></figure>
+  <ul class="do">
+    <li>Plate face up. Each hub + dial: the D-bore over the shaft’s flats, and press <b>until the shaft tip is flush with the boss</b>. The dial’s back is then 3.5 mm off the plate.</li>
+    <li>An index tab at 12 o’clock above each dial, one <span class="hw">M2 × 6</span> from behind into its pilot.</li>
+    <li>Turn each dial by hand: it must clear the ear-screw heads, the tab and its neighbours (4.0 mm apart).</li>
+  </ul>
+  <div class="note"><svg class="ico"><use href="#i-info"/></svg><p>The D-bore carries the torque and a light press holds it: the line pulls in the dial’s plane, so nothing pushes it off. For a loose one, a dab of clear silicone. Not threadlocker, which barely cures against plastic.</p></div>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+
+<section class="sheet" id="s8">
+  <div class="head"><span class="no-">8</span><h3>Apply the decals</h3><span class="tag"><a class="ki" href="#k11">KI 11</a></span></div>
+  <figure class="fig" data-fig="a_decal" data-alt="A decal above a dial, its coral tick lined up over the rim notch"></figure>
+  <ul class="do">
+    <li>Print <span class="hw">decals_1to1.pdf</span> at 100% on laser vinyl. Check the scale bar first.</li>
+    <li>Each station decal (Ø52, Ø24.5 hole): <b>coral tick over the rim notch</b>. Year decal on the year dial, moon decal on the moon disc.</li>
+  </ul>
+  <div class="note"><svg class="ico"><use href="#i-info"/></svg><p>The scales are warped: each tick sits where the arm really is (M2’s ticks move up to ±33 min). The decals depend on the constituents, the longitude and the year, so they’re reprinted for each deployment.</p></div>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+
+<section class="sheet wide" id="s9">
+  <div class="head"><span class="no-">9</span><h3>Bolt on the arms and their bearings</h3><span class="tag"><a class="ki" href="#k6">KI 6</a></span></div>
+  <figure class="fig" data-fig="a_arms" data-alt="O1 finished; M2's arm, bearing, shim and screw exploded above its dial"></figure>
+  <ul class="do">
+    <li>Each arm onto its own dial: <span class="hw">arm_S2</span> … <span class="hw">arm_M2</span>, stamped by radius. Two <span class="hw">M2 × 6</span> into the boss’s pilots.</li>
+    <li>A <span class="hw">V623ZZ</span> onto the stepped boss, a <b>3 × 5 × 0.5 shim</b>, then an <span class="hw">M3 × 8 button head</span> into the insert. Firm: the inner race is clamped, the outer spins.</li>
+    <li>Spin each bearing: free, no scrape. M2’s arm passes 2.5 mm over O1’s dial.</li>
+  </ul>
+  <div class="note"><svg class="ico"><use href="#i-info"/></svg><p>When real constituents replace the placeholders, only the arms are reprinted: the pin radius is the amplitude (35 mm per metre of tide).</p></div>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+
+<section class="sheet" id="s10">
+  <div class="head"><span class="no-">10</span><h3>Fit the year dial, the moon disc and the index hand</h3><span class="tag"><a class="ki" href="#k5">KI 5</a></span></div>
+  <figure class="fig" data-fig="a_caldials" data-alt="The calendar: year dial, moon disc and index hand exploded above the Ø12 hole"></figure>
+  <ul class="do">
+    <li>Year dial onto the BKA30D-R5’s <b>outer</b> shaft, magnets to the plate. Moon disc onto the <b>inner</b> shaft, 1 mm in front of the year dial.</li>
+    <li>The index hand, one <span class="hw">M2 × 6</span> from behind: it crosses the year ring and stops at the moon disc’s rim.</li>
+    <li>Turn both by hand: the gauge motor is weak (a 2.5 g pointer rating), so the discs must spin with no rub at all.</li>
+  </ul>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+
+<section class="sheet" id="s11">
+  <div class="head"><span class="no-">11</span><h3>Screw the pulley brackets to the top rail</h3></div>
+  <figure class="fig" data-fig="a_brackets" data-alt="The top rail on its back, inner face up; a bracket with its two pulleys above its place, two wood screws above it"></figure>
+  <ul class="do">
+    <li>Each bracket: two <span class="hw">V623ZZ</span> with a <b>3 × 5 × 0.5 shim</b> between them on an <span class="hw">M3 × 20</span>, head to the front, nyloc behind. Snug: they must spin freely.</li>
+    <li>Five brackets directly above the shafts (x −224 … 0) and the pen bracket at x +70. <span class="hw">#4 × 3/4″</span> into pilots at station x ± 11, 15 from the rail’s rear edge; the notch on each bracket marks its station and faces front.</li>
+    <li>The pen bracket carries one pulley (rear) and the screw-adjustable anchor (front).</li>
+  </ul>
+  <div class="note"><svg class="ico"><use href="#i-info"/></svg><p>The two pulleys run in planes 4.5 apart, either side of the arm-bearing groove at z −15. That’s what lets the threading mirror at alternate stations (step 16).</p></div>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+
+<section class="sheet" id="s12">
+  <div class="head"><span class="no-">12</span><h3>Build the pen carriage</h3><span class="tag"><a class="ki" href="#k6">KI 6</a><a class="ki" href="#k7">KI 7</a></span></div>
+  <figure class="fig" data-fig="a_carriage" data-alt="The pen carriage exploded: nuts, pen pulley, rear plate, shims and four bearings, front body, four screws"></figure>
+  <ul class="do">
+    <li>Pen pulley on the rear plate’s stub: <span class="hw">M3 × 16</span> with a shim, from behind, into the front body’s insert.</li>
+    <li>Four bearings, each with a shim on its rear side, clamped between rear plate and front body by <span class="hw">M3 × 16</span> from the front and a nut behind.</li>
+    <li>Leave the +x pair (slotted holes) loose until the carriage is on its rods (step 13).</li>
+  </ul>
+  <div class="note"><svg class="ico"><use href="#i-info"/></svg><p>The inner races are the spacers. The V grooves locate the carriage front to back; the two sides pushing outward on opposite rods locate it sideways.</p></div>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+
+<section class="sheet wide" id="s13">
+  <div class="head"><span class="no-">13</span><h3>Close the frame around the rods and the carriage</h3><span class="tag"><a class="ki" href="#k1">KI 1</a><a class="ki" href="#k9">KI 9</a></span></div>
+  <figure class="fig" data-fig="a_frame" data-alt="The frame lying face up: bottom rail, posts, two rods with the carriage on them, and the top rail with its brackets moving onto the rod ends"></figure>
+  <ul class="do">
+    <li>Drill the rails as a mirrored pair (clamp them outer face to outer face): rod sockets <b>Ø3.1 × 9</b> at x 70 ± 18.92, 23.75 from the rear edge; the drum hole at x 155.5, 24 from the rear edge.</li>
+    <li>Bottom rail flat, both rods in its sockets, the carriage between them with its bearings on the rods. Then the top rail onto the rod ends.</li>
+    <li>End posts between the rails, <span class="hw">#6 × 1-1/2″</span> and glue. Push the +x bearing pair outward for a light preload and lock the two screws.</li>
+  </ul>
+  <div class="note"><svg class="ico"><use href="#i-warn"/></svg><p>The rods are captive once the top rail is on: the carriage must go on them first.</p></div>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+
+<section class="sheet wide" id="s14">
+  <div class="head"><span class="no-">14</span><h3>Screw the faceplate to the frame</h3><span class="tag"><a class="ki" href="#k1">KI 1</a></span></div>
+  <figure class="fig" data-fig="a_plateon" data-alt="The frame face down; the plate with its motors coming down onto the rails' rear faces"></figure>
+  <ul class="do">
+    <li>Frame face down. The plate comes down onto the rails’ rear faces, motors up, with <b>12 mm of plate landing on each rail</b>.</li>
+    <li><span class="hw">#6 × 3/4″</span> through the Ø4.0 holes into the rails. Then stand the machine up and check every arm bearing clears the pulleys above it (18 mm at M2).</li>
+  </ul>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+
+<section class="sheet" id="s15">
+  <div class="head"><span class="no-">15</span><h3>Fit the drum</h3><span class="tag"><a class="ki" href="#k8">KI 8</a></span></div>
+  <figure class="fig" data-fig="a_drum" data-alt="The right-hand bay standing: the drum between the rails, its shaft coming down through the top rail"></figure>
+  <ul class="do">
+    <li>Cut 130 mm of 3″ PVC square; press an end cap into each end.</li>
+    <li>The 7 mm shaft down through the top rail, the drum and into the bottom rail’s plain bearing, with a washer under the bottom cap.</li>
+    <li>The drum axis sits at x 155.5, z −24, on the carriage’s mid-plane; 5.95 mm clear of the right post.</li>
+  </ul>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+
+<section class="sheet wide" id="s16">
+  <div class="head"><span class="no-">16</span><h3>Thread the line</h3><span class="tag"><a class="ki" href="#k10">KI 10</a></span></div>
+  <figure class="fig" data-fig="a_thread" data-alt="Front elevation of the line: from the dead end at S2, over each station's pulleys, round each arm bearing, to the pen pulley and its anchor"></figure>
+  <div class="tblwrap"><table class="tbl">
+    <thead><tr><th></th><th>S2</th><th>N2</th><th>K1</th><th>O1</th><th>M2</th><th>pen</th></tr></thead>
+    <tbody>
+      <tr><td>in over</td><td>front</td><td>rear</td><td>front</td><td>rear</td><td>front</td><td>rear</td></tr>
+      <tr><td>out over</td><td>rear</td><td>front</td><td>rear</td><td>front</td><td>rear</td><td>front = anchor</td></tr>
+    </tbody>
+  </table></div>
+  <ul class="do">
+    <li>Crimp a loop in the far end of the <b>0.30 mm fluorocarbon</b> and fix it at S2’s bracket, front plane.</li>
+    <li>At each station: over the IN pulley, down the +x side, <b>round under the arm’s bearing</b>, up the −x side, over the OUT pulley. Then along the rail to the next one.</li>
+    <li>At the pen: over the rear pulley, round under the carriage’s pen pulley, up to the anchor screw on the front plane. Crimp it there.</li>
+  </ul>
+  <div class="note"><svg class="ico"><use href="#i-info"/></svg><p>The order mirrors at every station, so every run between stations stays in one plane and only the legs skew (about 2°). The line passes <b>round</b> each arm bearing and never attaches: the U-turn turns a rise d into 2d of take-up, and the pen pulley halves it again, so the pen moves 35 mm per metre of tide.</p></div>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+</div>
+
+<!-- ===================== B: board ===================== -->
+<div class="divider" id="B"><span class="L">B</span><div><h2>Main board</h2><p>140 × 81.3 mm, all through-hole, chips and the ESP32 in sockets. Solder in rounds, lowest parts first; test where a round says so.</p></div></div>
+<div class="grid">
+<section class="sheet wide" id="b0">
+  <div class="head"><h3>The finished board</h3></div>
+  <figure class="fig" data-fig="pcb_iso" data-alt="Isometric view of the assembled main board with its connectors and chips called out"></figure>
+  <p class="lead-in">Motor sockets across the top edge, Hall sockets along the bottom, calendar and power on the right, the ESP32-C6-LCD-1.47 on the left with its USB-C out of the left edge. Nothing stands under the C6.</p>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+<section class="sheet wide" id="b1">
+  <div class="bag">
+    <div class="n">4</div><h3 class="bagt">Electronic parts for the board</h3>
+    <div class="parts eparts">
+      <div class="part"><figure class="fig" data-fig="ec_dip"></figure><span class="code">U2 U3 U8</span><span class="q">3x</span><span class="d"><b>MCP23017-E/SP</b>, DIP-28, + socket: I/O expanders 0x20, 0x21, 0x22</span></div>
+      <div class="part"><figure class="fig" data-fig="ec_dip"></figure><span class="code">U4 U5 U6</span><span class="q">3x</span><span class="d"><b>ULN2803A</b>, DIP-18, + socket: motor drivers, two motors each</span></div>
+      <div class="part"><figure class="fig" data-fig="ec_dip"></figure><span class="code">U7</span><span class="q">1x</span><span class="d"><b>SN74AHCT245N</b>, DIP-20, + socket: calendar coils at 5 V</span></div>
+      <div class="part"><figure class="fig" data-fig="ec_mod"></figure><span class="code">on J1 J2</span><span class="q">1x</span><span class="d"><b>Waveshare ESP32-C6-LCD-1.47</b>: plugs in, not soldered</span></div>
+      <div class="part"><figure class="fig" data-fig="ec_sock"></figure><span class="code">J1 J2</span><span class="q">2x</span><span class="d"><b>1 × 9 female header</b>, 8.5 tall: the C6’s socket</span></div>
+      <div class="part"><figure class="fig" data-fig="ec_xh"></figure><span class="code">J10–J15 J20–J26 J5</span><span class="q">14x</span><span class="d"><b>JST-XH</b> vertical: B5B ×6 (motors), B3B ×7 (Halls), B8B ×1 (calendar)</span></div>
+      <div class="part"><figure class="fig" data-fig="ec_hdr"></figure><span class="code">J4</span><span class="q">1x</span><span class="d"><b>1 × 6 male header</b>: expansion (3V3 GND SDA SCL IO1 IO3)</span></div>
+      <div class="part"><figure class="fig" data-fig="ec_dc"></figure><span class="code">J3</span><span class="q">1x</span><span class="d"><b>PJ-102AH</b> barrel jack, 5.5 / 2.0 mm</span></div>
+      <div class="part"><figure class="fig" data-fig="ec_ptc"></figure><span class="code">F1</span><span class="q">1x</span><span class="d"><b>MF-R250</b> resettable fuse, 2.5 A hold</span></div>
+      <div class="part"><figure class="fig" data-fig="ec_cp"></figure><span class="code">C1</span><span class="q">1x</span><span class="d"><b>1000 µF</b> 10 V or more, radial 10 mm</span></div>
+      <div class="part"><figure class="fig" data-fig="ec_c"></figure><span class="code">C5–C8</span><span class="q">4x</span><span class="d"><b>100 nF</b> ceramic, 2.5 mm pitch (7 more on the Hall carriers)</span></div>
+      <div class="part"><figure class="fig" data-fig="ec_ds"></figure><span class="code">D1 D2</span><span class="q">2x</span><span class="d"><b>1N5819</b> Schottky: C6 feed, and the hold switch’s freewheel</span></div>
+      <div class="part"><figure class="fig" data-fig="ec_led"></figure><span class="code">LED1</span><span class="q">1x</span><span class="d"><b>3 mm green</b>: power</span></div>
+      <div class="part"><figure class="fig" data-fig="ec_pmos"></figure><span class="code">Q1</span><span class="q">1x</span><span class="d"><b>IRLIB9343</b> P-FET, TO-220: switches the motors’ 5 V</span></div>
+      <div class="part"><figure class="fig" data-fig="ec_npn"></figure><span class="code">Q2</span><span class="q">1x</span><span class="d"><b>2N3904</b>, TO-92: drives Q1’s gate</span></div>
+      <div class="part"><figure class="fig" data-fig="ec_r"></figure><span class="code">R1–R9</span><span class="q">9x</span><span class="d"><b>¼ W, standing</b>: 4.7k R1 R2 · 10k R3 R4 R7 R9 · 1k R5 R6 R8</span></div>
+      <div class="part"><figure class="fig" data-fig="ec_sip"></figure><span class="code">RN1 RN2</span><span class="q">2x</span><span class="d"><b>Bussed 10k SIP</b>: RN1 9-pin (4609X), RN2 8-pin (4608X)</span></div>
+    </div>
+  </div>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+<section class="sheet wide" id="s17">
+  <div class="head"><span class="no-">17</span><h3>Read the silkscreen</h3></div>
+  <figure class="fig" data-fig="pcb_iso_detail" data-alt="Close-up of the power corner: Q1, Q2, D2, C1, LED1, F1 and J3, each labelled with how it goes in"></figure>
+  <figure class="fig" data-fig="pcb_legend" data-alt="Silkscreen marks: square pad, plus sign, flat edge, bold bar, circle, pin 1"></figure>
+  <p class="lead-in">Every part on this board has one right way round except the resistors, the ceramic capacitors and F1. The marks above are the whole vocabulary.</p>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+<section class="sheet" id="s18">
+  <div class="head"><span class="no-">18</span><h3>Round 1: diodes and IC sockets</h3></div>
+  <div class="two"><figure class="fig" data-fig="pcb_diode_flat"></figure><figure class="fig" data-fig="pcb_dip"></figure></div>
+  <ul class="do">
+    <li><b>D1, D2</b> (1N5819) lying flat, band over the square pad.</li>
+    <li><b>Sockets</b> for U2, U3, U8 (28 pin), U4, U5, U6 (18 pin), U7 (20 pin): notch over the silkscreen notch. Solder two opposite corners, check it sits flat, then the rest.</li>
+  </ul>
+  <p class="lead-in">No chips yet: they go in at Test 6.</p>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+<section class="sheet" id="s19">
+  <div class="head"><span class="no-">19</span><h3>Round 2: resistors, networks, small capacitors</h3></div>
+  <div class="two"><figure class="fig" data-fig="pcb_res"></figure><figure class="fig" data-fig="pcb_sip"></figure></div>
+  <ul class="do">
+    <li><b>R1–R9</b> standing, body over the circle: 4.7k R1 R2; 10k R3 R4 R7 R9; 1k R5 R6 R8.</li>
+    <li><b>RN1</b> (9 pins) and <b>RN2</b> (8 pins): the dot is pin 1, the common, on the square pad.</li>
+    <li><b>C5–C8</b>, 100 nF, either way round.</li>
+  </ul>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+<section class="sheet" id="s20">
+  <div class="head"><span class="no-">20</span><h3>Round 3: power entry</h3></div>
+  <div class="two"><figure class="fig" data-fig="pcb_cap"></figure><figure class="fig" data-fig="pcb_led"></figure></div>
+  <ul class="do">
+    <li><b>F1</b> (resettable fuse), either way round. <b>C1</b> 1000 µF: long leg in the + pad. <b>LED1</b>: flat side on the flat, short leg in the square pad.</li>
+    <li><b>J3</b>, the barrel jack: it overhangs the right edge by design.</li>
+  </ul>
+  <p class="lead-in">Now do <a href="#s23">Tests 0, 1 and 2</a> before going on.</p>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+<section class="sheet" id="s21">
+  <div class="head"><span class="no-">21</span><h3>Round 4: the hold switch</h3></div>
+  <div class="two"><figure class="fig" data-fig="pcb_to92"></figure><figure class="fig" data-fig="pcb_to220" data-part="IRLIB9343"></figure></div>
+  <ul class="do">
+    <li><b>Q2</b> (2N3904): flat face on the flat edge.</li>
+    <li><b>Q1</b> (IRLIB9343): metal tab to the bold bar, standing upright, no heatsink.</li>
+  </ul>
+  <div class="note"><svg class="ico"><use href="#i-info"/></svg><p>Q1 switches the motors’ 5 V (the HOLD rail) so the firmware can drop the holding current to 60% between steps. Fit it anyway; step 39 decides whether the hold is needed at all.</p></div>
+  <p class="lead-in">Then <a href="#s26">Test 3</a>.</p>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+<section class="sheet" id="s22">
+  <div class="head"><span class="no-">22</span><h3>Round 5: connectors</h3></div>
+  <div class="two"><figure class="fig" data-fig="pcb_socket"></figure><figure class="fig" data-fig="pcb_xh"></figure></div>
+  <ul class="do">
+    <li><b>J1, J2</b>: plug both headers onto the C6’s pins, set it in the board and solder; then <b>unplug the C6</b> again.</li>
+    <li><b>J10–J15</b> (5 pin), <b>J20–J26</b> (3 pin), <b>J5</b> (8 pin): housing inside its outline, pin 1 on the square pad.</li>
+    <li><b>J4</b>, the 1 × 6 expansion header.</li>
+  </ul>
+  <p class="lead-in">Then <a href="#s27">Tests 4 and 5</a>.</p>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+</div>
+
+<!-- ===================== C: smoke test ===================== -->
+<div class="divider" id="C"><span class="L">C</span><div><h2>Smoke test</h2><p>Nothing expensive goes in until every rail reads right. Use a bench supply at 5.0 V with a 100 mA limit, or a 5 V supply through a USB power meter.</p></div></div>
+<div class="grid">
+<section class="sheet" id="s23">
+  <div class="head"><span class="no-">23</span><h3>Test 0: Look, then measure</h3></div>
+  <figure class="fig" data-fig="meter" data-v="&gt; 1 kΩ" data-a="+5V (C1 +)" data-b="GND (J4 pin 2)"></figure>
+  <ul class="do">
+    <li>Look at every joint under a lens: no bridges, no dull balls. Socket notches, diode bands, C1’s stripe, Q1’s tab: all as the silkscreen.</li>
+    <li>Unpowered, meter on ohms: <b>+5V to GND</b> climbs as C1 charges and ends above 1 kΩ. Same from <b>J3’s centre pin</b> to GND.</li>
+  </ul>
+  <div class="note"><svg class="ico"><use href="#i-warn"/></svg><p>A reading that stays near 0 Ω is a short: find it before any power goes on.</p></div>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+<section class="sheet" id="s24">
+  <div class="head"><span class="no-">24</span><h3>Test 1: First power, current-limited</h3></div>
+  <figure class="fig" data-fig="meter" data-v="3 mA" data-a="supply 5.0 V, 100 mA limit" data-b="into J3"></figure>
+  <ul class="do">
+    <li>Power into J3. <b>LED1 lights</b> and the supply reads about <b>3 mA</b>: (5.0 − 2.1 V) through R8’s 1 kΩ.</li>
+  </ul>
+  <div class="note"><svg class="ico"><use href="#i-warn"/></svg><p>If the supply hits its limit, switch off at once and go back to Test 0.</p></div>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+<section class="sheet" id="s25">
+  <div class="head"><span class="no-">25</span><h3>Test 2: The 5 V rail</h3></div>
+  <figure class="fig" data-fig="meter" data-v="5.00" data-a="+5V (C1 +, Q1 pin 3)" data-b="GND"></figure>
+  <ul class="do">
+    <li>4.95 to 5.00 V: the supply less F1’s drop at 3 mA, which is next to nothing.</li>
+  </ul>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+<section class="sheet" id="s26">
+  <div class="head"><span class="no-">26</span><h3>Test 3: The hold switch</h3></div>
+  <div class="meters">
+    <figure class="fig" data-fig="meter" data-v="0.00" data-a="HOLD (Q1 pin 2)" data-b="GND"></figure>
+    <figure class="fig" data-fig="meter" data-v="4.99" data-a="HOLD, jumpered" data-b="GND"></figure>
+  </div>
+  <ul class="do">
+    <li>Power on, nothing plugged in: <b>HOLD reads 0 V</b>. R7 holds Q2 off, so R5 holds Q1 off.</li>
+    <li>Jumper <b>J2 pin 6 (PWM) to J2 pin 1 (ESP_5V)</b>: HOLD rises to <b>about 4.99 V</b>. Remove the jumper.</li>
+  </ul>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+<section class="sheet" id="s27">
+  <div class="head"><span class="no-">27</span><h3>Test 4: The ESP32’s 5 V</h3></div>
+  <figure class="fig" data-fig="meter" data-v="4.85" data-a="ESP_5V (J2 pin 1)" data-b="GND (J2 pin 2)"></figure>
+  <ul class="do">
+    <li>4.8 to 4.95 V: +5V less D1’s Schottky drop at almost no load.</li>
+  </ul>
+  <div class="note"><svg class="ico"><use href="#i-info"/></svg><p>D1 keeps the supply and the C6’s own USB apart, so flashing over USB with the board powered is safe.</p></div>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+<section class="sheet" id="s28">
+  <div class="head"><span class="no-">28</span><h3>Test 5: Plug in the C6</h3></div>
+  <figure class="fig" data-fig="meter" data-v="3.30" data-a="+3V3 (J4 pin 1)" data-b="GND (J4 pin 2)"></figure>
+  <ul class="do">
+    <li>Power off. The C6 into J1/J2, LCD up, USB-C at the board’s left edge. Power on.</li>
+    <li><b>3.30 V</b> on J4 pin 1 (from the C6’s regulator). Also 3.3 V on SDA and SCL (J4 pins 3, 4; R1, R2), on INT_A and INT_B (J1 pins 6, 5), and on pin 2 of every Hall socket J20–J26 (RN2).</li>
+  </ul>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+<section class="sheet" id="s29">
+  <div class="head"><span class="no-">29</span><h3>Test 6: Chips in</h3></div>
+  <figure class="fig" data-fig="meter" data-v="0.00" data-a="J5 pins 1 to 8" data-b="GND"></figure>
+  <ul class="do">
+    <li>Power off. Chips in, notch to notch: <b>U2, U3, U8</b> MCP23017, <b>U4, U5, U6</b> ULN2803A, <b>U7</b> 74AHCT245. Check no leg folded under.</li>
+    <li>Power on. Every calendar line on <b>J5 reads 0 V</b> (RN1 holds U7’s inputs low until the 0x22 expander is set up), and HOLD still reads 0.</li>
+    <li>The current is the C6’s own draw plus about 3 mA. Above 250 mA: switch off and look for a chip in backwards.</li>
+  </ul>
+  <p class="lead-in">The I²C scan (0x20, 0x21, 0x22) is <a href="#s38">step 38</a>: it needs firmware.</p>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+</div>
+
+<!-- ===================== D: wiring ===================== -->
+<div class="divider" id="D"><span class="L">D</span><div><h2>Wiring</h2><p>The board goes on the back of the plate, 30 mm off it, clear of the motors. Everything plugs into its edges.</p></div></div>
+<div class="grid">
+<section class="sheet wide" id="s30">
+  <div class="head"><span class="no-">30</span><h3>Mount the board on its standoffs</h3><span class="tag"><a class="ki" href="#k3">KI 3</a></span></div>
+  <figure class="fig" data-fig="d_mount" data-alt="The back of the plate with motors and carriers; four standoffs, the board coming down onto them"></figure>
+  <ul class="do">
+    <li>Four <span class="hw">M3 × 30</span> standoffs, <span class="hw">M3 × 6</span> from the front of the plate. The board on top, component side out, <b>silkscreen reading upright from behind</b>, four more <span class="hw">M3 × 6</span>.</li>
+    <li>The board is 30 mm off the plate, the motors 20.5 deep: 8 mm under the lead ends.</li>
+  </ul>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+<section class="sheet wide" id="s31">
+  <div class="head"><span class="no-">31</span><h3>The whole loom</h3></div>
+  <!--FZ:bb|Fritzing breadboard view of the main board and every harness: six motors, seven Hall carriers, the calendar, power-->
+  <p class="fzcap">Fritzing, breadboard view. Source: <span class="hw">docs/assembly_guide/tide_wiring.fzz</span>, generated by <span class="hw">gen_fritzing.py</span>; the board is drawn from <span class="hw">pcb/tide_main.kicad_pcb</span>.</p>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+<section class="sheet" id="s32">
+  <div class="head"><span class="no-">32</span><h3>Plug in the motors</h3><span class="tag"><a class="ki" href="#k8">KI 8</a></span></div>
+  <!--FZ:motors|Close-up: the six motor sockets along the top edge-->
+  <figure class="fig" data-fig="d_motor_plug"></figure>
+  <ul class="do">
+    <li>Each 28BYJ-48’s own plug into its socket: <b>J10 drum, J11 M2, J12 O1, J13 K1, J14 N2, J15 S2</b>, as the silkscreen says.</li>
+    <li>The plug is keyed. Red is pin 5, the switched HOLD rail.</li>
+  </ul>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+<section class="sheet" id="s33">
+  <div class="head"><span class="no-">33</span><h3>Crimp and plug the Hall leads</h3></div>
+  <!--FZ:halls|Close-up: the seven Hall sockets along the bottom edge-->
+  <figure class="fig" data-fig="d_hall_plug"></figure>
+  <ul class="do">
+    <li>Each 3-core lead into an <span class="hw">XHP-3</span>: pin 1 <b>+3V3</b>, pin 2 <b>S</b> (the latch output), pin 3 <b>GND</b>.</li>
+    <li><b>J20 year, J21 moon, J22 M2, J23 O1, J24 K1, J25 N2, J26 S2.</b></li>
+  </ul>
+  <div class="note"><svg class="ico"><use href="#i-info"/></svg><p>The pull-ups are on the board (RN2, 10 kΩ to 3.3 V), so each carrier needs only its latch and a 100 nF.</p></div>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+<section class="sheet" id="s34">
+  <div class="head"><span class="no-">34</span><h3>The calendar lead</h3><span class="tag"><a class="ki" href="#k5">KI 5</a></span></div>
+  <!--FZ:calendar|Close-up: J5 and the calendar carrier-->
+  <figure class="fig" data-fig="d_cal_plug"></figure>
+  <ul class="do">
+    <li>8-core from the BKA30D-R5 into an <span class="hw">XHP-8</span> on J5: pins 1–4 the year (outer) motor, pins 5–8 the moon (inner) motor.</li>
+    <li>Match each motor’s coil pins to Y1–Y4 and M1–M4 from its datasheet when it’s in hand.</li>
+  </ul>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+<section class="sheet" id="s35">
+  <div class="head"><span class="no-">35</span><h3>Power and USB</h3></div>
+  <!--FZ:power|Close-up: the barrel jack and the C6's USB-C-->
+  <ul class="do">
+    <li>A <b>5 V 3 A regulated</b> supply, 5.5 × 2.1 plug, centre positive, into J3. Peak draw is about 1.5 A with every motor energised.</li>
+    <li>USB-C on the C6, at the board’s left edge, for flashing and the serial console.</li>
+  </ul>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+<section class="sheet" id="s36">
+  <div class="head"><span class="no-">36</span><h3>Pin check before power</h3></div>
+  <figure class="fig" data-fig="meter" data-v="0.0 Ω" data-a="carrier S pad" data-b="J2x pin 2"></figure>
+  <ul class="do">
+    <li>Power off. Beep every Hall lead end to end (+, S, −) and the calendar lead pin by pin.</li>
+    <li>+3V3 to GND on each Hall socket must <b>not</b> beep.</li>
+  </ul>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+</div>
+
+<!-- ===================== E: first power-up, calibration ===================== -->
+<div class="divider" id="E"><span class="L">E</span><div><h2>First power-up and calibration</h2><p>Each step is tagged <b>today</b> (works with what’s in the repo now) or <b>planned</b> (needs firmware that isn’t written yet).</p></div></div>
+<div class="grid">
+<section class="sheet" id="s37">
+  <div class="head"><span class="no-">37</span><h3>Flash the firmware</h3><span class="tag"><span class="pill">planned</span></span></div>
+  <ul class="do">
+    <li>Over the C6’s USB-C. The firmware carries the tables from <span class="hw">pcb/design.py</span>: <span class="hw">MOTOR_BITS</span>, <span class="hw">HALL_BITS</span>, <span class="hw">CAL_BITS</span>, <span class="hw">CAL_HALL_BITS</span>, <span class="hw">ESP_GPIO</span>, plus a per-station inverse table from <span class="hw">kinematics.py</span>.</li>
+  </ul>
+  <div class="note"><svg class="ico"><use href="#i-info"/></svg><p>The C6’s LCD faces the back of the machine: planned as a status screen (time, phase of each station, last Hall edge).</p></div>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+<section class="sheet" id="s38">
+  <div class="head"><span class="no-">38</span><h3>I²C scan</h3><span class="tag"><span class="pill">planned</span></span></div>
+  <ul class="do">
+    <li>Expect exactly <b>0x20, 0x21, 0x22</b> on SDA GPIO19 / SCL GPIO18. A missing address is a chip not seated or an address pin: U2 all low, U3 A0 high, U8 A1 high.</li>
+  </ul>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+<section class="sheet" id="s39">
+  <div class="head"><span class="no-">39</span><h3>Holding-torque test</h3><span class="tag"><span class="pill now">today</span></span></div>
+  <ul class="do">
+    <li>One spare 28BYJ-48 on the bench, a 100 mm lever on its shaft, a known weight on the end: torque = m · g · 0.1.</li>
+    <li>Unpowered first, then with one coil energised (red to 5 V, orange to GND).</li>
+  </ul>
+  <div class="note"><svg class="ico"><use href="#i-info"/></svg><p>M2’s arm needs 14.5 mN·m. The datasheet’s 59–118 mN·m “friction torque” hints the gearbox holds that unpowered. If so, the PWM hold can go to zero between steps.</p></div>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+<section class="sheet" id="s40">
+  <div class="head"><span class="no-">40</span><h3>Check every motor’s direction</h3><span class="tag"><span class="pill">planned</span></span></div>
+  <ul class="do">
+    <li>At 1000×, one station at a time: each turns the way its table says. Every shaft turns one way only, which is what keeps gearbox backlash a constant.</li>
+  </ul>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+<section class="sheet" id="s41">
+  <div class="head"><span class="no-">41</span><h3>Hall edges</h3><span class="tag"><span class="pill">planned</span></span></div>
+  <ul class="do">
+    <li>Each station’s latch reports one edge per turn through the 0x21 expander’s INTB (GPIO20); year and moon through 0x22 (GPIO23).</li>
+    <li>Run each station past its edge ten times: the step count between edges must repeat exactly (2048 per turn at the output shaft, less the table’s shape).</li>
+  </ul>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+<section class="sheet" id="s42">
+  <div class="head"><span class="no-">42</span><h3>Home the calendar</h3><span class="tag"><span class="pill">planned</span></span></div>
+  <ul class="do">
+    <li>Slowly (the gauge motor is weak): year dial to Jan 1, moon disc to new moon, each on its latch edge. Then to today’s date and the <b>true</b> moon phase.</li>
+  </ul>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+<section class="sheet" id="s43">
+  <div class="head"><span class="no-">43</span><h3>Go-to-phase: check each arm’s radius</h3><span class="tag"><span class="pill">planned</span></span></div>
+  <figure class="fig" data-fig="e_phase" data-alt="An arm at 0, 90, 180 and 270 degrees and the pen moving between plus and minus r"></figure>
+  <ul class="do">
+    <li>One station at a time: command its phase to 0°, 90°, 180°, 270°. The pen moves <b>±r</b> about its zero.</li>
+  </ul>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+<section class="sheet" id="s44">
+  <div class="head"><span class="no-">44</span><h3>Set the pen zero</h3><span class="tag"><span class="pill">planned</span></span></div>
+  <ul class="do">
+    <li><b>Go-to-zero</b> (every output at 0), then turn the anchor screw on the pen bracket until the pen sits on the chart’s datum line.</li>
+  </ul>
+  <div class="note"><svg class="ico"><use href="#i-info"/></svg><p>The pen’s zero is set by line length and nothing else. Homing can’t crash the pen: its travel is bounded by Σr = 57.05 against 62 mm available.</p></div>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+<section class="sheet" id="s45">
+  <div class="head"><span class="no-">45</span><h3>Soak at 1000×</h3><span class="tag"><span class="pill">planned</span></span></div>
+  <ul class="do">
+    <li>90 minutes at 1000× (60 days of tide) against the Marigram Sandbox. No skips: every Hall edge arrives on its predicted step.</li>
+  </ul>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+</div>
+
+<!-- ===================== F: how to use ===================== -->
+<div class="divider" id="F"><span class="L">F</span><div><h2>How to use</h2><p>Set it running, load paper, read the dials.</p></div></div>
+<div class="grid">
+<section class="sheet" id="s46">
+  <div class="head"><span class="no-">46</span><h3>Start it</h3><span class="tag"><span class="pill">planned</span></span></div>
+  <ul class="do">
+    <li>Power on: Wi-Fi, NTP, re-home every station, then run in real time. NTP again daily.</li>
+  </ul>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+<section class="sheet" id="s47">
+  <div class="head"><span class="no-">47</span><h3>Load the chart paper</h3><span class="tag"><span class="pill now">today</span></span></div>
+  <figure class="fig" data-fig="f_paper" data-alt="The drum with a sheet wrapped round it"></figure>
+  <ul class="do">
+    <li>A4 wrapped the long way round the 279.3 mm drum; trim the 210 side to 140. Tape the 17.7 mm overlap.</li>
+  </ul>
+  <div class="note"><svg class="ico"><use href="#i-info"/></svg><p>Chart speed is still open: 7 days a turn (20.6 mm per tide) or 3.5 days (41.3 mm, a classic marigram). It’s a firmware constant.</p></div>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+<section class="sheet" id="s48">
+  <div class="head"><span class="no-">48</span><h3>Replay at speed</h3><span class="tag"><span class="pill">planned</span></span></div>
+  <ul class="do">
+    <li>The speed-up multiplier: 1000× replays 60 days in 86 minutes. Stay under 5000×, and re-home after any skip.</li>
+  </ul>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+<section class="sheet" id="s49">
+  <div class="head"><span class="no-">49</span><h3>Read the dials</h3><span class="tag"><span class="pill now">today</span></span></div>
+  <figure class="fig" data-fig="f_read" data-alt="A station dial read against its index tab, the coral high-water tick marked"></figure>
+  <ul class="do">
+    <li>Read each scale under its index tab; readings increase clockwise. <b>S2</b>: local mean solar time. <b>M2</b>: lunar hours. <b>K1</b>: sidereal time. <b>N2</b>, <b>O1</b>: hours of their own periods.</li>
+    <li>The coral tick is each constituent’s high water. On M2 the arm itself is the pointer.</li>
+    <li>Calendar: the hand reads the month on the year dial and days since new moon on the moon disc.</li>
+  </ul>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+</div>
+
+<!-- ===================== G: appendix ===================== -->
+<div class="divider" id="G"><span class="L">G</span><div><h2>Appendix: schematics</h2><p>The whole system, the board as blocks, then the board’s full schematic.</p></div></div>
+<div class="grid">
+<section class="sheet wide" id="g1">
+  <div class="head"><h3>G1 · System wiring, schematic view</h3></div>
+  <!--FZ:sch|Fritzing schematic view of the board and everything it connects to-->
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+<section class="sheet wide" id="g2">
+  <div class="head"><h3>G2 · The main board, logically</h3></div>
+  <figure class="fig" data-fig="g_logic" data-alt="Block diagram: 5 V in, fuse, ESP32-C6, hold switch; three MCP23017 expanders driving ULN2803A drivers and a 74AHCT245 to the motor and calendar sockets; Hall latches back to interrupts"></figure>
+  <p class="fzcap">Every block and net from <span class="hw">pcb/design.py</span>, the same data the board is built from.</p>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+<section class="sheet wide" id="g3">
+  <div class="head"><h3>G3 · Main board, full schematic</h3></div>
+  <div class="zoomer" id="kizoom" tabindex="0" aria-label="Board schematic. Drag to pan, scroll or use the buttons to zoom.">
+    <div class="zb"><button type="button" data-z="in" aria-label="Zoom in">+</button><button type="button" data-z="out" aria-label="Zoom out">−</button><button type="button" data-z="fit" aria-label="Fit">⤢</button></div>
+    <!--FZ:kicad|The main board's full KiCad schematic-->
+  </div>
+  <p class="fzcap"><span class="screen-only">Drag to pan, scroll or pinch to zoom.</span><span class="print-only">The drawing is vector: zoom in as far as you like.</span> Generated from <span class="hw">pcb/design.py</span> by <span class="hw">pcb/gen_schematic.py</span>; ERC clean.</p>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+</div>
+</main>
+
+<script src="engine.js"></script>
+<script src="figs_common.js"></script>
+<script src="tide_geom.js"></script>
+<script src="figs_project.js"></script>
+<script src="figs_pcb.js"></script>
+<script>
+(function () {
+  document.querySelectorAll('.fig[data-fig]').forEach(function (el) {
+    try { ISO.render(el, window.FIG); }
+    catch (e) { el.textContent = '[figure ' + el.getAttribute('data-fig') + ': ' + e.message + ']'; }
+  });
+  document.querySelectorAll('.sheet > footer span:last-child').forEach(function (el, i) { el.textContent = String(i + 1); });
+  document.querySelectorAll('.cmp .no').forEach(function (el) {
+    el.insertAdjacentHTML('beforeend', '<svg class="x" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M8 12 C38 38 62 60 92 88"/><path d="M92 12 C62 40 38 62 8 88"/></svg>');
+    el.setAttribute('aria-label', 'Wrong: ' + el.textContent.trim());
+  });
+  var root = document.documentElement, btn = document.getElementById('mode');
+  function isNight() {
+    if (root.classList.contains('night')) return true;
+    if (root.classList.contains('day')) return false;
+    if (root.getAttribute('data-theme') === 'dark') return true;
+    if (root.getAttribute('data-theme') === 'light') return false;
+    return window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches;
+  }
+  function label() { btn.textContent = isNight() ? 'Paper' : 'Red light'; }
+  try { var m = localStorage.getItem('tide-mode'); if (m === 'night' || m === 'day') root.classList.add(m); } catch (e) {}
+  label();
+  btn.addEventListener('click', function () {
+    var next = isNight() ? 'day' : 'night';
+    root.classList.remove('night', 'day'); root.classList.add(next);
+    try { localStorage.setItem('tide-mode', next); } catch (e) {}
+    label();
+  });
+  document.querySelectorAll('.zoomer').forEach(function (z) {
+    var svg = z.querySelector('svg'); if (!svg) return;
+    var full = svg.getAttribute('viewBox').split(/\s+/).map(Number), vb = full.slice();
+    function set() { svg.setAttribute('viewBox', vb.map(function (v) { return v.toFixed(2); }).join(' ')); }
+    function zoom(k, cx, cy) {
+      var r = svg.getBoundingClientRect(), fx = cx == null ? .5 : (cx - r.left) / r.width, fy = cy == null ? .5 : (cy - r.top) / r.height;
+      var nw = Math.min(full[2], Math.max(full[2] / 60, vb[2] * k)), nh = nw * vb[3] / vb[2];
+      vb = [vb[0] + (vb[2] - nw) * fx, vb[1] + (vb[3] - nh) * fy, nw, nh]; set();
+    }
+    z.querySelectorAll('button').forEach(function (b) {
+      b.addEventListener('click', function () { var m = b.getAttribute('data-z'); if (m === 'fit') { vb = full.slice(); set(); } else zoom(m === 'in' ? .6 : 1 / .6); });
+    });
+    z.addEventListener('wheel', function (e) { e.preventDefault(); zoom(e.deltaY < 0 ? .8 : 1.25, e.clientX, e.clientY); }, { passive: false });
+    var pts = {}, last = null;
+    z.addEventListener('pointerdown', function (e) { if (e.target.closest('button')) return; z.setPointerCapture(e.pointerId); pts[e.pointerId] = [e.clientX, e.clientY]; z.classList.add('drag'); });
+    z.addEventListener('pointermove', function (e) {
+      if (!pts[e.pointerId]) return;
+      var ids = Object.keys(pts), r = svg.getBoundingClientRect(), s = Math.max(vb[2] / r.width, vb[3] / r.height);
+      if (ids.length === 1) { vb[0] -= (e.clientX - pts[e.pointerId][0]) * s; vb[1] -= (e.clientY - pts[e.pointerId][1]) * s; set(); }
+      pts[e.pointerId] = [e.clientX, e.clientY];
+      if (ids.length === 2) {
+        var a = pts[ids[0]], b = pts[ids[1]], d = Math.hypot(a[0] - b[0], a[1] - b[1]);
+        if (last) zoom(last / d, (a[0] + b[0]) / 2, (a[1] + b[1]) / 2);
+        last = d;
+      }
+    });
+    function up(e) { delete pts[e.pointerId]; last = null; if (!Object.keys(pts).length) z.classList.remove('drag'); }
+    z.addEventListener('pointerup', up); z.addEventListener('pointercancel', up);
+    z.addEventListener('keydown', function (e) { if (e.key === '+' || e.key === '=') zoom(.8); else if (e.key === '-') zoom(1.25); else if (e.key === '0') { vb = full.slice(); set(); } });
+  });
+})();
+</script>

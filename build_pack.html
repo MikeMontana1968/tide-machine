@@ -100,7 +100,7 @@ code{font-family:'IBM Plex Mono',monospace; color:var(--ink2)}
   <h1>Build Pack</h1>
   <p class="lede">Everything to order and how it wires together, for the Rev M design: five arm stations and the drum on 28BYJ-48 steppers, a BKA30D-R5 turning the calendar dial, seven Hall latches reading magnet pairs through the aluminium faceplate, and 22 V623ZZ bearings carrying the line. One through-hole main board behind the faceplate carries all the electronics; everything else plugs into it. Quantities to order include spares.</p>
   <div class="chips">
-    <span class="chip"><b>54</b> order lines</span>
+    <span class="chip"><b>55</b> order lines</span>
     <span class="chip"><b>3</b> to verify before building around them</span>
     <span class="chip"><b>1</b> not yet: the faceplate waits for the Ruby port</span>
     <span class="chip">also in <b>bom.csv</b></span>
@@ -117,7 +117,7 @@ code{font-family:'IBM Plex Mono',monospace; color:var(--ink2)}
 <tr><td class="item">Dual-shaft gauge stepper<span class="pill verify">verify first</span><div class="spec">BKA30D-R5 (continuous 360° version)</div></td><td class="num">1</td><td class="num">2</td><td class="note">Calendar: outer shaft = year dial, inner shaft = moon disc. Confirm both shafts spin all the way round, and measure shaft diameters and lengths, before building around it.</td></tr>
 <tr><td class="item">V-groove bearing<span class="pill verify">verify first</span><div class="spec">V623ZZ, 3 × 12 × 4 mm</div></td><td class="num">22</td><td class="num">25</td><td class="note">12 rail pulleys, 5 arms, 1 pen pulley, 4 pen carriage. Measure the groove root radius (4.8 assumed) and V angle (90° assumed) on arrival.</td></tr>
 <tr><td class="item">Steel rod<div class="spec">3 mm ground stainless (h6), or 1/8″ (3.175 mm) O-1 drill rod</div></td><td class="num">2 × 170 mm</td><td class="num">2 × 300 mm</td><td class="note">Pen guide rods, cut to 170 socket bottom to socket bottom. 4 mm and up won't seat in the V623's groove.</td></tr>
-<tr><td class="item">Shim washer<div class="spec">3 × 5 × 0.5 mm (OD must be 5 mm or less)</div></td><td class="num">10</td><td class="num">20</td><td class="note">Between the two bearings in each pulley bracket (6), and behind each pen-carriage bearing (4). A standard M3 washer rubs the bearing shields.</td></tr>
+<tr><td class="item">Shim washer<div class="spec">3 × 5 × 0.5 mm (OD must be 5 mm or less)</div></td><td class="num">16</td><td class="num">25</td><td class="note">Between the two bearings in each pulley bracket (6), behind each pen-carriage bearing (4), under each arm-bearing axle head (5) and the pen-pulley axle head (1). A standard M3 washer presses on the bearing shields.</td></tr>
 <tr><td class="item">Monofilament line<div class="spec">0.30 mm fluorocarbon (about 12 lb)</div></td><td class="num">about 2 m</td><td class="num">1 spool</td><td class="note">Not nylon: nylon absorbs moisture and wanders with humidity.</td></tr>
 <tr><td class="item">Crimp sleeves<div class="spec">Aluminium or copper, 0.6–0.8 mm ID, for 0.3 mm line</div></td><td class="num">4</td><td class="num">20</td><td class="note">Crimp, don't knot.</td></tr>
 <tr class="sec"><th colspan="4" scope="colgroup">Sensing</th></tr>
@@ -155,14 +155,15 @@ code{font-family:'IBM Plex Mono',monospace; color:var(--ink2)}
 <tr><td class="item">M3 × 16 button head<div class="spec"></div></td><td class="num">5</td><td class="num">10</td><td class="note">Pen-pulley axle (into the carriage insert), and the 4 carriage bearing axles, which clamp the carriage's two halves.</td></tr>
 <tr><td class="item">M3 hex nuts<div class="spec"></div></td><td class="num">4</td><td class="num">10</td><td class="note">Carriage bearing axles, on the rear plate.</td></tr>
 <tr><td class="item">M3 × 8 pan head + nut<div class="spec">Head 2.4 mm tall or less</div></td><td class="num">12</td><td class="num">20</td><td class="note">Motor ears. The dials clear the heads by 1.1 mm.</td></tr>
-<tr><td class="item">M3 washers<div class="spec"></div></td><td class="num">12</td><td class="num">25</td><td class="note"></td></tr>
+<tr><td class="item">M3 washers<div class="spec"></div></td><td class="num">12</td><td class="num">25</td><td class="note">Under the motor-ear nuts only; never against a bearing (use the shims).</td></tr>
 <tr><td class="item">M3 × 4 heat-set inserts<div class="spec">OD about 4.6 mm</div></td><td class="num">6</td><td class="num">20</td><td class="note">Five arms + the pen carriage.</td></tr>
 <tr><td class="item">M2 × 6 + nut<div class="spec"></div></td><td class="num">30</td><td class="num">50</td><td class="note">Arm to hub, Hall boards, calendar board, index tabs, index hand.</td></tr>
 <tr><td class="item">#4 × 3/4″ flat-head wood screws<div class="spec"></div></td><td class="num">12</td><td class="num">20</td><td class="note">Pulley brackets.</td></tr>
-<tr><td class="item">#6 × 3/4″ wood screws<div class="spec"></div></td><td class="num">14</td><td class="num">25</td><td class="note">Faceplate to rails; end posts.</td></tr>
+<tr><td class="item">#6 × 3/4″ wood screws<div class="spec"></div></td><td class="num">10</td><td class="num">20</td><td class="note">Faceplate to the rails' rear faces.</td></tr>
+<tr><td class="item">#6 × 1-1/2″ wood screws<div class="spec"></div></td><td class="num">4</td><td class="num">10</td><td class="note">End posts, through the rail into the post's end grain, with glue (a 3/4″ screw can't reach through the 19 mm rail).</td></tr>
 <tr><td class="item">M3 × 30 standoffs + M3 × 6 screws<div class="spec">Female-female hex, brass or nylon</div></td><td class="num">4 + 8</td><td class="num">4 + 10</td><td class="note">Main board to the back of the faceplate, clear of the motors (20.5 deep).</td></tr>
 <tr class="sec"><th colspan="4" scope="colgroup">Frame and materials</th></tr>
-<tr><td class="item">Pine 1 × 2<div class="spec">19 × 38 mm actual, 8 ft length</div></td><td class="num">1288 mm</td><td class="num">1 (+1 for mistakes)</td><td class="note">Two rails about 492 mm, two posts 152 mm.</td></tr>
+<tr><td class="item">Pine 1 × 2<div class="spec">19 × 38 mm actual, 8 ft length</div></td><td class="num">1302 mm</td><td class="num">1 (+1 for mistakes)</td><td class="note">Two rails 499 mm, two posts 152 mm.</td></tr>
 <tr><td class="item">Faceplate<span class="pill later">not yet</span><div class="spec">1.5 mm (0.063″) 5052 aluminium, laser cut, about 283 × 176 mm</div></td><td class="num">1</td><td class="num">not yet</td><td class="note">The DXF comes from the Ruby port. Never steel: the Hall sensors look through it.</td></tr>
 <tr><td class="item">PVC pipe<div class="spec">3″ Schedule 40</div></td><td class="num">130 mm</td><td class="num">a short length</td><td class="note">The drum.</td></tr>
 <tr><td class="item">Drum shaft and bearing<div class="spec">7 mm steel or brass rod about 200 mm; PTFE tube or bushing; M8 washer</div></td><td class="num">1 set</td><td class="num">1 set</td><td class="note"></td></tr>

@@ -1,0 +1,83 @@
+"""Write tide_geom.js: every dimension the guide's drawings use, straight from the Rev M CAD.
+
+    python gen_geom.py      (build.py's pre-step; run from this folder)
+
+Sources: station_study.py --full (the fit study: plate, rails, stations, brackets, pen carriage, drum,
+calendar), rollers.py (pulley bracket), pcb/design.py (main board). Nothing here is typed in by hand
+except where the design itself is still open (marked PLACEHOLDER, and listed on the known-issues sheet).
+"""
+import json, os, sys, io, contextlib
+HERE = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.normpath(os.path.join(HERE, "..", ".."))
+sys.path.insert(0, ROOT)
+sys.path.insert(0, os.path.join(ROOT, "pcb"))
+sys.argv = ["station_study.py", "--full"]
+cwd = os.getcwd()
+os.chdir(ROOT)
+with contextlib.redirect_stdout(io.StringIO()):
+    import station_study as S
+import rollers as R
+import design as D
+os.chdir(cwd)
+
+brk, binfo = R.build_bracket(R.LINE_Z)
+holes = []                                   # [x, y, diameter, kind]
+windows = []                                 # [x, y, side]
+for name, xs, r in S.ALL_STATIONS:
+    holes.append([xs, 0.0, S.BOSS_HOLE, "boss"])
+    for sx in (-1, 1):
+        holes.append([xs + sx * S.EAR_PITCH / 2, -S.MOT_OFF, 3.2, "ear"])
+    windows.append([xs, S.HALL_R, S.HALL_WIN])
+    for dy in (-5.5, 5.5):
+        holes.append([xs, S.HALL_R + dy, 2.2, "hall"])
+    holes.append([xs, S.TAB_R1 - 2.0, 2.2, "tab"])
+holes.append([S.CAL_X, S.CAL_Y, 12.0, "bka"])
+windows += [[S.CAL_X, S.CAL_Y + S.HALL_R, S.HALL_WIN], [S.CAL_X, S.CAL_Y - S.MOON_HALL_R, S.HALL_WIN]]
+for sx in (-1, 1):
+    for sy in (-1, 1):
+        holes.append([S.CAL_X + sx * 14.0, S.CAL_Y + sy * 30.0, 2.2, "calpcb"])
+holes.append([S.CAL_X + 1.9, S.CAL_Y + 30.5, 2.2, "hand"])
+# main board: PROPOSED position (not yet in RESUME's hole schedule). Seen from behind, board x runs toward machine -x;
+# checked against every part of the model (4 x M3 x 30 standoffs, the board, lead ends under it): clear by >= 3 mm
+BOARD_O = (28.5, 42.5)                       # machine x, y of the board's (0, 0) corner
+for hx, hy in D.HOLES:
+    holes.append([BOARD_O[0] - hx, BOARD_O[1] - hy, 3.2, "board"])
+
+TIDE = dict(
+    pitch=S.PITCH,
+    stations=[dict(n=n, x=x, r=r) for n, x, r in S.ALL_STATIONS],
+    plate=dict(x0=S.PLATE_X[0], x1=S.PLATE_X[1], y0=-(S.RAIL_Y + 12), y1=S.RAIL_Y + 12, t=S.PLATE_T),
+    holes=holes, windows=windows,
+    rail=dict(x0=S.RAIL_X[0], x1=S.RAIL_X[1], y=S.RAIL_Y, t=S.RAIL_T, d=38.1, socket=S.SOCKET),
+    angles=S.START_ANG,
+    motor=dict(d=S.MOT_D, l=S.MOT_L, off=S.MOT_OFF, ear_pitch=S.EAR_PITCH, ear_r=S.EAR_R, ear_t=S.EAR_T,
+               ear_hole=S.EAR_HOLE, cover_w=S.COVER_W, cover_reach=S.COVER_REACH, boss_d=S.BOSS_D, boss_h=S.BOSS_H,
+               shaft_d=S.SHAFT_D, shaft_len=S.SHAFT_LEN, flats=S.FLATS, flat_len=S.FLAT_LEN, ear_head=S.EAR_HEAD),
+    hall=dict(r=S.HALL_R, win=S.HALL_WIN, pcb=list(S.HALL_PCB)),
+    mag=dict(d=S.MAG_D, t=S.MAG_T, sep=S.MAG_SEP),
+    rotor=dict(hub_r=S.HUB_R, disc_r=S.R_DISC, disc_t=S.DISC_T, arm_t=S.ARM_T, arm_end_r=S.ARM_END_R,
+               boss_step_d=S.BOSS_STEP_D, boss_step_h=S.BOSS_STEP_H, race_h=S.BOSS_RACE_H,
+               insert_d=S.INSERT_D, insert_l=S.INSERT_L, axle_l=S.AXLE_L, notch=S.NOTCH,
+               z_disc_back=S.z_disc_back, z_disc_front=S.z_disc_front, z_arm_back=S.z_arm_back,
+               z_arm_front=S.z_arm_front, z_brg_back=S.z_brg_back, z_brg_front=S.z_brg_front, z_line=S.z_line,
+               z_shaft_tip=S.z_shaft_tip, tab=[S.TAB_R0, S.TAB_R1, S.TAB_T]),
+    brg=dict(od=R.BRG_OD, w=R.BRG_W, root_r=R.BRG_ROOT_R, race_d=R.BRG_RACE_D, shim=R.SHIM),
+    bracket=dict(axle_y=binfo["axle_y"], half_x=R.HALF_X, screw_x=R.SCREW_X, cheek_t=R.CHEEK_T, lobe_r=R.LOBE_R,
+                 bridge_t=binfo["bridge_t"], z_rear=binfo["z_rear"], z_front=binfo["z_front"],
+                 z_rear_in=binfo["z_rear_in"], z_front_in=binfo["z_front_in"], planes=list(binfo["planes"]),
+                 line_y=R.LINE_Y),
+    threading={n: list(R.threading(n)) for n in R.ROW},
+    pen=dict(x=S.PEN_X, rod_d=S.PEN_ROD_D, rod_dx=S.PEN_ROD_DX, bx=S.PEN_BX, s=S.PEN_S, body_x=S.PEN_BODY_X,
+             gap_x=S.PEN_GAP_X, zr=S.PEN_ZR, bz=S.PEN_BZ, zf=S.PEN_ZF, pocket=S.PEN_POCKET, arm=S.PEN_ARM,
+             yhi=S.PEN_YHI, ylo=S.PEN_YLO, yc=S.PEN_YC, sum_r=S.SUM_R, arm_z=list(S.PEN_ARM_Z)),
+    drum=dict(r=S.DRUM_R, bore=S.DRUM_BORE, l=S.DRUM_L, z=S.DRUM_Z, x=S.DRUM_X),
+    cal=dict(x=S.CAL_X, y=S.CAL_Y, moon_r=S.MOON_R, moon_t=S.MOON_T, moon_gap=S.MOON_GAP, moon_hall_r=S.MOON_HALL_R,
+             bka=[S.BKA_L, S.BKA_W, S.BKA_T], pcb=list(S.CAL_PCB), chamfer=list(S.CAL_CHAMFER), z_moon_back=S.z_moon_back,
+             z_moon_front=S.z_moon_front, z_hand=list(S.z_hand)),
+    board=dict(w=D.BOARD_W, h=D.BOARD_H, holes=D.HOLES, standoff=30.0, origin=list(BOARD_O), devkit=list(D.DEVKIT)),
+)
+
+with open(os.path.join(HERE, "tide_geom.js"), "w", encoding="utf8") as f:
+    f.write("/* generated by gen_geom.py from station_study.py, rollers.py and pcb/design.py -- do not edit */\n")
+    f.write("window.TIDE = " + json.dumps(TIDE, indent=1) + ";\n")
+print("tide_geom.js:", len(holes), "plate holes,", len(TIDE["stations"]), "stations")
