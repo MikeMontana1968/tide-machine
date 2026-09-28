@@ -436,6 +436,18 @@ Everything lives in `C:\Users\mikem\Desktop\tide-machine\` (a git repo).
 - [ ] **Port Rev M into `tide_machine.rb`** (CFG + builders), then regenerate
       `faceplate.py` / `rails.py` outputs and the 3D viewer from it. **Don't order or drill
       Rev L files meanwhile.**
+- [ ] **1:1 rail templates (Rev M).** `rails.py`'s printable drilling templates are Rev L (7 rod sockets, 12 screw-eye
+      pilots). Generate new ones from the model: one per drilled face, printed at 100% and tiled across Letter pages
+      (the rail is 498.9 long) with a calibration bar, page-join marks, and each sheet labelled TOP/BOTTOM rail, face,
+      and "S2 end". Positions from the S2 end of the rail:
+      - top rail, inner face: 2 × #4 pilots per pulley bracket at 50, 106, 162, 218, 274 and 344 (each ± 11), 15 from
+        the rear edge; pen-rod sockets Ø3.1 × 9 at 325.08 and 362.92, 23.75 from the rear edge
+      - bottom rail, inner face: the same two rod sockets
+      - both rails: the drum-shaft hole at 429.45, 24 from the rear edge (clearance on the top rail, plain bearing on
+        the bottom)
+      - rear faces: the faceplate pilots, 6 from the inner edge (spacing still to set, see the frame-screw holes)
+      - outer faces: the end-post screws, centred 9.5 from each end
+      Guide: KI 13, steps 11 and 13.
 - [x] ~~Route the main board~~: rev B (ESP32-C6) routed by Freerouting, DRC clean (2026-09-27). Open
       `pcb/tide_main.kicad_pcb` in KiCad to inspect; regenerate with `python pcb/make_board.py`.
 - [ ] **Firmware for the ESP32-C6:** three MCP23017s at 0x20/0x21/0x22 on GPIO19/18; the tables in `pcb/design.py`.

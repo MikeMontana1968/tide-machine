@@ -3600,6 +3600,7 @@ p{margin:0}
     <li id="k10"><span class="ki">KI 10</span><p><b>The far dead end has no fixing.</b> Nothing slides at S2’s IN pulley, so the line can end there, but no tie-off point is designed. The pen bracket’s screw-adjustable anchor, copied onto S2’s bracket, would do. <a href="#s16">Step 16</a>.</p></li>
     <li id="k11"><span class="ki">KI 11</span><p><b>Decals use placeholder constituents.</b> Put NOAA G values, the longitude and the epoch into <span class="hw">decals.py</span>, and check the K1/O1 ±90° convention (it moves those zeros by 12 h), before printing. <a href="#s8">Step 8</a>.</p></li>
     <li id="k12"><span class="ki">KI 12</span><p><b>No firmware yet.</b> Everything in section E and F tagged <span class="pill">planned</span> needs it: the inverse tables, the Hall edge timing, homing, NTP, the PWM hold. <a href="#E">Section E</a>.</p></li>
+    <li id="k13"><span class="ki">KI 13</span><p><b>No 1:1 rail templates yet.</b> <span class="hw">rails.py</span> printed drilling templates for Rev L; Rev M needs new ones from the model, printed at 100% and tiled across Letter pages (the rail is 498.9 long), with a calibration bar, page-join marks, and each sheet labelled top or bottom rail, face, and S2 end. Until then, measure from the <b>S2 end</b>. Top rail, inner face: #4 pilots at 50, 106, 162, 218, 274 and 344 (each ± 11), 15 from the rear edge; rod sockets Ø3.1 × 9 at 325.08 and 362.92, 23.75 from the rear edge (the bottom rail’s inner face takes the same two). Both rails: the drum hole at 429.45, 24 from the rear edge. Rear faces: faceplate pilots 6 from the inner edge (spacing with <a href="#k1">KI 1</a>). Outer faces: end-post screws 9.5 from each end. <a href="#s11">Step 11</a>, <a href="#s13">step 13</a>.</p></li>
   </ol>
   <div class="head"><h3>Fixed in the model while writing this guide</h3></div>
   <ul class="fixed">
@@ -3747,7 +3748,7 @@ p{margin:0}
 </section>
 
 <section class="sheet" id="s11">
-  <div class="head"><span class="no-">11</span><h3>Screw the pulley brackets to the top rail</h3></div>
+  <div class="head"><span class="no-">11</span><h3>Screw the pulley brackets to the top rail</h3><span class="tag"><a class="ki" href="#k13">KI 13</a></span></div>
   <figure class="fig" data-fig="a_brackets" data-alt="The top rail on its back, inner face up; a bracket with its two pulleys above its place, two wood screws above it"></figure>
   <ul class="do">
     <li>Each bracket: two <span class="hw">V623ZZ</span> with a <b>3 × 5 × 0.5 shim</b> between them on an <span class="hw">M3 × 20</span>, head to the front, nyloc behind. Snug: they must spin freely.</li>
@@ -3771,10 +3772,10 @@ p{margin:0}
 </section>
 
 <section class="sheet wide" id="s13">
-  <div class="head"><span class="no-">13</span><h3>Close the frame around the rods and the carriage</h3><span class="tag"><a class="ki" href="#k1">KI 1</a><a class="ki" href="#k9">KI 9</a></span></div>
+  <div class="head"><span class="no-">13</span><h3>Close the frame around the rods and the carriage</h3><span class="tag"><a class="ki" href="#k1">KI 1</a><a class="ki" href="#k9">KI 9</a><a class="ki" href="#k13">KI 13</a></span></div>
   <figure class="fig" data-fig="a_frame" data-alt="The frame lying face up: bottom rail, posts, two rods with the carriage on them, and the top rail with its brackets moving onto the rod ends"></figure>
   <ul class="do">
-    <li>Drill the rails as a mirrored pair (clamp them outer face to outer face): rod sockets <b>Ø3.1 × 9</b> at x 70 ± 18.92, 23.75 from the rear edge; the drum hole at x 155.5, 24 from the rear edge.</li>
+    <li>Tape the 1:1 templates to the rails (<a class="ki" href="#k13">KI 13</a>) and drill them as a mirrored pair, clamped outer face to outer face: rod sockets <b>Ø3.1 × 9</b> at 325.08 and 362.92 from the S2 end, 23.75 from the rear edge; the drum hole at 429.45, 24 from the rear edge.</li>
     <li>Bottom rail flat, both rods in its sockets, the carriage between them with its bearings on the rods. Then the top rail onto the rod ends.</li>
     <li>End posts between the rails, <span class="hw">#6 × 1-1/2″</span> and glue. Push the +x bearing pair outward for a light preload and lock the two screws.</li>
   </ul>
