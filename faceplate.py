@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Faceplate drawings, generated FROM tide_machine.rb so they cannot drift.
 
-Outputs into Desktop\\tide-machine\\:
+Outputs into claude\\tide-machine\\:
   faceplate_CUT.dxf         geometry only, mm, one layer -- THIS is the vendor file
   faceplate_REF.dxf         same + annotation on separate layers, for your CAD
   faceplate_1to1_A3.pdf     A3 landscape, exact 1:1, dimensioned + hole schedule
@@ -10,8 +10,8 @@ Outputs into Desktop\\tide-machine\\:
 import io, os, re
 from collections import Counter
 
-RB  = r'C:\Users\mikem\Desktop\tide-machine\tide_machine.rb'
-OUT = r'C:\Users\mikem\Desktop\tide-machine'
+RB  = r'C:\Users\mikem\claude\tide-machine\tide_machine.rb'
+OUT = r'C:\Users\mikem\claude\tide-machine'
 
 # ---------------------------------------------------------------- read CFG
 src = io.open(RB, encoding='utf-8').read()

@@ -236,7 +236,7 @@ p{margin:0}
   <h1>Tide Machine</h1>
   <p class="sub">A five-constituent harmonic tide predictor: five stepper-driven arms sum on one line and draw the tide on a drum. Assembly, board, smoke test, wiring, first power.</p>
   <figure class="fig" data-fig="cover" data-w="680" data-alt="The finished machine, standing: five dials and arms in a row under a rail of pulleys, the calendar below, the pen carriage and the drum on the right"></figure>
-  <div class="badge"><svg class="ico" style="width:26px;height:26px"><use href="#i-star"/></svg><span>Design and Quality<small>the bench of Mike</small></span></div>
+  <div class="badge"><svg class="ico" style="width:26px;height:26px"><use href="#i-star"/></svg><span>Another Amazing DIY Project<small>by Mike Montana</small></span></div>
   <footer><span>TIDE-AG</span><span></span></footer>
 </section>
 
@@ -260,11 +260,11 @@ p{margin:0}
   <div class="head"><h3>Contents</h3></div>
   <nav class="toc" aria-label="Contents">
     <a href="#A"><b>A</b><span>Mechanics</span><small>steps 1 to 16</small></a>
-    <a href="#B"><b>B</b><span>Main board</span><small>steps 17 to 22</small></a>
-    <a href="#C"><b>C</b><span>Smoke test</span><small>steps 23 to 29</small></a>
-    <a href="#D"><b>D</b><span>Wiring</span><small>steps 30 to 36</small></a>
-    <a href="#E"><b>E</b><span>First power-up, calibration</span><small>steps 37 to 45</small></a>
-    <a href="#F"><b>F</b><span>How to use</span><small>steps 46 to 49</small></a>
+    <a href="#B"><b>B</b><span>Main board</span><small>steps 17 to 33</small></a>
+    <a href="#C"><b>C</b><span>Smoke test</span><small>steps 34 to 40</small></a>
+    <a href="#D"><b>D</b><span>Wiring</span><small>steps 41 to 47</small></a>
+    <a href="#E"><b>E</b><span>First power-up, calibration</span><small>steps 48 to 56</small></a>
+    <a href="#F"><b>F</b><span>How to use</span><small>steps 57 to 60</small></a>
     <a href="#G"><b>G</b><span>Appendix: schematics</span><small>system, logical, full board</small></a>
     <a href="#issues"><b>!</b><span>Known issues</span><small>read before you order or cut</small></a>
   </nav>
@@ -347,12 +347,12 @@ p{margin:0}
   <ol class="issues">
     <li id="k1"><span class="ki">KI 1</span><p><b>No Rev M cut files yet.</b> <span class="hw">tide_machine.rb</span>, <span class="hw">faceplate.py</span> and <span class="hw">rails.py</span> still describe Rev L. The hole schedule in step 1 comes from <span class="hw">station_study.py</span>. Port it to the Ruby before ordering the plate or drilling the rails. The #6 frame-screw holes (Ø4.0 at y ±82) have no spacing yet. <a href="#s1">Step 1</a>, <a href="#s14">step 14</a>.</p></li>
     <li id="k2"><span class="ki">KI 2</span><p><b>Hall windows are still sized for the SOT-23.</b> They’re 3.4 × 3.4; the TO-92 latch needs about 4.4 × 3.4, and its sensing element sits a few tenths deeper. Re-run the field check (the magnet gap was 4.40 mm) when you resize them. <a href="#s1">Step 1</a>, <a href="#s5">step 5</a>.</p></li>
-    <li id="k3"><span class="ki">KI 3</span><p><b>No holes for the main board yet.</b> Proposed: 4 × Ø3.2 at (25, 39), (−108, 39), (25, −35.28), (−108, −35.28), for the board upright as seen from behind. Checked against the whole model (the standoffs, the board and the lead ends under it): nothing within 3 mm. Screw heads under a dial are fine at 2.4 mm tall or less (the same 1.1 mm as the motor-ear screws). <a href="#s30">Step 30</a>.</p></li>
+    <li id="k3"><span class="ki">KI 3</span><p><b>No holes for the main board yet.</b> Proposed: 4 × Ø3.2 at (25, 39), (−108, 39), (25, −35.28), (−108, −35.28), for the board upright as seen from behind. Checked against the whole model (the standoffs, the board and the lead ends under it): nothing within 3 mm. Screw heads under a dial are fine at 2.4 mm tall or less (the same 1.1 mm as the motor-ear screws). <a href="#s30">Step 41</a>.</p></li>
     <li id="k4"><span class="ki">KI 4</span><p><b>The Hall carriers and the calendar carrier are hand-cut perfboard</b>, not designed parts. As a plain 36 × 68 rectangle, the calendar carrier’s top corners clipped the N2 and K1 motor bodies (8.9 mm³ each; each corner is 11.7 mm from a motor’s axis, against its 14 mm radius). <b>Fixed in the model:</b> cut 4 × 6 off both top corners; it now clears by 0.98 mm. <b>Still open:</b> the two bottom holes at y −78 are under the bottom rail (its inner face is at y −76), so their M2 heads have nowhere to go on the front; and all four nuts sit inside the BKA placeholder’s outline. Move the holes once the motor is measured. <a href="#s5">Step 5</a>, <a href="#s6">step 6</a>.</p></li>
-    <li id="k5"><span class="ki">KI 5</span><p><b>BKA30D-R5 is a placeholder.</b> The body, the shaft diameters, lengths and positions, and whether both shafts turn continuously (the family datasheet shows stops) are all unconfirmed. The year dial’s and moon disc’s hub bores are placeholders, and so is the coil-to-pin map in step 34. <a href="#s6">Step 6</a>, <a href="#s10">step 10</a>, <a href="#s34">step 34</a>.</p></li>
+    <li id="k5"><span class="ki">KI 5</span><p><b>BKA30D-R5 is a placeholder.</b> The body, the shaft diameters, lengths and positions, and whether both shafts turn continuously (the family datasheet shows stops) are all unconfirmed. The year dial’s and moon disc’s hub bores are placeholders, and so is the coil-to-pin map in step 45. <a href="#s6">Step 6</a>, <a href="#s10">step 10</a>, <a href="#s34">step 45</a>.</p></li>
     <li id="k6"><span class="ki">KI 6</span><p><b>Arm-bearing axles clamped a washer on the shield.</b> The M3 × 8 went through an M3 washer (Ø7) against the V623ZZ’s face; the inner race is Ø5, so 1 mm of the washer bore on the shield. The pen pulley’s M3 × 16 head (Ø5.7) did the same by 0.35 mm. <b>Fixed in the model:</b> a 3 × 5 × 0.5 shim under each (16 shims in all). The pen pulley’s screw now engages its insert by 2.25 mm. <a href="#s9">Step 9</a>, <a href="#s12">step 12</a>.</p></li>
     <li id="k7"><span class="ki">KI 7</span><p><b>The pen arm ran through the +x guide rod</b> (27.9 mm³) at the drum’s mid-plane (z −22 to −26, rod at −23.75). <b>Fixed in the model:</b> the arm runs 1 mm in front of the rods, at z −26.25 to −30.25; the nib meets the drum at x 111.2. The pen holder, leaf spring, retract lever and ballast pocket still aren’t designed. <a href="#s12">Step 12</a>.</p></li>
-    <li id="k8"><span class="ki">KI 8</span><p><b>Drum drive not designed.</b> Nothing is drawn yet for the motor mount, the coupling to the 7 mm shaft, or how the end caps grip the shaft (the cap STL only has a Ø7.1 bore). The drum motor sits outside the top rail, about 18 cm in a straight line from J10; its lead is about 24 cm. Route it tight or make a 5-way XH extension. <a href="#s15">Step 15</a>, <a href="#s32">step 32</a>.</p></li>
+    <li id="k8"><span class="ki">KI 8</span><p><b>Drum drive not designed.</b> Nothing is drawn yet for the motor mount, the coupling to the 7 mm shaft, or how the end caps grip the shaft (the cap STL only has a Ø7.1 bore). The drum motor sits outside the top rail, about 18 cm in a straight line from J10; its lead is about 24 cm. Route it tight or make a 5-way XH extension. <a href="#s15">Step 15</a>, <a href="#s32">step 43</a>.</p></li>
     <li id="k9"><span class="ki">KI 9</span><p><b>End-post screws are too short.</b> The BOM’s #6 × 3/4″ can’t reach through a 19 mm rail into the post’s end grain. Use #6 × 1-1/2″ (4) with glue; the faceplate still takes #6 × 3/4″ (10). <a href="#s13">Step 13</a>.</p></li>
     <li id="k10"><span class="ki">KI 10</span><p><b>The far dead end has no fixing.</b> Nothing slides at S2’s IN pulley, so the line can end there, but no tie-off point is designed. The pen bracket’s screw-adjustable anchor, copied onto S2’s bracket, would do. <a href="#s16">Step 16</a>.</p></li>
     <li id="k11"><span class="ki">KI 11</span><p><b>Decals use placeholder constituents.</b> Put NOAA G values, the longitude and the epoch into <span class="hw">decals.py</span>, and check the K1/O1 ±90° convention (it moves those zeros by 12 h), before printing. <a href="#s8">Step 8</a>.</p></li>
@@ -453,7 +453,7 @@ p{margin:0}
   <ul class="do">
     <li>Cut the carrier 36 × 68 from perfboard, then <b>cut 4 × 6 off both top corners</b>. Without the cut it hits the N2 and K1 motor bodies.</li>
     <li>On it: the BKA30D-R5, shafts forward through the plate’s Ø12, and the year and moon latches at (0, +20.5) and (0, −9) from its centre, nested in their windows.</li>
-    <li>Four <span class="hw">M2 × 6</span> from the front, nuts behind. Then an 8-core lead for the coils (step 34), and a 3-core lead from each latch.</li>
+    <li>Four <span class="hw">M2 × 6</span> from the front, nuts behind. Then an 8-core lead for the coils (step 45), and a 3-core lead from each latch.</li>
   </ul>
   <footer><span>TIDE-AG</span><span></span></footer>
 </section>
@@ -582,7 +582,7 @@ p{margin:0}
 </div>
 
 <!-- ===================== B: board ===================== -->
-<div class="divider" id="B"><span class="L">B</span><div><h2>Main board</h2><p>140 × 81.3 mm, all through-hole, chips and the ESP32 in sockets. Solder in rounds, lowest parts first; test where a round says so.</p></div></div>
+<div class="divider" id="B"><span class="L">B</span><div><h2>Main board</h2><p>140 × 81.3 mm, all through-hole, chips and the ESP32 in sockets. Written for a first board: one kind of part at a time, simplest first, each with a map of where it goes. Then test everything (section C) before any chip or the C6 goes in.</p></div></div>
 <div class="grid">
 <section class="sheet wide" id="b0">
   <div class="head"><h3>The finished board</h3></div>
@@ -591,6 +591,7 @@ p{margin:0}
   <footer><span>TIDE-AG</span><span></span></footer>
 </section>
 <section class="sheet wide" id="b1">
+  <style>@media print{#b1 .eparts{display:flex;flex-wrap:wrap;gap:12px 2%}#b1 .eparts .part{width:23.5%}}</style>
   <div class="bag">
     <div class="n">4</div><h3 class="bagt">Electronic parts for the board</h3>
     <div class="parts eparts">
@@ -615,63 +616,215 @@ p{margin:0}
   </div>
   <footer><span>TIDE-AG</span><span></span></footer>
 </section>
+<section class="sheet" id="b-solder">
+  <div class="head"><span class="no-">17</span><h3>Soldering, the basics</h3></div>
+  <figure class="fig" data-fig="solder_how" data-alt="Iron touching pad and lead together, solder fed to the joint from the other side"></figure>
+  <div class="cmp">
+    <div class="ok"><figure class="fig" data-fig="joint_ok"></figure>a shiny cone that hugs the lead</div>
+    <div class="no"><figure class="fig" data-fig="joint_blob"></figure>a ball: too much, may not wet the pad</div>
+  </div>
+  <div class="cmp">
+    <div class="no"><figure class="fig" data-fig="joint_cold"></figure>dull, grainy, a gap at the pad: reheat it</div>
+    <div class="no"><figure class="fig" data-fig="joint_bridge"></figure>joins two pads: drag it apart or wick it off</div>
+  </div>
+  <ul class="do">
+    <li>Iron at <b>330 to 350 °C</b>. Wipe the tip on damp sponge or brass wool, then melt a little solder onto it: a shiny tip moves heat.</li>
+    <li><b>0.8 mm rosin-core solder</b>. 63/37 leaded flows most easily; wash your hands after. Work with a fan or open window.</li>
+    <li>Parts go in from the <b>printed side</b>. Solder from the back. Trim each lead just above the cone, after it is soldered.</li>
+  </ul>
+  <div class="note"><svg class="ico"><use href="#i-tip"/></svg><p>Never soldered before? Practise ten joints on a scrap of perfboard first. The Hall carriers are perfboard too, so the practice pays twice.</p></div>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+
 <section class="sheet wide" id="s17">
-  <div class="head"><span class="no-">17</span><h3>Read the silkscreen</h3></div>
+  <div class="head"><span class="no-">18</span><h3>Read the silkscreen</h3></div>
   <figure class="fig" data-fig="pcb_iso_detail" data-alt="Close-up of the power corner: Q1, Q2, D2, C1, LED1, F1 and J3, each labelled with how it goes in"></figure>
   <figure class="fig" data-fig="pcb_legend" data-alt="Silkscreen marks: square pad, plus sign, flat edge, bold bar, circle, pin 1"></figure>
-  <p class="lead-in">Every part on this board has one right way round except the resistors, the ceramic capacitors and F1. The marks above are the whole vocabulary.</p>
-  <footer><span>TIDE-AG</span><span></span></footer>
-</section>
-<section class="sheet" id="s18">
-  <div class="head"><span class="no-">18</span><h3>Round 1: diodes and IC sockets</h3></div>
-  <div class="two"><figure class="fig" data-fig="pcb_diode_flat"></figure><figure class="fig" data-fig="pcb_dip"></figure></div>
   <ul class="do">
-    <li><b>D1, D2</b> (1N5819) lying flat, band over the square pad.</li>
-    <li><b>Sockets</b> for U2, U3, U8 (28 pin), U4, U5, U6 (18 pin), U7 (20 pin): notch over the silkscreen notch. Solder two opposite corners, check it sits flat, then the rest.</li>
-  </ul>
-  <p class="lead-in">No chips yet: they go in at Test 6.</p>
-  <footer><span>TIDE-AG</span><span></span></footer>
-</section>
-<section class="sheet" id="s19">
-  <div class="head"><span class="no-">19</span><h3>Round 2: resistors, networks, small capacitors</h3></div>
-  <div class="two"><figure class="fig" data-fig="pcb_res"></figure><figure class="fig" data-fig="pcb_sip"></figure></div>
-  <ul class="do">
-    <li><b>R1–R9</b> standing, body over the circle: 4.7k R1 R2; 10k R3 R4 R7 R9; 1k R5 R6 R8.</li>
-    <li><b>RN1</b> (9 pins) and <b>RN2</b> (8 pins): the dot is pin 1, the common, on the square pad.</li>
-    <li><b>C5–C8</b>, 100 nF, either way round.</li>
+    <li>The <b>square pad</b> is the one to find: pin 1 of a socket or connector, <b>+</b> of C1, the band end of a diode, <b>K</b> of the LED.</li>
+    <li>Hold the board as the maps show it: <b>motor sockets along the top</b>, Hall sockets along the bottom, the C6 on the left.</li>
+    <li>Every part here has one right way round except the resistors, the ceramic capacitors and F1. If a part does not match its outline, stop and check.</li>
   </ul>
   <footer><span>TIDE-AG</span><span></span></footer>
 </section>
-<section class="sheet" id="s20">
-  <div class="head"><span class="no-">20</span><h3>Round 3: power entry</h3></div>
-  <div class="two"><figure class="fig" data-fig="pcb_cap"></figure><figure class="fig" data-fig="pcb_led"></figure></div>
+
+<section class="sheet" id="b-order">
+  <div class="head"><span class="no-">19</span><h3>The order of work</h3></div>
+  <div class="tblwrap"><table class="tbl">
+    <tr><th></th><th>Kind</th><th>How many</th><th>New idea</th></tr>
+    <tr><td>1</td><td>Resistors</td><td>9</td><td>bending a lead, reading a value</td></tr>
+    <tr><td>2</td><td>Resistor networks</td><td>2</td><td>a dot marks pin 1</td></tr>
+    <tr><td>3</td><td>Ceramic capacitors</td><td>4</td><td>reading a code</td></tr>
+    <tr><td>4</td><td>The big capacitor, C1</td><td>1</td><td><b>polarity</b>: one way round only</td></tr>
+    <tr><td>5</td><td>Diodes and the LED</td><td>3</td><td>a band or a flat marks the end</td></tr>
+    <tr><td>6</td><td>Chip sockets</td><td>7</td><td>a notch marks pin 1</td></tr>
+    <tr><td>7</td><td>C6 sockets and the expansion header</td><td>3</td><td>female and male</td></tr>
+    <tr><td>8</td><td>JST-XH connectors</td><td>14</td><td>the housing's open side</td></tr>
+    <tr><td>9</td><td>Fuse and power jack</td><td>2</td><td>big pins, big joints</td></tr>
+    <tr><td>10</td><td>Transistors</td><td>2</td><td>reading the part number, the tab</td></tr>
+  </table></div>
+  <figure class="fig" data-fig="bend_lead" data-alt="Leads splayed outward under the board to hold the part in place"></figure>
   <ul class="do">
-    <li><b>F1</b> (resettable fuse), either way round. <b>C1</b> 1000 µF: long leg in the + pad. <b>LED1</b>: flat side on the flat, short leg in the square pad.</li>
-    <li><b>J3</b>, the barrel jack: it overhangs the right edge by design.</li>
+    <li>Fit all of one kind, splay the legs, turn the board over, solder them all, trim them all, tick them off on the map.</li>
+    <li>When kind 10 is done, the <a href="#b-quick">quick check</a> (step 32) lights the board for the first time. Then <a href="#C">section C</a> tests it properly, <b>before</b> any chip or the C6 goes in.</li>
   </ul>
-  <p class="lead-in">Now do <a href="#s23">Tests 0, 1 and 2</a> before going on.</p>
   <footer><span>TIDE-AG</span><span></span></footer>
 </section>
-<section class="sheet" id="s21">
-  <div class="head"><span class="no-">21</span><h3>Round 4: the hold switch</h3></div>
-  <div class="two"><figure class="fig" data-fig="pcb_to92"></figure><figure class="fig" data-fig="pcb_to220" data-part="IRLIB9343"></figure></div>
+
+<section class="sheet" id="b-res">
+  <div class="head"><span class="no-">20</span><h3>Resistors: how</h3></div>
+  <figure class="fig" data-fig="pcb_res" data-alt="Resistor standing over the circle, top lead bent over into the other pad"></figure>
   <ul class="do">
-    <li><b>Q2</b> (2N3904): flat face on the flat edge.</li>
-    <li><b>Q1</b> (IRLIB9343): metal tab to the bold bar, standing upright, no heatsink.</li>
+    <li>These resistors <b>stand up</b>. Bend one lead tightly over the top of the body and down beside it. The body stands over the <b>circle</b>; the bent lead goes into the other hole.</li>
+    <li>No polarity: either end can go up.</li>
+    <li><b>Measure every resistor</b> with the meter on Ω before it goes in. The colours below confirm it.</li>
   </ul>
-  <div class="note"><svg class="ico"><use href="#i-info"/></svg><p>Q1 switches the motors’ 5 V (the HOLD rail) so the firmware can drop the holding current to 60% between steps. Fit it anyway; step 39 decides whether the hold is needed at all.</p></div>
-  <p class="lead-in">Then <a href="#s26">Test 3</a>.</p>
+  <figure class="fig" data-fig="res_bands" data-values="10k 4.7k 1k" data-alt="Colour bands for 10 kΩ, 4.7 kΩ and 1 kΩ"></figure>
   <footer><span>TIDE-AG</span><span></span></footer>
 </section>
-<section class="sheet" id="s22">
-  <div class="head"><span class="no-">22</span><h3>Round 5: connectors</h3></div>
-  <div class="two"><figure class="fig" data-fig="pcb_socket"></figure><figure class="fig" data-fig="pcb_xh"></figure></div>
+
+<section class="sheet wide" id="b-res-map">
+  <div class="head"><span class="no-">21</span><h3>Resistors: where</h3></div>
+  <figure class="fig" data-fig="pcb_map" data-match="^R\d+$" data-alt="Board map with every resistor position highlighted and labelled with its value"></figure>
+  <div class="tblwrap"><table class="tbl">
+    <tr><th>Value</th><th>How many</th><th>Where</th></tr>
+    <tr><td>10 kΩ</td><td>4</td><td>R3 R4 R7 R9</td></tr>
+    <tr><td>4.7 kΩ</td><td>2</td><td>R1 R2 (the I²C pull-ups)</td></tr>
+    <tr><td>1 kΩ</td><td>3</td><td>R5 R6 R8</td></tr>
+  </table></div>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+
+<section class="sheet wide" id="b-rn">
+  <div class="head"><span class="no-">22</span><h3>Resistor networks: how and where</h3></div>
+  <div class="row"><figure class="fig" data-fig="pcb_sip" data-alt="Resistor network: the dot end on the square pad"></figure></div>
+  <figure class="fig" data-fig="pcb_map" data-refs="RN1 RN2" data-label="RN1=9 pins, 8 × 10 kΩ bussed (4609X);RN2=8 pins, 7 × 10 kΩ bussed (4608X)" data-alt="Board map with RN1 and RN2 highlighted"></figure>
   <ul class="do">
-    <li><b>J1, J2</b>: plug both headers onto the C6’s pins, set it in the board and solder; then <b>unplug the C6</b> again.</li>
-    <li><b>J10–J15</b> (5 pin), <b>J20–J26</b> (3 pin), <b>J5</b> (8 pin): housing inside its outline, pin 1 on the square pad.</li>
-    <li><b>J4</b>, the 1 × 6 expansion header.</li>
+    <li>A row of resistors in one flat package. The <b>dot</b> printed on it is pin 1, the common pin: it goes in the <b>square pad</b>.</li>
+    <li>RN1 has 9 pins and RN2 has 8. They only fit their own place, but they fit it backwards too: check the dot.</li>
   </ul>
-  <p class="lead-in">Then <a href="#s27">Tests 4 and 5</a>.</p>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+
+<section class="sheet wide" id="b-cer">
+  <div class="head"><span class="no-">23</span><h3>Ceramic capacitors: what and where</h3></div>
+  <figure class="fig" data-fig="cap_code" data-code="104" data-alt="A ceramic disc capacitor marked 104, decoded to 100 nF"></figure>
+  <figure class="fig" data-fig="pcb_map" data-refs="C5 C6 C7 C8" data-alt="Board map with the four 100 nF ceramic capacitors highlighted"></figure>
+  <ul class="do">
+    <li><b>Four, all the same: 100 nF, printed 104.</b> No polarity. Seven more of the same go on the Hall carriers later.</li>
+  </ul>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+
+<section class="sheet wide" id="b-elec">
+  <div class="head"><span class="no-">24</span><h3>The big capacitor, C1: how and where</h3></div>
+  <div class="row"><figure class="fig" data-fig="pcb_cap" data-alt="Electrolytic capacitor: long leg into the square plus pad, stripe away"></figure></div>
+  <figure class="fig" data-fig="pcb_map" data-refs="C1" data-label="C1=1000 µF, 10 V or more" data-alt="Board map with C1 highlighted"></figure>
+  <ul class="do">
+    <li><b>Polarity</b>, the first part on the board that has it: the <b>long leg is +</b>, the <b>stripe</b> down the sleeve marks <b>−</b>. Long leg into the <b>square pad</b>, beside the printed <b>+</b>.</li>
+  </ul>
+  <div class="note"><svg class="ico"><use href="#i-warn"/></svg><p>Fitted backwards, an electrolytic can swell or burst when power goes on. A higher voltage rating than 10 V is fine; a lower one is not.</p></div>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+
+<section class="sheet wide" id="b-diode">
+  <div class="head"><span class="no-">25</span><h3>Diodes and the LED: how and where</h3></div>
+  <div class="row"><figure class="fig" data-fig="pcb_diode_flat" data-alt="Diode lying flat, band over the square pad"></figure><figure class="fig" data-fig="pcb_led" data-alt="LED: short leg and flat side into the square K pad"></figure></div>
+  <figure class="fig" data-fig="pcb_map" data-refs="D1 D2 LED1" data-label="D1=1N5819, band to the square pad;D2=1N5819, band to the square pad;LED1=green, power" data-alt="Board map with D1, D2 and LED1 highlighted"></figure>
+  <ul class="do">
+    <li><b>D1, D2</b> (1N5819) lie <b>flat</b>, with the <b>band</b> over the <b>square pad</b>.</li>
+    <li><b>LED1:</b> the short leg and the flat side of the rim go to the square pad.</li>
+  </ul>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+
+<section class="sheet wide" id="b-dip">
+  <div class="head"><span class="no-">26</span><h3>Chip sockets: how and where</h3></div>
+  <div class="row"><figure class="fig" data-fig="pcb_dip" data-alt="DIP socket: notch over the silkscreen notch"></figure></div>
+  <figure class="fig" data-fig="pcb_map" data-match="^U\d+$" data-label="U2=28-pin socket (MCP23017, 0x20);U3=28-pin socket (MCP23017, 0x21);U8=28-pin socket (MCP23017, 0x22);U4=18-pin socket (ULN2803A);U5=18-pin socket (ULN2803A);U6=18-pin socket (ULN2803A);U7=20-pin socket (74AHCT245)" data-alt="Board map with the seven chip sockets highlighted"></figure>
+  <ul class="do">
+    <li>Sockets only: <b>no chips yet</b>. They go in at step 40, after the tests.</li>
+    <li>The socket's <b>notch</b> sits over the notch printed on the board. Solder two opposite corners, check it sits flat, then the rest.</li>
+  </ul>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+
+<section class="sheet" id="b-mf">
+  <div class="head"><span class="no-">27</span><h3>Male and female</h3></div>
+  <figure class="fig" data-fig="male_female" data-alt="Male header with pins, female socket with holes, a module's pins going into a socket"></figure>
+  <ul class="do">
+    <li>A <b>male</b> header has <b>pins</b>. A <b>female</b> socket has <b>holes</b>.</li>
+    <li><b>J1, J2</b> are <b>female</b>: the C6 plugs into them. <b>J4</b> is <b>male</b>: a cable plugs onto it later.</li>
+    <li>The JST-XH connectors (step 29) are male too: pins inside a little plastic wall.</li>
+  </ul>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+
+<section class="sheet wide" id="b-sock">
+  <div class="head"><span class="no-">28</span><h3>C6 sockets and the expansion header: how and where</h3></div>
+  <figure class="fig" data-fig="pcb_map" data-refs="J1 J2 J4" data-label="J1=1 × 9 female, the C6's top row;J2=1 × 9 female, the C6's bottom row;J4=1 × 6 male, expansion" data-alt="Board map with J1, J2 and J4 highlighted"></figure>
+  <figure class="fig" data-fig="pcb_socket" data-alt="Female header socket soldered with the module plugged in to keep it square"></figure>
+  <ul class="do">
+    <li><b>J1, J2:</b> plug both onto the C6's pins, set the C6 in the board, turn it over and solder. Then <b>unplug the C6</b> again: it goes in at step 39.</li>
+    <li><b>J4:</b> short ends of the pins down. Solder one pin, check it stands upright, then the rest.</li>
+  </ul>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+
+<section class="sheet wide" id="b-xh">
+  <div class="head"><span class="no-">29</span><h3>JST-XH connectors: how and where</h3></div>
+  <div class="row"><figure class="fig" data-fig="pcb_xh" data-alt="JST-XH connector: housing inside its outline, pin 1 on the square pad"></figure></div>
+  <figure class="fig" data-fig="pcb_map" data-match="^J(1[0-5]|2[0-6]|5)$" data-label="J10=5 pins, DRUM motor;J11=5 pins, M2 motor;J12=5 pins, O1 motor;J13=5 pins, K1 motor;J14=5 pins, N2 motor;J15=5 pins, S2 motor;J20=3 pins, year latch;J21=3 pins, moon latch;J22=3 pins, M2 Hall;J23=3 pins, O1 Hall;J24=3 pins, K1 Hall;J25=3 pins, N2 Hall;J26=3 pins, S2 Hall;J5=8 pins, calendar" data-alt="Board map with all fourteen JST-XH connectors highlighted"></figure>
+  <ul class="do">
+    <li>Six with 5 pins (motors, top edge), seven with 3 pins (Halls, bottom edge), one with 8 pins (calendar, right edge).</li>
+    <li>The housing sits <b>inside its printed outline</b>, pin 1 on the square pad. Both ways fit the holes; only that one is right.</li>
+  </ul>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+
+<section class="sheet wide" id="b-pwr">
+  <div class="head"><span class="no-">30</span><h3>Fuse and power jack: how and where</h3></div>
+  <figure class="fig" data-fig="pcb_map" data-refs="F1 J3" data-label="F1=MF-R250 resettable fuse, either way;J3=5.5 × 2.1 mm power jack" data-alt="Board map with F1 and J3 highlighted"></figure>
+  <ul class="do">
+    <li><b>F1</b>, the resettable fuse, fits either way round.</li>
+    <li><b>J3</b>, the barrel jack, overhangs the right edge on purpose. Its pins are big and soak up heat: hold the iron on 4 to 5 seconds, until the solder flows into the hole.</li>
+  </ul>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+
+<section class="sheet wide" id="b-q">
+  <div class="head"><span class="no-">31</span><h3>Transistors: how and where</h3></div>
+  <div class="row"><figure class="fig" data-fig="pcb_to92" data-alt="TO-92 transistor: flat face over the flat edge of the outline"></figure><figure class="fig" data-fig="pcb_to220" data-part="IRLIB9343" data-alt="TO-220 transistor: tab toward the bold bar"></figure></div>
+  <figure class="fig" data-fig="pcb_map" data-refs="Q1 Q2" data-label="Q1=IRLIB9343, the hold switch;Q2=2N3904, drives Q1" data-alt="Board map with Q1 and Q2 highlighted"></figure>
+  <ul class="do">
+    <li><b>Q2</b> (2N3904): the <b>flat face</b> over the flat edge of the outline. Read the print before it goes in.</li>
+    <li><b>Q1</b> (IRLIB9343): <b>metal tab</b> to the <b>bold bar</b>, standing upright, no heatsink.</li>
+  </ul>
+  <div class="note"><svg class="ico"><use href="#i-info"/></svg><p>Q1 switches the motors' 5 V (the HOLD rail) so the firmware can drop the holding current to 60% between steps. Fit it anyway; step 50 decides whether the hold is needed at all.</p></div>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+
+<section class="sheet" id="b-quick">
+  <div class="head"><span class="no-">32</span><h3>Quick check: first light</h3></div>
+  <figure class="fig" data-fig="meter" data-mode="volt" data-v="5.00" data-a="U7 socket pin 20 (+5V)" data-b="U7 socket pin 19 (GND)"></figure>
+  <figure class="fig" data-fig="pcb_probe" data-supply="J3:1 J3:2" data-supply-set="5.0 V, LIMIT 100 mA" data-probes="red:U7:20:+5V (U7 socket pin 20);black:U7:19:GND (pin 19)" data-alt="Supply into J3; meter leads in the U7 socket's +5V and GND holes"></figure>
+  <ul class="do">
+    <li><b>No chips, no C6.</b> 5.0 V into J3 through a <b>100 mA current limit</b>, centre pin +.</li>
+    <li><b>LED1 lights green.</b> The meter reads <b>4.95 to 5.00 V</b> in the empty U7 socket. Nothing gets warm.</li>
+    <li>Power off. All good? On to section C. Not good? Section C's tests, one at a time, show which part is at fault.</li>
+  </ul>
+  <footer><span>TIDE-AG</span><span></span></footer>
+</section>
+
+<section class="sheet" id="b-done">
+  <div class="head"><span class="no-">33</span><h3>Before you test</h3></div>
+  <figure class="fig" data-fig="pcb_iso" data-alt="The assembled board"></figure>
+  <ul class="do">
+    <li>Every box on every map ticked. The sockets stay empty.</li>
+    <li>Turn the board over under a bright light. Every joint a shiny cone, no bridges, every lead trimmed.</li>
+    <li>Scrub off the flux with isopropyl alcohol and an old toothbrush, and let it dry.</li>
+    <li>Now <a href="#s23">Test 0</a>. No chip and no C6 go in until section C says so.</li>
+  </ul>
   <footer><span>TIDE-AG</span><span></span></footer>
 </section>
 </div>
@@ -680,80 +833,100 @@ p{margin:0}
 <div class="divider" id="C"><span class="L">C</span><div><h2>Smoke test</h2><p>Nothing expensive goes in until every rail reads right. Use a bench supply at 5.0 V with a 100 mA limit, or a 5 V supply through a USB power meter.</p></div></div>
 <div class="grid">
 <section class="sheet" id="s23">
-  <div class="head"><span class="no-">23</span><h3>Test 0: Look, then measure</h3></div>
-  <figure class="fig" data-fig="meter" data-v="&gt; 1 kΩ" data-a="+5V (C1 +)" data-b="GND (J4 pin 2)"></figure>
+  <div class="head"><span class="no-">34</span><h3>Test 0: DON'T HOOK UP POWER YET – Look, then measure resistance</h3></div>
+  <div class="row" style="align-items:flex-start;flex-wrap:nowrap">
+    <figure class="fig" data-fig="meter" style="flex:0 0 300px" data-mode="ohm" data-v="OL" data-a="+5V (U7 socket pin 20)" data-b="GND (pin 19)"></figure>
+    <div class="note" style="flex:1 1 320px;border-top:0;padding-top:0;font-size:13px"><svg class="ico"><use href="#i-info"/></svg><div><p><b>How this works with no power.</b> On Ω the meter sends a small current of its own and reads the voltage it makes. Across the 5 V rail that current fills C1, so the reading starts low and climbs. A short never fills and stays low. The test: <b>does it climb, or stay put?</b></p><p>Nothing in this board's 5 V input blocks one direction, so either lead works, but red on + is the habit to keep.</p></div></div>
+  </div>
+  <figure class="fig" style="width:86%;margin:0 auto" data-fig="pcb_probe" data-probes="red:U7:20:1. +5V (U7 socket pin 20);black:U7:19:1. GND (pin 19);red:J3:1:2. J3 centre pin (VIN);black:J3:2:2. J3 GND" data-alt="Probe points: the U7 socket's +5V and GND holes, and J3's centre pin and ground"></figure>
   <ul class="do">
-    <li>Look at every joint under a lens: no bridges, no dull balls. Socket notches, diode bands, C1’s stripe, Q1’s tab: all as the silkscreen.</li>
-    <li>Unpowered, meter on ohms: <b>+5V to GND</b> climbs as C1 charges and ends above 1 kΩ. Same from <b>J3’s centre pin</b> to GND.</li>
+    <li>Look at every joint under a lens: no bridges, no dull balls. Socket notches, diode bands, C1's stripe, Q1's tab: all as the silkscreen.</li>
+    <li><b>1.</b> +5V to GND <b>climbs</b> as C1 charges and ends above 1 kΩ. <b>2.</b> The same from J3's centre pin to GND. A reading that <b>stays</b> near 0 Ω is a short: <b>find it before any power goes in</b>.</li>
   </ul>
-  <div class="note"><svg class="ico"><use href="#i-warn"/></svg><p>A reading that stays near 0 Ω is a short: find it before any power goes on.</p></div>
   <footer><span>TIDE-AG</span><span></span></footer>
 </section>
+
 <section class="sheet" id="s24">
-  <div class="head"><span class="no-">24</span><h3>Test 1: First power, current-limited</h3></div>
-  <figure class="fig" data-fig="meter" data-v="3 mA" data-a="supply 5.0 V, 100 mA limit" data-b="into J3"></figure>
+  <div class="head"><span class="no-">35</span><h3>Test 1: First power, current-limited</h3></div>
+  <figure class="fig" data-fig="pcb_probe" data-supply="J3:1 J3:2" data-supply-set="5.0 V, LIMIT 100 mA" data-probes="pin:LED1:2:LED1 lights green" data-alt="Supply into J3; LED1 ringed"></figure>
   <ul class="do">
-    <li>Power into J3. <b>LED1 lights</b> and the supply reads about <b>3 mA</b>: (5.0 − 2.1 V) through R8’s 1 kΩ.</li>
+    <li>At this point all the electronic components are installed. <b>EXCEPT DO NOT YET INSERT THE C6 OR THE CHIPS:</b> the C6 goes in at <a href="#s28">step 39</a>, the chips at <a href="#s29">step 40</a>, each only after the tests before it pass.</li>
+    <li>5.0 V into J3 through the 100 mA limit. <b>LED1 lights</b> and the supply's current reading shows about <b>3 mA</b>: (5.0 − 2.1 V) through R8's 1 kΩ.</li>
   </ul>
   <div class="note"><svg class="ico"><use href="#i-warn"/></svg><p>If the supply hits its limit, switch off at once and go back to Test 0.</p></div>
   <footer><span>TIDE-AG</span><span></span></footer>
 </section>
+
 <section class="sheet" id="s25">
-  <div class="head"><span class="no-">25</span><h3>Test 2: The 5 V rail</h3></div>
-  <figure class="fig" data-fig="meter" data-v="5.00" data-a="+5V (C1 +, Q1 pin 3)" data-b="GND"></figure>
+  <div class="head"><span class="no-">36</span><h3>Test 2: Verify 5 V reaches the board</h3></div>
+  <figure class="fig" data-fig="meter" data-mode="volt" data-v="5.00" data-a="+5V (U7 socket pin 20)" data-b="GND (pin 19)"></figure>
+  <figure class="fig" data-fig="pcb_probe" data-supply="J3:1 J3:2" data-supply-set="5.0 V, LIMIT 100 mA" data-probes="red:U7:20:+5V (U7 socket pin 20);black:U7:19:GND (pin 19)" data-alt="Supply into J3; meter leads in the U7 socket's +5V and GND holes"></figure>
   <ul class="do">
-    <li>4.95 to 5.00 V: the supply less F1’s drop at 3 mA, which is next to nothing.</li>
+    <li><b>4.95 to 5.00 V</b>: the supply less F1's drop at 3 mA, which is next to nothing.</li>
   </ul>
   <footer><span>TIDE-AG</span><span></span></footer>
 </section>
+
 <section class="sheet" id="s26">
-  <div class="head"><span class="no-">26</span><h3>Test 3: The hold switch</h3></div>
+  <div class="head"><span class="no-">37</span><h3>Test 3: The hold switch</h3></div>
   <div class="meters">
-    <figure class="fig" data-fig="meter" data-v="0.00" data-a="HOLD (Q1 pin 2)" data-b="GND"></figure>
-    <figure class="fig" data-fig="meter" data-v="4.99" data-a="HOLD, jumpered" data-b="GND"></figure>
+    <figure class="fig" data-fig="meter" data-mode="volt" data-v="0.00" data-a="HOLD (U4 pin 10)" data-b="GND (pin 9)"></figure>
+    <figure class="fig" data-fig="meter" data-mode="volt" data-v="4.99" data-a="HOLD, jumpered" data-b="GND (pin 9)"></figure>
   </div>
+  <figure class="fig" data-fig="pcb_probe" data-supply="J3:1 J3:2" data-supply-set="5.0 V, LIMIT 100 mA" data-bridge="jumper" data-bridge-name="jumper wire" data-probes="red:U4:10:HOLD (U4 socket pin 10);black:U4:9:GND (pin 9);bridge:J2:6:jumper: J2 pin 6 (PWM);bridge:J2:1:jumper: J2 pin 1 (ESP_5V)" data-alt="Meter leads in the U4 socket's HOLD and GND holes; jumper from J2 pin 6 to J2 pin 1"></figure>
   <ul class="do">
     <li>Power on, nothing plugged in: <b>HOLD reads 0 V</b>. R7 holds Q2 off, so R5 holds Q1 off.</li>
     <li>Jumper <b>J2 pin 6 (PWM) to J2 pin 1 (ESP_5V)</b>: HOLD rises to <b>about 4.99 V</b>. Remove the jumper.</li>
   </ul>
   <footer><span>TIDE-AG</span><span></span></footer>
 </section>
+
 <section class="sheet" id="s27">
-  <div class="head"><span class="no-">27</span><h3>Test 4: The ESP32’s 5 V</h3></div>
-  <figure class="fig" data-fig="meter" data-v="4.85" data-a="ESP_5V (J2 pin 1)" data-b="GND (J2 pin 2)"></figure>
+  <div class="head"><span class="no-">38</span><h3>Test 4: Verify the C6 gets its 5 V</h3></div>
+  <figure class="fig" data-fig="meter" data-mode="volt" data-v="4.85" data-a="ESP_5V (J2 pin 1)" data-b="GND (J2 pin 2)"></figure>
+  <figure class="fig" data-fig="pcb_probe" data-supply="J3:1 J3:2" data-supply-set="5.0 V, LIMIT 100 mA" data-probes="red:J2:1:ESP_5V (J2 pin 1);black:J2:2:GND (J2 pin 2)" data-alt="Meter leads in J2's pin 1 and pin 2 holes"></figure>
   <ul class="do">
-    <li>4.8 to 4.95 V: +5V less D1’s Schottky drop at almost no load.</li>
+    <li><b>4.8 to 4.95 V</b>: +5V less D1's Schottky drop at almost no load.</li>
   </ul>
-  <div class="note"><svg class="ico"><use href="#i-info"/></svg><p>D1 keeps the supply and the C6’s own USB apart, so flashing over USB with the board powered is safe.</p></div>
+  <div class="note"><svg class="ico"><use href="#i-info"/></svg><p>D1 keeps the supply and the C6's own USB apart, so flashing over USB with the board powered is safe.</p></div>
   <footer><span>TIDE-AG</span><span></span></footer>
 </section>
+
 <section class="sheet" id="s28">
-  <div class="head"><span class="no-">28</span><h3>Test 5: Plug in the C6</h3></div>
-  <figure class="fig" data-fig="meter" data-v="3.30" data-a="+3V3 (J4 pin 1)" data-b="GND (J4 pin 2)"></figure>
+  <div class="head"><span class="no-">39</span><h3>Test 5: Plug in the C6</h3><span class="tag">fitting, then a check</span></div>
+  <div class="row" style="align-items:flex-start;flex-wrap:nowrap">
+    <figure class="fig" data-fig="meter" style="flex:0 0 300px" data-mode="volt" data-v="3.30" data-a="+3V3 (J4 pin 1)" data-b="GND (J4 pin 2)"></figure>
+    <div class="note" style="flex:1 1 320px;border-top:0;padding-top:0;font-size:13px;align-self:center"><svg class="ico"><use href="#i-info"/></svg><p>3.3 V comes from the C6's own regulator. With no C6 fitted, the 3V3 net reads nothing, and that is correct.</p></div>
+  </div>
+  <figure class="fig" style="width:86%;margin:0 auto" data-fig="pcb_probe" data-supply="J3:1 J3:2" data-supply-set="5.0 V, LIMIT 300 mA" data-probes="red:J4:1:+3V3 (J4 pin 1);black:J4:2:GND (J4 pin 2)" data-alt="Meter leads on J4 pins 1 and 2"></figure>
   <ul class="do">
-    <li>Power off. The C6 into J1/J2, LCD up, USB-C at the board’s left edge. Power on.</li>
-    <li><b>3.30 V</b> on J4 pin 1 (from the C6’s regulator). Also 3.3 V on SDA and SCL (J4 pins 3, 4; R1, R2), on INT_A and INT_B (J1 pins 6, 5), and on pin 2 of every Hall socket J20–J26 (RN2).</li>
+    <li><b>Power off.</b> The C6 into J1/J2, LCD up, USB-C at the board's left edge.</li>
+    <li>Raise the supply's limit to <b>300 mA</b>: the C6 and its screen draw more than the bare board.</li>
+    <li>Power on. <b>3.30 V</b> on J4 pin 1. Also 3.3 V on SDA and SCL (J4 pins 3, 4), on INT_A and INT_B (J1 pins 6, 5), and on pin 2 of every Hall socket J20–J26.</li>
   </ul>
   <footer><span>TIDE-AG</span><span></span></footer>
 </section>
+
 <section class="sheet" id="s29">
-  <div class="head"><span class="no-">29</span><h3>Test 6: Chips in</h3></div>
-  <figure class="fig" data-fig="meter" data-v="0.00" data-a="J5 pins 1 to 8" data-b="GND"></figure>
+  <div class="head"><span class="no-">40</span><h3>Test 6: Chips in</h3><span class="tag">fitting, then a check</span></div>
+  <figure class="fig" data-fig="meter" data-mode="volt" data-v="0.00" data-a="J5 pins 1 to 8, one at a time" data-b="GND (J4 pin 2)"></figure>
+  <figure class="fig" data-fig="pcb_probe" data-supply="J3:1 J3:2" data-supply-set="5.0 V, LIMIT 300 mA" data-probes="red:J5:1:J5 pin 1, then 2 to 8;black:J4:2:GND (J4 pin 2)" data-alt="Meter leads on J5 and J4 pin 2"></figure>
   <ul class="do">
-    <li>Power off. Chips in, notch to notch: <b>U2, U3, U8</b> MCP23017, <b>U4, U5, U6</b> ULN2803A, <b>U7</b> 74AHCT245. Check no leg folded under.</li>
-    <li>Power on. Every calendar line on <b>J5 reads 0 V</b> (RN1 holds U7’s inputs low until the 0x22 expander is set up), and HOLD still reads 0.</li>
-    <li>The current is the C6’s own draw plus about 3 mA. Above 250 mA: switch off and look for a chip in backwards.</li>
+    <li><b>Power off.</b> Chips into the sockets from step 26, notch to notch: <b>U2, U3, U8</b> MCP23017, <b>U4, U5, U6</b> ULN2803A, <b>U7</b> 74AHCT245. Check no leg folded under.</li>
+    <li>Power on, limit still 300 mA. Every calendar line on <b>J5 reads 0 V</b> (RN1 holds U7's inputs low until the 0x22 expander is set up), and HOLD still reads 0.</li>
+    <li>The current is the C6's own draw plus about 3 mA. Above 250 mA: switch off and look for a chip in backwards.</li>
   </ul>
-  <p class="lead-in">The I²C scan (0x20, 0x21, 0x22) is <a href="#s38">step 38</a>: it needs firmware.</p>
+  <p class="lead-in">The I²C scan (0x20, 0x21, 0x22) is <a href="#s38">step 49</a>: it needs firmware.</p>
   <footer><span>TIDE-AG</span><span></span></footer>
 </section>
 </div>
+
 
 <!-- ===================== D: wiring ===================== -->
 <div class="divider" id="D"><span class="L">D</span><div><h2>Wiring</h2><p>The board goes on the back of the plate, 30 mm off it, clear of the motors. Everything plugs into its edges.</p></div></div>
 <div class="grid">
 <section class="sheet wide" id="s30">
-  <div class="head"><span class="no-">30</span><h3>Mount the board on its standoffs</h3><span class="tag"><a class="ki" href="#k3">KI 3</a></span></div>
+  <div class="head"><span class="no-">41</span><h3>Mount the board on its standoffs</h3><span class="tag"><a class="ki" href="#k3">KI 3</a></span></div>
   <figure class="fig" data-fig="d_mount" data-alt="The back of the plate with motors and carriers; four standoffs, the board coming down onto them"></figure>
   <ul class="do">
     <li>Four <span class="hw">M3 × 30</span> standoffs, <span class="hw">M3 × 6</span> from the front of the plate. The board on top, component side out, <b>silkscreen reading upright from behind</b>, four more <span class="hw">M3 × 6</span>.</li>
@@ -762,13 +935,13 @@ p{margin:0}
   <footer><span>TIDE-AG</span><span></span></footer>
 </section>
 <section class="sheet wide" id="s31">
-  <div class="head"><span class="no-">31</span><h3>The whole loom</h3></div>
+  <div class="head"><span class="no-">42</span><h3>The whole loom</h3></div>
   <!--FZ:bb|Fritzing breadboard view of the main board and every harness: six motors, seven Hall carriers, the calendar, power-->
   <p class="fzcap">Fritzing, breadboard view. Source: <span class="hw">docs/assembly_guide/tide_wiring.fzz</span>, generated by <span class="hw">gen_fritzing.py</span>; the board is drawn from <span class="hw">pcb/tide_main.kicad_pcb</span>.</p>
   <footer><span>TIDE-AG</span><span></span></footer>
 </section>
 <section class="sheet" id="s32">
-  <div class="head"><span class="no-">32</span><h3>Plug in the motors</h3><span class="tag"><a class="ki" href="#k8">KI 8</a></span></div>
+  <div class="head"><span class="no-">43</span><h3>Plug in the motors</h3><span class="tag"><a class="ki" href="#k8">KI 8</a></span></div>
   <!--FZ:motors|Close-up: the six motor sockets along the top edge-->
   <figure class="fig" data-fig="d_motor_plug"></figure>
   <ul class="do">
@@ -778,7 +951,7 @@ p{margin:0}
   <footer><span>TIDE-AG</span><span></span></footer>
 </section>
 <section class="sheet" id="s33">
-  <div class="head"><span class="no-">33</span><h3>Crimp and plug the Hall leads</h3></div>
+  <div class="head"><span class="no-">44</span><h3>Crimp and plug the Hall leads</h3></div>
   <!--FZ:halls|Close-up: the seven Hall sockets along the bottom edge-->
   <figure class="fig" data-fig="d_hall_plug"></figure>
   <ul class="do">
@@ -789,7 +962,7 @@ p{margin:0}
   <footer><span>TIDE-AG</span><span></span></footer>
 </section>
 <section class="sheet" id="s34">
-  <div class="head"><span class="no-">34</span><h3>The calendar lead</h3><span class="tag"><a class="ki" href="#k5">KI 5</a></span></div>
+  <div class="head"><span class="no-">45</span><h3>The calendar lead</h3><span class="tag"><a class="ki" href="#k5">KI 5</a></span></div>
   <!--FZ:calendar|Close-up: J5 and the calendar carrier-->
   <figure class="fig" data-fig="d_cal_plug"></figure>
   <ul class="do">
@@ -799,7 +972,7 @@ p{margin:0}
   <footer><span>TIDE-AG</span><span></span></footer>
 </section>
 <section class="sheet" id="s35">
-  <div class="head"><span class="no-">35</span><h3>Power and USB</h3></div>
+  <div class="head"><span class="no-">46</span><h3>Power and USB</h3></div>
   <!--FZ:power|Close-up: the barrel jack and the C6's USB-C-->
   <ul class="do">
     <li>A <b>5 V 3 A regulated</b> supply, 5.5 × 2.1 plug, centre positive, into J3. Peak draw is about 1.5 A with every motor energised.</li>
@@ -808,8 +981,8 @@ p{margin:0}
   <footer><span>TIDE-AG</span><span></span></footer>
 </section>
 <section class="sheet" id="s36">
-  <div class="head"><span class="no-">36</span><h3>Pin check before power</h3></div>
-  <figure class="fig" data-fig="meter" data-v="0.0 Ω" data-a="carrier S pad" data-b="J2x pin 2"></figure>
+  <div class="head"><span class="no-">47</span><h3>Pin check before power</h3></div>
+  <figure class="fig" data-fig="meter" data-mode="ohm" data-v="0.0 Ω" data-a="carrier S pad" data-b="J2x pin 2"></figure>
   <ul class="do">
     <li>Power off. Beep every Hall lead end to end (+, S, −) and the calendar lead pin by pin.</li>
     <li>+3V3 to GND on each Hall socket must <b>not</b> beep.</li>
@@ -822,7 +995,7 @@ p{margin:0}
 <div class="divider" id="E"><span class="L">E</span><div><h2>First power-up and calibration</h2><p>Each step is tagged <b>today</b> (works with what’s in the repo now) or <b>planned</b> (needs firmware that isn’t written yet).</p></div></div>
 <div class="grid">
 <section class="sheet" id="s37">
-  <div class="head"><span class="no-">37</span><h3>Flash the firmware</h3><span class="tag"><span class="pill">planned</span></span></div>
+  <div class="head"><span class="no-">48</span><h3>Flash the firmware</h3><span class="tag"><span class="pill">planned</span></span></div>
   <ul class="do">
     <li>Over the C6’s USB-C. The firmware carries the tables from <span class="hw">pcb/design.py</span>: <span class="hw">MOTOR_BITS</span>, <span class="hw">HALL_BITS</span>, <span class="hw">CAL_BITS</span>, <span class="hw">CAL_HALL_BITS</span>, <span class="hw">ESP_GPIO</span>, plus a per-station inverse table from <span class="hw">kinematics.py</span>.</li>
   </ul>
@@ -830,14 +1003,14 @@ p{margin:0}
   <footer><span>TIDE-AG</span><span></span></footer>
 </section>
 <section class="sheet" id="s38">
-  <div class="head"><span class="no-">38</span><h3>I²C scan</h3><span class="tag"><span class="pill">planned</span></span></div>
+  <div class="head"><span class="no-">49</span><h3>I²C scan</h3><span class="tag"><span class="pill">planned</span></span></div>
   <ul class="do">
     <li>Expect exactly <b>0x20, 0x21, 0x22</b> on SDA GPIO19 / SCL GPIO18. A missing address is a chip not seated or an address pin: U2 all low, U3 A0 high, U8 A1 high.</li>
   </ul>
   <footer><span>TIDE-AG</span><span></span></footer>
 </section>
 <section class="sheet" id="s39">
-  <div class="head"><span class="no-">39</span><h3>Holding-torque test</h3><span class="tag"><span class="pill now">today</span></span></div>
+  <div class="head"><span class="no-">50</span><h3>Holding-torque test</h3><span class="tag"><span class="pill now">today</span></span></div>
   <ul class="do">
     <li>One spare 28BYJ-48 on the bench, a 100 mm lever on its shaft, a known weight on the end: torque = m · g · 0.1.</li>
     <li>Unpowered first, then with one coil energised (red to 5 V, orange to GND).</li>
@@ -846,14 +1019,14 @@ p{margin:0}
   <footer><span>TIDE-AG</span><span></span></footer>
 </section>
 <section class="sheet" id="s40">
-  <div class="head"><span class="no-">40</span><h3>Check every motor’s direction</h3><span class="tag"><span class="pill">planned</span></span></div>
+  <div class="head"><span class="no-">51</span><h3>Check every motor’s direction</h3><span class="tag"><span class="pill">planned</span></span></div>
   <ul class="do">
     <li>At 1000×, one station at a time: each turns the way its table says. Every shaft turns one way only, which is what keeps gearbox backlash a constant.</li>
   </ul>
   <footer><span>TIDE-AG</span><span></span></footer>
 </section>
 <section class="sheet" id="s41">
-  <div class="head"><span class="no-">41</span><h3>Hall edges</h3><span class="tag"><span class="pill">planned</span></span></div>
+  <div class="head"><span class="no-">52</span><h3>Hall edges</h3><span class="tag"><span class="pill">planned</span></span></div>
   <ul class="do">
     <li>Each station’s latch reports one edge per turn through the 0x21 expander’s INTB (GPIO20); year and moon through 0x22 (GPIO23).</li>
     <li>Run each station past its edge ten times: the step count between edges must repeat exactly (2048 per turn at the output shaft, less the table’s shape).</li>
@@ -861,14 +1034,14 @@ p{margin:0}
   <footer><span>TIDE-AG</span><span></span></footer>
 </section>
 <section class="sheet" id="s42">
-  <div class="head"><span class="no-">42</span><h3>Home the calendar</h3><span class="tag"><span class="pill">planned</span></span></div>
+  <div class="head"><span class="no-">53</span><h3>Home the calendar</h3><span class="tag"><span class="pill">planned</span></span></div>
   <ul class="do">
     <li>Slowly (the gauge motor is weak): year dial to Jan 1, moon disc to new moon, each on its latch edge. Then to today’s date and the <b>true</b> moon phase.</li>
   </ul>
   <footer><span>TIDE-AG</span><span></span></footer>
 </section>
 <section class="sheet" id="s43">
-  <div class="head"><span class="no-">43</span><h3>Go-to-phase: check each arm’s radius</h3><span class="tag"><span class="pill">planned</span></span></div>
+  <div class="head"><span class="no-">54</span><h3>Go-to-phase: check each arm’s radius</h3><span class="tag"><span class="pill">planned</span></span></div>
   <figure class="fig" data-fig="e_phase" data-alt="An arm at 0, 90, 180 and 270 degrees and the pen moving between plus and minus r"></figure>
   <ul class="do">
     <li>One station at a time: command its phase to 0°, 90°, 180°, 270°. The pen moves <b>±r</b> about its zero.</li>
@@ -876,7 +1049,7 @@ p{margin:0}
   <footer><span>TIDE-AG</span><span></span></footer>
 </section>
 <section class="sheet" id="s44">
-  <div class="head"><span class="no-">44</span><h3>Set the pen zero</h3><span class="tag"><span class="pill">planned</span></span></div>
+  <div class="head"><span class="no-">55</span><h3>Set the pen zero</h3><span class="tag"><span class="pill">planned</span></span></div>
   <ul class="do">
     <li><b>Go-to-zero</b> (every output at 0), then turn the anchor screw on the pen bracket until the pen sits on the chart’s datum line.</li>
   </ul>
@@ -884,7 +1057,7 @@ p{margin:0}
   <footer><span>TIDE-AG</span><span></span></footer>
 </section>
 <section class="sheet" id="s45">
-  <div class="head"><span class="no-">45</span><h3>Soak at 1000×</h3><span class="tag"><span class="pill">planned</span></span></div>
+  <div class="head"><span class="no-">56</span><h3>Soak at 1000×</h3><span class="tag"><span class="pill">planned</span></span></div>
   <ul class="do">
     <li>90 minutes at 1000× (60 days of tide) against the Marigram Sandbox. No skips: every Hall edge arrives on its predicted step.</li>
   </ul>
@@ -896,14 +1069,14 @@ p{margin:0}
 <div class="divider" id="F"><span class="L">F</span><div><h2>How to use</h2><p>Set it running, load paper, read the dials.</p></div></div>
 <div class="grid">
 <section class="sheet" id="s46">
-  <div class="head"><span class="no-">46</span><h3>Start it</h3><span class="tag"><span class="pill">planned</span></span></div>
+  <div class="head"><span class="no-">57</span><h3>Start it</h3><span class="tag"><span class="pill">planned</span></span></div>
   <ul class="do">
     <li>Power on: Wi-Fi, NTP, re-home every station, then run in real time. NTP again daily.</li>
   </ul>
   <footer><span>TIDE-AG</span><span></span></footer>
 </section>
 <section class="sheet" id="s47">
-  <div class="head"><span class="no-">47</span><h3>Load the chart paper</h3><span class="tag"><span class="pill now">today</span></span></div>
+  <div class="head"><span class="no-">58</span><h3>Load the chart paper</h3><span class="tag"><span class="pill now">today</span></span></div>
   <figure class="fig" data-fig="f_paper" data-alt="The drum with a sheet wrapped round it"></figure>
   <ul class="do">
     <li>A4 wrapped the long way round the 279.3 mm drum; trim the 210 side to 140. Tape the 17.7 mm overlap.</li>
@@ -912,14 +1085,14 @@ p{margin:0}
   <footer><span>TIDE-AG</span><span></span></footer>
 </section>
 <section class="sheet" id="s48">
-  <div class="head"><span class="no-">48</span><h3>Replay at speed</h3><span class="tag"><span class="pill">planned</span></span></div>
+  <div class="head"><span class="no-">59</span><h3>Replay at speed</h3><span class="tag"><span class="pill">planned</span></span></div>
   <ul class="do">
     <li>The speed-up multiplier: 1000× replays 60 days in 86 minutes. Stay under 5000×, and re-home after any skip.</li>
   </ul>
   <footer><span>TIDE-AG</span><span></span></footer>
 </section>
 <section class="sheet" id="s49">
-  <div class="head"><span class="no-">49</span><h3>Read the dials</h3><span class="tag"><span class="pill now">today</span></span></div>
+  <div class="head"><span class="no-">60</span><h3>Read the dials</h3><span class="tag"><span class="pill now">today</span></span></div>
   <figure class="fig" data-fig="f_read" data-alt="A station dial read against its index tab, the coral high-water tick marked"></figure>
   <ul class="do">
     <li>Read each scale under its index tab; readings increase clockwise. <b>S2</b>: local mean solar time. <b>M2</b>: lunar hours. <b>K1</b>: sidereal time. <b>N2</b>, <b>O1</b>: hours of their own periods.</li>
@@ -950,7 +1123,7 @@ p{margin:0}
     <div class="zb"><button type="button" data-z="in" aria-label="Zoom in">+</button><button type="button" data-z="out" aria-label="Zoom out">−</button><button type="button" data-z="fit" aria-label="Fit">⤢</button></div>
     <!--FZ:kicad|The main board's full KiCad schematic-->
   </div>
-  <p class="fzcap"><span class="screen-only">Drag to pan, scroll or pinch to zoom.</span><span class="print-only">The drawing is vector: zoom in as far as you like.</span> Generated from <span class="hw">pcb/design.py</span> by <span class="hw">pcb/gen_schematic.py</span>; ERC clean.</p>
+  <p class="fzcap"><span class="screen-only">Drag to pan, scroll or pinch to zoom.</span><span class="print-only">The drawing is vector: zoom in as far as you like.</span> Parts are joined by net label in KiCad; the coloured lines redraw those connections for this page (one colour per signal net, faint dashed grey for the many-pin rails). Generated from <span class="hw">pcb/design.py</span> by <span class="hw">pcb/gen_schematic.py</span>; ERC clean.</p>
   <footer><span>TIDE-AG</span><span></span></footer>
 </section>
 </div>
@@ -961,6 +1134,7 @@ p{margin:0}
 <script src="tide_geom.js"></script>
 <script src="figs_project.js"></script>
 <script src="figs_pcb.js"></script>
+<script src="figs_beginner.js"></script>
 <script>
 (function () {
   document.querySelectorAll('.fig[data-fig]').forEach(function (el) {

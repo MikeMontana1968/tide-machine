@@ -19,6 +19,7 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, '..', '..'))
 sys.path.insert(0, os.path.expanduser(r'~\.claude\skills\flatpack-guide\scripts'))
+sys.path.insert(0, os.path.join(HERE, 'kit', 'scripts'))   # the repo's copy of the kit wins (kit/README.txt)
 sys.path.insert(0, os.path.join(ROOT, 'pcb'))
 import fritzing_kit as FK   # noqa: E402
 import design as D          # noqa: E402
@@ -98,23 +99,27 @@ def calendar():
          + '<path d="M16 50 H20 V53 A2 2 0 0 1 16 53 Z" fill="#1d1d1d"/><path d="M16 20 H20 V23 A2 2 0 0 1 16 23 Z" fill="#1d1d1d"/>'
          + T(24, 23, 'year', 1.8, '#ffffff', 'start', 'normal') + T(24, 53, 'moon', 1.8, '#ffffff', 'start', 'normal'))
     p = FK.Part('calendar', 'Calendar carrier', 'CAL', 36, 68, a, 'BKA30D-R5 gauge stepper + year and moon latches on perfboard (outline: 4 x 6 corner cuts)')
+    # latch pins mirrored (M- .. Y+ left to right): the leads come up from under the
+    # carrier in U-shapes, which only nest without crossing in this order
     for i, n in enumerate(['Y+', 'YS', 'Y-']):
-        p.conn(n, 'year latch ' + n[1:], 5 + 2.5 * i, 67.4, 'R', i)
+        p.conn(n, 'year latch ' + n[1:], 20 - 2.5 * i, 67.4, 'R', i)
     for i, n in enumerate(['M+', 'MS', 'M-']):
-        p.conn(n, 'moon latch ' + n[1:], 15 + 2.5 * i, 67.4, 'R', 4 + i)
-    for i, n in enumerate(['Y1', 'Y2', 'Y3', 'Y4', 'M1', 'M2', 'M3', 'M4']):
-        p.conn(n, ('year' if n[0] == 'Y' else 'moon') + ' coil ' + n[1], 0.6, 26 + 2.5 * i, 'R', 8 + i)
+        p.conn(n, 'moon latch ' + n[1:], 10 - 2.5 * i, 67.4, 'R', 4 + i)
+    coils = ['Y1', 'Y2', 'Y3', 'Y4', 'M1', 'M2', 'M3', 'M4']
+    for i, n in enumerate(coils):     # drawn M4 at the top .. Y1 at the bottom, J5's order
+        p.conn(n, ('year' if n[0] == 'Y' else 'moon') + ' coil ' + n[1], 0.6, 26 + 2.5 * (7 - i), 'R', 8 + i)
     return p
 
 
 def psu():
-    a = ('<rect x="0" y="0" width="34" height="26" rx="3" fill="#2b2f33" stroke="#111" stroke-width="0.4"/>'
-         + T(17, 11, '5 V  3 A', 3.6) + T(17, 16, 'regulated', 2, '#cfd3d6', weight='normal')
-         + '<path d="M17 26 C17 34 4 34 4 40" fill="none" stroke="#1d1d1d" stroke-width="1.6"/>'
-         '<rect x="0.5" y="40" width="7" height="9" rx="1" fill="#1d1d1d"/>' + T(4, 53, '5.5 x 2.1', 1.6, '#2a2a2a', weight='normal'))
-    p = FK.Part('psu', '5 V 3 A supply', 'PS', 34, 54, a, 'MEAN WELL GST18U05-P1J or similar, centre positive')
-    p.conn('+', 'centre pin, +5 V', 2.5, 48.6, 'R', 0)
-    p.conn('-', 'sleeve, ground', 5.5, 48.6, 'R', 1)
+    # plug on top: its two leads go straight up into J3, clear of every other harness
+    a = ('<rect x="0.5" y="0" width="7" height="9" rx="1" fill="#1d1d1d"/>' + T(12, 6, '5.5 x 2.1', 1.6, '#2a2a2a', 'start', 'normal')
+         + '<path d="M4 9 C4 15 17 13 17 18" fill="none" stroke="#1d1d1d" stroke-width="1.6"/>'
+         + '<rect x="0" y="18" width="34" height="26" rx="3" fill="#2b2f33" stroke="#111" stroke-width="0.4"/>'
+         + T(17, 29, '5 V  3 A', 3.6) + T(17, 34, 'regulated', 2, '#cfd3d6', weight='normal'))
+    p = FK.Part('psu', '5 V 3 A supply', 'PS', 34, 44, a, 'MEAN WELL GST18U05-P1J or similar, centre positive')
+    p.conn('+', 'centre pin, +5 V', 2.5, 0.6, 'R', 0)
+    p.conn('-', 'sleeve, ground', 5.5, 0.6, 'R', 1)
     return p
 
 
@@ -122,12 +127,19 @@ S = FK.Sketch()
 b = S.place(board, (0, 0), (0, 0), (0, 0))
 
 # motors above the board, in the order of their sockets
+MOTOR_RUNS = []
 for i, m in enumerate(D.MOTORS):
     part = motor(m)
     j = MOTOR_J[m]
     mi = S.place(part, (-52 + 42 * i, -78), FK.level(board, part, 'A', conn_name(j, 1), False), (-60 + 20 * i, -60))
-    for k, key in enumerate(['A', 'B', 'C', 'D', 'HOLD']):
-        S.wire(mi, key, b, conn_name(j, k + 1), LEAD[key], sag=4)
+    pins = [(key, conn_name(j, k + 1), LEAD[key]) for k, key in enumerate(['A', 'B', 'C', 'D', 'HOLD'])]
+    off = abs(S.pin_mm(mi, 'A')[0] - S.pin_mm(b, conn_name(j, 1))[0])
+    MOTOR_RUNS.append((off, mi, pins))
+# rank by how far each harness travels sideways: rank 0 (farthest) runs lowest
+for side in (0, 1):
+    runs = sorted([r for i_, r in enumerate(MOTOR_RUNS) if (i_ >= len(MOTOR_RUNS) // 2) == side], key=lambda r: -r[0])
+    for rank, (off, mi, pins) in enumerate(runs):
+        S.bundle(mi, b, pins, -14 - 10 * rank, -6 - 10 * rank)
 
 # station Hall carriers below the board, each under its socket so the leads run straight down
 _, PADS, *_ = FK.load_board_at_origin(PCB)
@@ -144,19 +156,21 @@ for i, h in enumerate(['M2', 'O1', 'K1', 'N2', 'S2']):
 
 # the calendar carrier on the right: coils to J5, its two latches to J20 / J21
 cal = calendar()
-ci = S.place(cal, (170, -8), FK.level(board, cal, 'Y+', conn_name('J20', 1), True), (170, 0))
+j5_top = S.pin_mm(b, conn_name('J5', 8))[1]
+ci = S.place(cal, (170, j5_top - 26), FK.level(board, cal, 'Y+', conn_name('J20', 1), True), (170, 0))
 coil_cols = [FK.BLUE, PINK, FK.YELLOW, FK.ORANGE, FK.GREEN, FK.PURPLE, FK.GREY, FK.WHITE]
 for k, n in enumerate(['Y1', 'Y2', 'Y3', 'Y4', 'M1', 'M2', 'M3', 'M4']):
-    S.wire(ci, n, b, conn_name('J5', k + 1), coil_cols[k], sag=-3)
-for lat, j in (('Y', 'J20'), ('M', 'J21')):
-    for k, (sfx, col) in enumerate([('+', FK.RED), ('S', FK.YELLOW), ('-', FK.BLACK)]):
-        S.wire(ci, lat + sfx, b, conn_name(j, k + 1), col, sag=30 + 4 * k)
+    S.route(ci, n, b, conn_name('J5', k + 1), coil_cols[k], [])          # level with J5: straight across
+latch = [(conn_name(j, k + 1), lat + sfx, col) for lat, j in (('Y', 'J20'), ('M', 'J21'))
+         for k, (sfx, col) in enumerate([('+', FK.RED), ('S', FK.YELLOW), ('-', FK.BLACK)])]
+print('calendar latch leads: %d crossings' % S.bundle(b, ci, latch, 140, 152))
 
 # the supply into J3
 ps = psu()
-pi = S.place(ps, (178, 78), FK.level(board, ps, '+', conn_name('J3', 1), True), (180, 90))
-S.wire(pi, '+', b, conn_name('J3', 1), FK.RED, sag=6)
-S.wire(pi, '-', b, conn_name('J3', 2), FK.BLACK, sag=10)
+pi = S.place(ps, (110, 88), FK.level(board, ps, '+', conn_name('J3', 1), True), (180, 90))
+for key, pin, col, lvl in (('+', 1, FK.RED, 84), ('-', 2, FK.BLACK, 86)):
+    s_, d_ = S.pin_mm(pi, key), S.pin_mm(b, conn_name('J3', pin))
+    S.route(pi, key, b, conn_name('J3', pin), col, [(s_[0], lvl), (d_[0], lvl)])
 
 S.save(OUT, 'tide_wiring')
 print('wrote', OUT)

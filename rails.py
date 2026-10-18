@@ -11,8 +11,8 @@ vendor cut file. Tape a sheet to the wood, centre-punch, drill.
 import io, os, re
 from collections import Counter
 
-RB  = r'C:\Users\mikem\Desktop\tide-machine\tide_machine.rb'
-OUT = r'C:\Users\mikem\Desktop\tide-machine'
+RB  = r'C:\Users\mikem\claude\tide-machine\tide_machine.rb'
+OUT = r'C:\Users\mikem\claude\tide-machine'
 
 src = io.open(RB, encoding='utf-8').read()
 cfg = re.search(r'CFG = \{(.*?)\n  \}', src, re.S).group(1)

@@ -345,7 +345,7 @@ faces if the decal shows the layer lines.
 
 ## Files
 
-Everything lives in `C:\Users\mikem\Desktop\tide-machine\` (a git repo).
+Everything lives in `C:\Users\mikem\claude\tide-machine\` (a git repo).
 
 | File | Rev | What |
 |---|---|---|
